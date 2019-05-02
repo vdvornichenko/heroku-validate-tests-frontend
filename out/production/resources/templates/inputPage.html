@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script type="text/javascript">
+        var checkedUsers = [];
+        function removeOrAddUser(elemId, value) {
+            if (value) {
+                if (!checkedUsers.includes(elemId)) {
+                    checkedUsers.push(elemId);
+                }
+            } else {
+                if (checkedUsers.includes(elemId)) {
+                    checkedUsers = checkedUsers.filter(elem => elem != elemId);
+                }
+            }
+            setButtonState();
+        }
+
+        function showResults() {
+            const Http = new XMLHttpRequest();
+            const url='/usersInfo';
+            Http.open("POST", url);
+            Http.send(checkedUsers.join(";"));
+            Http.onreadystatechange=(e)=>{
+                document.getElementById("results").innerHTML = Http.responseText;
+            }
+        }
+
+        function setButtonState() {
+            if(checkedUsers.length == 0) {
+                document.getElementById("showButton").disabled = true;
+            } else {
+                document.getElementById("showButton").disabled = false;
+            }
+        }
+
+    </script>
+    <style>
+        .buttons {
+            padding: 20px;
+        }
+
+        .buttons-getButton {
+            border-radius: 5px;
+            background-color: #6c7ae0;
+            border: none;
+            color: #fff;
+            text-shadow: 0 1px 0 rgba(0,0,0,.2);
+            width: 150px;
+            height: 30px;
+            float: right;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,.3)), to(rgba(255,255,255,0)));
+            background-image: -webkit-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+            background-image: -moz-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+            background-image: -ms-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+            background-image: -o-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+            background-image: linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+        }
+
+        .buttons-getButton:hover{
+            background-color: #62c462;
+        }
+
+        .buttons-getButton:active{
+            background: #57a957;
+        }
+
+        #customers {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            padding: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 1px 2px 2px 1px;
+        }
+
+        #customers td, #customers th {
+            border: none;
+            padding: 8px;
+        }
+
+        #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+        #customers tr:hover {background-color: #ddd;}
+
+        #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #6c7ae0;
+            color: white;
+        }
+        .header{
+            background-color: #6c7ae0;
+            text-align: center;
+            position: sticky;
+            text-decoration: white;
+            color: white;
+            box-shadow: 30px 30px 20px 13px;
+        }
+    </style>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div class="header">
+    <h1>Task Checker</h1>
+</div>
+<div style="padding:20px;">
+    <table id="customers">
+        <tr>
+            <th>
+                User Name
+            </th>
+            <th>
+                Password
+            </th>
+            <th>
+                Select User
+            </th>
+        </tr>
+        <th:block th:each="creds : ${userCredentials}">
+            <tr>
+                <td>
+                    <a th:href="'https://login.salesforce.com/?un=' + ${creds.userName} + '&pw=' + ${creds.password}">
+                        <div th:text="${creds.userName}"></div>
+                    </a>
+                </td>
+                <td th:text="${creds.password}"></td>
+                <td>
+                    <input type="checkbox" th:id="${creds.userName}" onclick="removeOrAddUser(this.id, this.checked)"/>
+                </td>
+            </tr>
+        </th:block>
+    </table>
+</div>
+<div class="buttons">
+    <input id="showButton" type="button" onclick="showResults()"
+           value="Run tests for users" disabled="true" class="buttons-getButton"/>
+</div>
+<div id="results"></div>
+</body>
+</html>
