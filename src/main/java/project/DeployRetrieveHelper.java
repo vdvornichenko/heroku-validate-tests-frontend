@@ -22,7 +22,8 @@ public class DeployRetrieveHelper {
 
     private String ZIP_FILE = "src/main/resources" + Thread.currentThread().getName() + ".zip";
     // manifest file that controls which components get retrieved
-    private String manifest_file = "src/main/resources/package.xml";
+    //private String manifest_file = "src/main/resources/package.xml";
+    private String manifest_file = TaskMapping.PathToXMLFile;
 
     private static final double API_VERSION = 45.0;
     // one second in milliseconds

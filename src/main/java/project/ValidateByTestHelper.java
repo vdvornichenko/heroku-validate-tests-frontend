@@ -80,7 +80,7 @@ public class ValidateByTestHelper {
         } catch (Exception commEx) {
             System.out.println("Ex: " + commEx);
         }
-        RequestProcessor.userResults.put(un, resultForUser);
+
     }
 
     private String[] setStringToArray(Set<String> originalSet) {
