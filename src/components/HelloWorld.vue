@@ -16,7 +16,7 @@
               v-if="primaryDrawer.type !== 'permanent'"
               @click.stop="primaryDrawer.model = !primaryDrawer.model"
       ></v-toolbar-side-icon>
-      <v-toolbar-title>Vuetify</v-toolbar-title>
+      <v-toolbar-title>Task Checker</v-toolbar-title>
       <div style="float: right">
         <v-flex xs12 md6>
           <v-switch v-model="dark" primary label="Dark"></v-switch>
@@ -74,7 +74,7 @@
         </div>
         <div v-if="showResults" style="padding-top: 30px">
           <div v-for="(value, propertyName, index) in userResults" v-bind:key="index" style="padding-top: 30px">
-            <v-toolbar flat dark>
+            <v-toolbar flat :dark="dark">
               <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
             </v-toolbar>
             <v-data-table :dark="dark"
@@ -174,9 +174,9 @@
       drawers: ['Default (no property)', 'Permanent', 'Temporary'],
       primaryDrawer: {
         model: null,
-        type: 'default (no property)',
-        clipped: false,
-        floating: false,
+        type: 'Default (no property)',
+        clipped: true,
+        floating: true,
         mini: false
       },
       footer: {
