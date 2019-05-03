@@ -10,7 +10,7 @@ public class Results {
         this.nameMetadata = nameMetadata;
         this.message = message;
         if(status){
-            this.status = "SUCCES";
+            this.status = "SUCCESS";
         } else {
             this.status = "ERROR";
         }
