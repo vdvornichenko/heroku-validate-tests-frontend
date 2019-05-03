@@ -1,99 +1,102 @@
-<template>
-  <v-container>
-    <v-layout
-      text-xs-center
-      wrap
-    >
-      <v-flex xs12>
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        ></v-img>
-      </v-flex>
-      <v-btn color="success">Success</v-btn>
-      <v-btn color="error">Error</v-btn>
-      <v-btn color="warning">Warning</v-btn>
-      <v-btn color="info">Info</v-btn> <v-btn color="success">Success</v-btn>
-      <v-btn color="error">Error</v-btn>
-      <v-btn color="warning">Warning</v-btn>
-      <v-btn color="info">Info</v-btn> <v-btn color="success">Success</v-btn>
-      <v-btn color="error">Error</v-btn>
-      <v-btn color="warning">Warning</v-btn>
-      <v-btn color="info">Info</v-btn> <v-btn color="success">Success</v-btn>
-      <v-btn color="error">Error</v-btn>
-      <v-btn color="warning">Warning</v-btn>
-      <v-btn color="info">Info</v-btn>
-      <v-flex mb-4>
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-flex>
-
-      <v-flex
-        mb-5
-        xs12
-      >
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+  <v-app id="sandbox" :dark="dark">
+    <v-navigation-drawer
+            v-model="primaryDrawer.model"
+            :permanent="primaryDrawer.type === 'permanent'"
+            :temporary="primaryDrawer.type === 'temporary'"
+            :clipped="primaryDrawer.clipped"
+            :floating="primaryDrawer.floating"
+            :mini-variant="primaryDrawer.mini"
+            absolute
+            overflow
+            app
+    ></v-navigation-drawer>
+    <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
+      <v-toolbar-side-icon
+              v-if="primaryDrawer.type !== 'permanent'"
+              @click.stop="primaryDrawer.model = !primaryDrawer.model"
+      ></v-toolbar-side-icon>
+      <v-toolbar-title>Vuetify</v-toolbar-title>
+      <div style="float: right">
+        <v-flex xs12 md6>
+          <v-switch v-model="dark" primary label="Dark"></v-switch>
+        </v-flex>
+      </div>
+    </v-toolbar>
+    <v-container>
+      <div style="height: 100%; padding-top: 50px">
+        <div>
+          <v-alert
+                  v-model="errorAlert"
+                  dismissible
+                  type="error"
           >
-            {{ next.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
+            {{ errorMessage }}
+          </v-alert>
+        </div>
+        <div class="text-xs-center">
+          <v-dialog
+                  v-model="callbackState"
+                  hide-overlay
+                  persistent
+                  width="300"
           >
-            {{ link.text }}
-          </a>
-        </v-layout>
-      </v-flex>
+            <v-card
+                    color="primary"
+                    dark
+            >
+              <v-card-text>
+                Please stand by
+                <v-progress-linear
+                        indeterminate
+                        color="white"
+                        class="mb-0"
+                ></v-progress-linear>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+        </div>
+        <v-data-table :dark="dark" disable-initial-sort
+                      :headers="usersTableHeaders"
+                      :items="users"
+                      class="elevation-1"
+        >
+          <template v-slot:items="props" >
+            <td>{{ props.item.index + 1 }}</td>
+            <td><input type="checkbox" v-model="props.item.checked"/></td>
+            <td class="text-xs-left">{{ props.item.userName }}</td>
+            <td class="text-xs-left">{{ props.item.password }}</td>
+          </template>
+        </v-data-table>
+        <div style="float: right;">
+          <v-btn color="info" v-on:click="getAllUsersInfo">Show Results for all users</v-btn>
+          <v-btn color="info" v-on:click="getSelectedUsersInfo">Show Results for selected users</v-btn>
+        </div>
+        <div v-if="showResults" style="padding-top: 30px">
+          <div v-for="(value, propertyName, index) in userResults" v-bind:key="index" style="padding-top: 30px">
+            <v-toolbar flat dark>
+              <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
+            </v-toolbar>
+            <v-data-table :dark="dark"
+                          :headers="userResultsHeaders"
+                          :items="value"
+                          class="elevation-1"
+            >
+              <template v-slot:items="props">
+                <td>{{ props.item.nameMetadata }}</td>
+                <td class="text-xs-left">{{ props.item.status }}</td>
+                <td class="text-xs-left">{{ props.item.message }}</td>
+              </template>
+            </v-data-table>
+          </div>
+        </div>
+      </div>
+    </v-container>
+    <v-footer :inset="footer.inset" app>
+      <span class="px-3">&copy; {{ new Date().getFullYear() }}</span>
+    </v-footer>
+  </v-app>
 
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-  </v-container>
 </template>
 
 <script>
@@ -149,8 +152,79 @@
           href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
         }
 
-      ]
-    })
+      ],
+      users : [],
+      usersTableHeaders : [
+        {text : "#", value : "index", sortable: false, align: "left"},
+        {text : "Select User", value : "checked", sortable : false},
+        {text : "User Name", value : "userName"},
+        {text : "Password", value : "password"}
+      ],
+      showResults : false,
+      userResults : [],
+      userResultsHeaders : [
+        {text : "Metadata File", value : "nameMetadata"},
+        {text : "Status", value : "status"},
+        {text : "Message", value : "message"}
+      ],
+      callbackState: false,
+      errorAlert : false,
+      errorMessage : "",
+      dark: true,
+      drawers: ['Default (no property)', 'Permanent', 'Temporary'],
+      primaryDrawer: {
+        model: null,
+        type: 'default (no property)',
+        clipped: false,
+        floating: false,
+        mini: false
+      },
+      footer: {
+        inset: false
+      }
+    }),
+
+    created() {
+      this.$http.get('http://localhost:8080/getUsers').then(response => {
+        response.body.forEach((elem, i) => {
+          this.users.push({index : i, userName : elem.userName, password : elem.password, checked: false});
+        });
+      });
+    },
+
+    methods: {
+      getAllUsersInfo : function() {
+        this.getResults("all");
+      },
+
+      getSelectedUsersInfo : function() {
+        let users = [];
+        this.users.forEach((elem) => {
+          if (elem.checked) {
+            users.push(elem.userName);
+          }
+        });
+        this.getResults(users.join(";"));
+      },
+
+      getResults : function(users) {
+        if (users === "") {
+          this.errorAlert = true;
+          this.errorMessage = "You must select at least 1 user"
+        } else {
+          this.callbackState = true;
+          this.$http.post('http://localhost:8080/usersInfo', users).then(response => {
+            this.userResults = response.body;
+            this.showResults = true;
+            this.callbackState = false;
+          }, response => {
+            this.errorMessage = response.body.bodyText.error;
+            this.errorAlert = true;
+            this.callbackState = false;
+          });
+        }
+      }
+    }
   }
 </script>
 
