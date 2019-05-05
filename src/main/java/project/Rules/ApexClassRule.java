@@ -2,6 +2,7 @@ package project.Rules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ApexClassRule implements  Rule {
 
@@ -31,5 +32,11 @@ public class ApexClassRule implements  Rule {
         }
         return new Results(nameClass, "NOT Found method " + strSearch,false);
     }
+
+
+
+
+
+
 
 }

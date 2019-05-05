@@ -20,7 +20,7 @@ public class SalesforceHandlerThread extends Thread {
         super.run();
 
         SalesforceHepler hepler = new SalesforceHepler(un, pw);
-        hepler.processUser();
+       /// hepler.processUser();
     }
 
     @Override

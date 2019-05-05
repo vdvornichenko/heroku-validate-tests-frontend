@@ -18,6 +18,17 @@
             setButtonState();
         }
 
+        function test() {
+            const Http = new XMLHttpRequest();
+            const url='/test';
+            Http.open("POST", url);
+            Http.send(checkedUsers.join(";"));
+            Http.onreadystatechange=(e)=>{
+                var results = JSON.parse(Http.responseText);
+            }
+        }
+
+
         function showResults() {
             const Http = new XMLHttpRequest();
             const url='/usersInfo';
@@ -119,6 +130,18 @@
         Show Info for selected users
     </button>
 </div>
+
+
+<button type="button" class="btn btn-info" onclick="test()">
+    TEST
+</button>
+
+
+<!--<form action="post" th:action="@{/test}" method="post">-->
+    <!--<input type="submit" />-->
+<!--</form>-->
+
+
 <div id="results"></div>
 </body>
 </html>

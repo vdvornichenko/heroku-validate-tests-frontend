@@ -25,10 +25,21 @@ public class TaskMapping {
     public static String VERSION  = "45.0";
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     static {
-        List<String> fields = new ArrayList<>();
-        fields.add("Amount__c");
-        fields.add("Account__c");
-        fields.add("zzt__c");
+
+        List<sObjectRule.Property> fields = new ArrayList<>();
+
+        Map<String, String> keyValue = new HashMap<>();
+        keyValue.put("type", "URL");
+        keyValue.put("label", "ImageURL");
+        fields.add(new sObjectRule.FieldSObjectInnerClass("ImageURL",keyValue));
+        Map<String, String> keyValueTwo = new HashMap<>();
+        keyValueTwo.put("type", "Number");
+        keyValueTwo.put("label", "Amount");
+        keyValueTwo.put("sss", "aa");
+        fields.add(new sObjectRule.FieldSObjectInnerClass("Amount__c",keyValueTwo));
+        Map<String, String> keyValueThree = new HashMap<>();
+        fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
+
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
         METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
 

@@ -18,7 +18,6 @@ public class RequestProcessor {
 
     public RequestProcessor(String userNames) {
         users = userNames;
-
         if (userNames == "all") {
             users = String.join(";", GoogleHelper.userCreds.keySet());
         }
@@ -32,7 +31,23 @@ public class RequestProcessor {
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
             helper.processUser();
         });
-        System.out.println("****************");
+        System.out.println("*********");
+        System.out.println("*********");
         return userResults;
     }
+
+    public void test() {
+        System.out.println("TESSSTTTTTT!!!!");
+        System.out.println(GoogleHelper.userCreds.keySet());
+        Stream<String> creds = Arrays.stream(users.split(";"));
+
+        creds.parallel().forEach(value -> {
+            System.out.println(value);
+            SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
+            helper.executeAnonymous();
+        });
+
+    }
+
+
 }

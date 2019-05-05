@@ -1,14 +1,27 @@
 package project;
 
+import com.sforce.soap.apex.*;
+import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 import project.Rules.*;
 
 import project.Processors.RequestProcessor;
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.sforce.soap.tooling.ExecuteAnonymous;
+import com.sforce.soap.tooling.ExecuteAnonymousResponse;
+import com.sforce.soap.tooling.DebuggingInfo;
+
+
+
 public class SalesforceHepler {
+
+    public static String templateNotFoundFile =  "Не найден файл: {0}";
 
     public static long startTime = System.currentTimeMillis();
 
@@ -23,26 +36,72 @@ public class SalesforceHepler {
         this.tempPassword = password;
     }
 
-    public static void checkUsersResults() throws InterruptedException {
 
-        if (GoogleHelper.userCreds.size() == 0) {
-            System.out.println("No users creds found in Google File");
-            System.exit(1);
-        }
+    public void executeAnonymous() {
+        System.out.println("tempUsername");
+        System.out.println(tempUsername);
+        System.out.println("tempPassword");
+        System.out.println(tempPassword);
+        String un = "";
+        SoapConnection connection;
+        ConnectorConfig soapConfig = new ConnectorConfig();
 
-//         Stress test
-//        for (Integer count = 0; count < 50; count++) { // for stress test
-//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> Test: " + count); // for stress test
-            for (String item : GoogleHelper.userCreds.keySet()) {
+        try {
+            MetadataConnection metadataConnection = MetadataLoginUtil.login(
+                    tempUsername,
+                    tempPassword
+            );
+            System.out.println("*****************" + tempUsername + " >> Un: " + un);
+            System.out.println("*****************" + tempUsername + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
 
-                SalesforceHandlerThread thread = new SalesforceHandlerThread(
-                        item,
-                        GoogleHelper.userCreds.get(item),
-                        item
-                );
-                thread.start();
-//            } // for stress test
-//            Thread.sleep(10000); // for stress test
+            soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl());
+            soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl().replace("/u/", "/s/"));
+            soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
+
+            connection = new SoapConnection(soapConfig);
+//            com.sforce.soap.apex.RunTestsRequest request = new com.sforce.soap.apex.RunTestsRequest();
+//            com.sforce.soap.tooling.ExecuteAnonymous req = new com.sforce.soap.tooling.ExecuteAnonymous();
+//            req.setString("System.debug('SOAAAP ');");
+//            com.sforce.soap.apex.RunTestsResult result = connection.runTests(request);
+//            ExecuteAnonymousResult res = connection.executeAnonymous("System.debug('SOAAAP ');");
+            ExecuteAnonymousResult res = connection.executeAnonymous("System.debug('SOAAAP ');");
+            System.out.println(">>" + res + " >>");
+//            val debugHeader = new DebuggingHeader_element()
+//            debugHeader.setDebugLevel("Debugonly")
+//            conn.__setDebuggingHeader(debugHeader)
+//            val res = conn.executeAnonymous(apexCode)
+//            val log = conn.getDebuggingInfo.getDebugLog
+
+//            DebuggingHeader_element deb = new DebuggingHeader_element();
+//            deb.setDebugLevel(LogType.Debugonly);
+//            connection.__setDebuggingHeader(deb);
+//
+
+
+
+
+            LogInfo[] logs = new LogInfo[1];
+            logs[0] = new LogInfo();
+            logs[0].setCategory(LogCategory.Apex_code);
+            logs[0].setLevel(LogCategoryLevel.Fine);
+            connection.setDebuggingHeader(logs,LogType.Debugonly);
+//            System.out.println(">>" + connection.de + " >>");
+
+
+//            https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/intro_soap_overview.htm?search_text=SOQL
+
+
+//            toolingSoapSforceCom.LogInfo apexLogInfo = new toolingSoapSforceCom.LogInfo();
+//            apexLogInfo.category='All';
+//            apexLogInfo.level='FINEST';
+//            List< toolingSoapSforceCom.LogInfo> lstLogInfo = new List< toolingSoapSforceCom.LogInfo>();
+//            lstLogInfo.add(apexLogInfo);
+//
+//            toolingSoapSforceCom.DebuggingHeader_element objDebuggingHeaderElement = new toolingSoapSforceCom.DebuggingHeader_element();
+//            objDebuggingHeaderElement.debugLevel = 'DEBUGONLY';
+//            objDebuggingHeaderElement.categories = lstLogInfo;
+        } catch (ConnectionException ex) {
+            System.out.println(Thread.currentThread().getName() + ". >> Connection Exception: " + ex);
         }
     }
 
@@ -51,11 +110,10 @@ public class SalesforceHepler {
         DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword);
 
         instance.retrieveZip();
-        RequestProcessor.userListResults = checkZipFile();
+//        RequestProcessor.userListResults = checkZipFile();
+        RequestProcessor.userResults.put(tempUsername, checkZipFile());
         //readZipFile();
-        System.out.println(tempUsername);
 
-        checkZipFile();
     }
 
 
@@ -85,7 +143,7 @@ public class SalesforceHepler {
                 }
                 // not found file
                 if (!fileFound){
-                    results.add(new Results(item, "NOT FOUND FILE " + item, false));
+                    results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
                 }
             }
         } catch (IOException ex) {
@@ -94,9 +152,6 @@ public class SalesforceHepler {
         for (Results res : results) {
             System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
         }
-        RequestProcessor.userResults.put(tempUsername, results);
-        System.out.println(">>>>>>>>>>>>> ");
-        System.out.println(tempUsername);
         return results;
     }
 
@@ -179,5 +234,28 @@ public class SalesforceHepler {
         ValidateByTestHelper helper = new ValidateByTestHelper(tempUsername);
 
     }
+
+//    public static void checkUsersResults() throws InterruptedException {
+//
+//        if (GoogleHelper.userCreds.size() == 0) {
+//            System.out.println("No users creds found in Google File");
+//            System.exit(1);
+//        }
+//
+////         Stress test
+////        for (Integer count = 0; count < 50; count++) { // for stress test
+////            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> Test: " + count); // for stress test
+//            for (String item : GoogleHelper.userCreds.keySet()) {
+//
+//                SalesforceHandlerThread thread = new SalesforceHandlerThread(
+//                        item,
+//                        GoogleHelper.userCreds.get(item),
+//                        item
+//                );
+//                thread.start();
+////            } // for stress test
+////            Thread.sleep(10000); // for stress test
+//        }
+//    }
 
 }
