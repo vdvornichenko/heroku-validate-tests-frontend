@@ -37,7 +37,9 @@ public class RequestProcessor {
         creds.parallel().forEach(value -> {
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
             helper.processUser();
+
         });
+        System.out.println("****************");
         return userResults;
     }
 

@@ -18,6 +18,7 @@
             setButtonState();
         }
 
+<<<<<<< HEAD
         function showResults(userNames) {
             var users = checkedUsers.join(";");
             if (userNames === "all") {
@@ -34,6 +35,18 @@
                 let tables = '<div style="padding-top:20px;">';
                 tables += '<table class="table table-dark">';
                 tables += '<thead>' +
+=======
+        function showResults() {
+            const Http = new XMLHttpRequest();
+            const url='/usersInfo';
+            Http.open("POST", url);
+            Http.send(checkedUsers.join(";"));
+            Http.onreadystatechange=(e)=>{
+                var results = JSON.parse(Http.responseText);
+                let tables = '<div style="padding:20px;">';
+                tables += '<table class="table table-striped info-table">';
+                tables += '<thead style="background-color:lightblue">' +
+>>>>>>> 277dbb250fda3623e44f10328a5b2a4882825095
                 '<tr>' +
                     '<th scope="col">#</th>' +
                     '<th scope="col">Metadata file</th>' +
@@ -43,7 +56,11 @@
                 '</thead>' +
                 '<tbody>';
                 for (let i in results) {
+<<<<<<< HEAD
                     tables += '<tr style="background-color:#605F5E"><td>' + i + '</td><td></td><td></td><td></td></tr>';
+=======
+                    tables += '<tr style="background-color:lightblue"><td>' + i + '</td><td></td><td></td><td></td></tr>';
+>>>>>>> 277dbb250fda3623e44f10328a5b2a4882825095
                     results[i].forEach((elem, i) => {
                         tables += '<tr><td>' + (i + 1) + '</td>';
                         tables += '<td>' + elem.nameMetadata + '</td>';
@@ -67,7 +84,12 @@
     </script>
     <style>
         .buttons {
+<<<<<<< HEAD
             padding-top: 20px;
+=======
+            padding: 20px;
+            text-align: right;
+>>>>>>> 277dbb250fda3623e44f10328a5b2a4882825095
         }
         .header{
             background-color: lightblue;
@@ -76,6 +98,7 @@
             color: black;
             height: 100px;
         }
+<<<<<<< HEAD
     </style>
     <title>Task Validation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -164,5 +187,56 @@
     </div>
     <div class="col-1"></div>
 </div>
+=======
+
+        .info-table {
+            overflow: hidden;
+            border-radius: 7px;
+            box-shadow: 0 0 10px 0;
+        }
+    </style>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div class="header">
+    <h1 style="font-size: 500%; font-family:cursive">Task Checker</h1>
+</div>
+<div style="padding:20px;">
+    <table class="table table-striped info-table">
+        <thead style="background-color:lightblue">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Select user</th>
+            <th scope="col">User Name</th>
+            <th scope="col">Password</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="creds,iter : ${userCredentials}">
+            <tr>
+                <td><span th:text="${iter.count}"></span></td>
+                <td>
+                    <input type="checkbox" th:id="${creds.userName}" onclick="removeOrAddUser(this.id, this.checked)"/>
+                </td>
+                <td>
+                    <a th:href="'https://login.salesforce.com/?un=' + ${creds.userName} + '&pw=' + ${creds.password}">
+                        <div th:text="${creds.userName}"></div>
+                    </a>
+                </td>
+                <td th:text="${creds.password}"></td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</div>
+<div class="buttons">
+    <button type="button" class="btn btn-info"
+            id="showButton" disabled="true" onclick="showResults()">
+        Show Info for selected users
+    </button>
+</div>
+<div id="results"></div>
+>>>>>>> 277dbb250fda3623e44f10328a5b2a4882825095
 </body>
 </html>
