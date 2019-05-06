@@ -17,7 +17,7 @@ public class RequestProcessor {
     public static List<Results> userListResults = new ArrayList<>();
 
     public RequestProcessor() {
-
+        GoogleHelper.callDocument();
     }
 
     public RequestProcessor(String userNames) {
@@ -39,7 +39,6 @@ public class RequestProcessor {
             helper.processUser();
 
         });
-        System.out.println("****************");
         return userResults;
     }
 
