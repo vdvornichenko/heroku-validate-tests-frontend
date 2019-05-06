@@ -17,6 +17,7 @@
               @click.stop="primaryDrawer.model = !primaryDrawer.model"
       ></v-toolbar-side-icon>
       <v-toolbar-title>Task Checker</v-toolbar-title>
+      <v-spacer></v-spacer>
       <div style="float: right">
         <br/>
         <v-flex xs12 md6>
