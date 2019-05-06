@@ -1,16 +1,16 @@
 <template>
   <v-app>
-      <HelloWorld/>
+      <StartPage/>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import StartPage from './components/StartPage'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+      StartPage
   },
   data () {
     return {
