@@ -72,8 +72,7 @@ public class ValidateByTestHelper {
                 }
             }
 
-            String totalTime = String.valueOf((System.currentTimeMillis() - SalesforceHandlerThread.getStartTime()) / 1000) + "s";
-            System.out.println("Task Validation for user " + Thread.currentThread().getName() + " finished in " + totalTime);
+
 
         } catch (ConnectionException ex) {
             System.out.println( debugThreadName + " >> ValidateByTestEx: " + ex);

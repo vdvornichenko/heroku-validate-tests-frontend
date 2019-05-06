@@ -1,7 +1,13 @@
 package project;
 
 import com.sforce.soap.apex.*;
+import com.sforce.soap.apex.ExecuteAnonymousResult;
+import com.sforce.soap.apex.LogCategory;
+import com.sforce.soap.apex.LogCategoryLevel;
+import com.sforce.soap.apex.LogInfo;
+import com.sforce.soap.apex.LogType;
 import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.tooling.*;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import project.Rules.*;
@@ -12,11 +18,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import com.sforce.soap.tooling.ExecuteAnonymous;
-import com.sforce.soap.tooling.ExecuteAnonymousResponse;
-import com.sforce.soap.tooling.DebuggingInfo;
-
 
 
 public class SalesforceHepler {
@@ -38,71 +39,107 @@ public class SalesforceHepler {
 
 
     public void executeAnonymous() {
-        System.out.println("tempUsername");
-        System.out.println(tempUsername);
-        System.out.println("tempPassword");
-        System.out.println(tempPassword);
-        String un = "";
-        SoapConnection connection;
-        ConnectorConfig soapConfig = new ConnectorConfig();
 
-        try {
-            MetadataConnection metadataConnection = MetadataLoginUtil.login(
-                    tempUsername,
-                    tempPassword
-            );
-            System.out.println("*****************" + tempUsername + " >> Un: " + un);
-            System.out.println("*****************" + tempUsername + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
-
-            soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl());
-            soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl().replace("/u/", "/s/"));
-            soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
-
-            connection = new SoapConnection(soapConfig);
-//            com.sforce.soap.apex.RunTestsRequest request = new com.sforce.soap.apex.RunTestsRequest();
-//            com.sforce.soap.tooling.ExecuteAnonymous req = new com.sforce.soap.tooling.ExecuteAnonymous();
-//            req.setString("System.debug('SOAAAP ');");
-//            com.sforce.soap.apex.RunTestsResult result = connection.runTests(request);
-//            ExecuteAnonymousResult res = connection.executeAnonymous("System.debug('SOAAAP ');");
-            ExecuteAnonymousResult res = connection.executeAnonymous("System.debug('SOAAAP ');");
-            System.out.println(">>" + res + " >>");
-//            val debugHeader = new DebuggingHeader_element()
-//            debugHeader.setDebugLevel("Debugonly")
-//            conn.__setDebuggingHeader(debugHeader)
-//            val res = conn.executeAnonymous(apexCode)
-//            val log = conn.getDebuggingInfo.getDebugLog
-
-//            DebuggingHeader_element deb = new DebuggingHeader_element();
-//            deb.setDebugLevel(LogType.Debugonly);
-//            connection.__setDebuggingHeader(deb);
-//
-
-
-
-
-            LogInfo[] logs = new LogInfo[1];
-            logs[0] = new LogInfo();
-            logs[0].setCategory(LogCategory.Apex_code);
-            logs[0].setLevel(LogCategoryLevel.Fine);
-            connection.setDebuggingHeader(logs,LogType.Debugonly);
-//            System.out.println(">>" + connection.de + " >>");
-
-
+        ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
+        String apexCode = "System.debug('SOAAAP)";
+        String res = hlp.executeAnonymousWithReturnStringDebug(apexCode);
+//            https://www.programcreek.com/java-api-examples/?api=com.sforce.soap.apex.SoapConnection
 //            https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/intro_soap_overview.htm?search_text=SOQL
 
 
-//            toolingSoapSforceCom.LogInfo apexLogInfo = new toolingSoapSforceCom.LogInfo();
-//            apexLogInfo.category='All';
-//            apexLogInfo.level='FINEST';
-//            List< toolingSoapSforceCom.LogInfo> lstLogInfo = new List< toolingSoapSforceCom.LogInfo>();
-//            lstLogInfo.add(apexLogInfo);
+//        System.out.println("tempUsername");
+//        System.out.println(tempUsername);
+//        System.out.println("tempPassword");
+//        System.out.println(tempPassword);
+//        String un = "";
+//        SoapConnection connection;
+//        ConnectorConfig soapConfig = new ConnectorConfig();
 //
-//            toolingSoapSforceCom.DebuggingHeader_element objDebuggingHeaderElement = new toolingSoapSforceCom.DebuggingHeader_element();
-//            objDebuggingHeaderElement.debugLevel = 'DEBUGONLY';
-//            objDebuggingHeaderElement.categories = lstLogInfo;
-        } catch (ConnectionException ex) {
-            System.out.println(Thread.currentThread().getName() + ". >> Connection Exception: " + ex);
-        }
+//        try {
+//            MetadataConnection metadataConnection = MetadataLoginUtil.login(
+//                    tempUsername,
+//                    tempPassword
+//            );
+//            System.out.println("*****************" + tempUsername + " >> Un: " + un);
+//            System.out.println("*****************" + tempUsername + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
+//
+//            soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl());
+//            soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(tempUsername).getServerUrl().replace("/u/", "/s/"));
+//            soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(tempUsername));
+//
+//            connection = new SoapConnection(soapConfig);
+////            com.sforce.soap.apex.RunTestsRequest request = new com.sforce.soap.apex.RunTestsRequest();
+//            //com.sforce.soap.tooling.DebuggingInfo debuggingInfo = new DebuggingInfo();
+//            DebuggingHeader_element debuggingInfo = new DebuggingHeader_element();
+//            debuggingInfo.setDebugLevel(LogType.Debugonly);
+//            DebuggingInfo_element rr = new DebuggingInfo_element();
+//            rr.setDebugLog("USER_DEBUG");
+//
+//            LogInfo[] logs = new LogInfo[1];
+//            logs[0] = new LogInfo();
+//            logs[0].setCategory(LogCategory.Apex_code);
+//            logs[0].setLevel(LogCategoryLevel.Debug);
+//            debuggingInfo.setCategories(logs);
+//
+//
+//            connection.setDebuggingHeader(logs, LogType.Debugonly);
+////            connection.__setDebuggingHeader(debuggingInfo);
+//
+//            TraceFlag dd = new TraceFlag();
+//            dd.setLogType("USER_DEBUG");
+////            connection.se
+//
+//            ExecuteAnonymousResult res = connection.executeAnonymous("System.debug('SOAAAP ');");
+//            System.out.println(">>" + res + "<<");
+//            String log = connection.getDebuggingInfo().getDebugLog();
+//
+//            System.out.println(">>" + log + "<<");
+//
+////            val debugHeader = new DebuggingHeader_element()
+////            debugHeader.setDebugLevel("Debugonly")
+////            conn.__setDebuggingHeader(debugHeader)
+////            val res = conn.executeAnonymous(apexCode)
+////            val log = conn.getDebuggingInfo.getDebugLog
+//
+////            DebuggingHeader_element deb = new DebuggingHeader_element();
+////            deb.setDebugLevel(LogType.Debugonly);
+////            connection.__setDebuggingHeader(deb);
+////
+////            LogInfo[] logs = new LogInfo[1];
+////            logs[0] = new LogInfo();
+////            logs[0].setCategory(LogCategory.Apex_code);
+////            logs[0].setLevel(LogCategoryLevel.Fine);
+//////            DebuggingHeader_element deb = new DebuggingHeader_element();
+//////            deb.setDebugLevel(LogType.Debugonly);
+//////            deb.setCategories(logs);
+//////            connection.__setDebuggingHeader(deb);
+////            DebuggingInfo ff = new DebuggingInfo();
+////            ff.setDebugLog("DEBUGONLY");
+////            connection.se
+//
+//
+////
+////            System.out.println(">>" + connection.getDebuggingInfo() + " >>");
+////            System.out.println(">>" + metadataConnection.getDebuggingHeader() + " >>");
+//
+//
+//
+////            https://www.programcreek.com/java-api-examples/?api=com.sforce.soap.apex.SoapConnection
+////            https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/intro_soap_overview.htm?search_text=SOQL
+//
+//
+////            toolingSoapSforceCom.LogInfo apexLogInfo = new toolingSoapSforceCom.LogInfo();
+////            apexLogInfo.category='All';
+////            apexLogInfo.level='FINEST';
+////            List< toolingSoapSforceCom.LogInfo> lstLogInfo = new List< toolingSoapSforceCom.LogInfo>();
+////            lstLogInfo.add(apexLogInfo);
+////
+////            toolingSoapSforceCom.DebuggingHeader_element objDebuggingHeaderElement = new toolingSoapSforceCom.DebuggingHeader_element();
+////            objDebuggingHeaderElement.debugLevel = 'DEBUGONLY';
+////            objDebuggingHeaderElement.categories = lstLogInfo;
+//        } catch (ConnectionException ex) {
+//            System.out.println(Thread.currentThread().getName() + ". >> Connection Exception: " + ex);
+//        }
     }
 
     public void processUser() {
@@ -117,6 +154,33 @@ public class SalesforceHepler {
     }
 
 
+//    public void disableFeedTrackingHeaderSample() {
+//        try {
+//// Insert a large number of accounts.
+//            SObject[] sObjects = new SObject[500];
+//            for (int i = 0; i < 500; i++) {
+//                Account a = new Account();
+//                a.setName("my-account-" + i);
+//                sObjects[i] = a;
+//            }
+//// Set the SOAP header to disable feed tracking to avoid generating a
+//// large number of feed items because of this bulk operation.
+//            connection.setDisableFeedTrackingHeader(true);
+//// Perform the bulk create. This won't result in 500 feed items, which
+//// would otherwise be generated without the DisableFeedTrackingHeader.
+//            SaveResult[] sr = connection.create(sObjects);
+//            for (int i = 0; i < sr.length; i++) {
+//                if (sr[i].isSuccess()) {
+//                    System.out.println("Successfully created account with id: " +
+//                            sr[i].getId() + ".");
+//                } else {
+//                    System.out.println("Error creating account: " + sr[i].getErrors()[0].getMessage());
+//                }
+//            }
+//        } catch (ConnectionException ce) {
+//            ce.printStackTrace();
+//        }
+//    }
 
 
     private List<Results> checkZipFile() {
