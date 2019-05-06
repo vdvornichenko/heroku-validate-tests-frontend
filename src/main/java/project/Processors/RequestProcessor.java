@@ -16,11 +16,17 @@ public class RequestProcessor {
     public static Map<String, List<Results>> userResults = new HashMap<>();
     public static List<Results> userListResults = new ArrayList<>();
 
+    public RequestProcessor() {
+
+    }
+
     public RequestProcessor(String userNames) {
+        GoogleHelper.callDocument();
         users = userNames;
 
-        if (userNames == "all") {
+        if (userNames.equalsIgnoreCase("all")) {
             users = String.join(";", GoogleHelper.userCreds.keySet());
+            System.out.println(users);
         }
     }
 
@@ -32,7 +38,27 @@ public class RequestProcessor {
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
             helper.processUser();
         });
-        System.out.println("****************");
         return userResults;
+    }
+
+    public List<CredentialsStorage> getUserLogins() {
+
+        List<CredentialsStorage> credentials = new ArrayList<>();
+        for(Map.Entry<String, String> userCreds : GoogleHelper.userCreds.entrySet()) {
+            credentials.add(new CredentialsStorage(userCreds));
+        }
+        return credentials;
+    }
+
+    public class CredentialsStorage {
+        public String userName;
+        public String password;
+
+        public CredentialsStorage(Map.Entry<String, String> userCreds) {
+            userName = userCreds.getKey();
+            password = userCreds.getValue();
+        }
+
+
     }
 }
