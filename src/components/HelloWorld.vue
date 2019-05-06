@@ -18,6 +18,7 @@
       ></v-toolbar-side-icon>
       <v-toolbar-title>Task Checker</v-toolbar-title>
       <div style="float: right">
+        <br/>
         <v-flex xs12 md6>
           <v-switch v-model="dark" primary label="Dark"></v-switch>
         </v-flex>
