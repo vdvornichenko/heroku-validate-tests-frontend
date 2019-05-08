@@ -136,11 +136,35 @@
     TEST
 </button>
 
+<form method="post" action="url">
+    <input type="submit" value="redirect to VF"/>
+</form>
 
-<!--<form action="post" th:action="@{/test}" method="post">-->
-    <!--<input type="submit" />-->
-<!--</form>-->
+<form method="post" action="runCode">
+    <textarea  name="runCode" style="width: 500px; height: 100px">
+        List &lt;Contact&gt;cons = [SELECT Id,Name FROM Contact];
+        System.debug(cons.size());
+        System.debug(JSON.serialize(cons));
+    </textarea>
+    <input type="submit" value="runCode with return logs"/>
+</form>
 
+<form method="post" action="apexClass">
+    <textarea  name="text" style="width: 500px; height: 100px">
+    public class Messages {
+        public static string SayHello() {
+             return 'Hello';
+        }
+    }
+    </textarea>
+    <input type="submit" value="create Apex Class"/>
+</form>
+
+<form method="post" action="query">
+    <textarea  name="query" style="width: 500px">SELECT Id,Name FROM Contact</textarea>
+    <input type="submit" value="run query"/>
+</form>
+<div th:text="${results}"></div>
 
 <div id="results"></div>
 </body>
