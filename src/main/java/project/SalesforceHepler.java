@@ -42,7 +42,16 @@ public class SalesforceHepler {
         System.out.println("Error creating account: " + tempUsername);
         System.out.println("Error creating account: " + tempPassword);
 
+        //TestRule(tempUsername);
         ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
+        TestRule ts = new TestRule(tempUsername);
+        ts.checkCondition("VALERA");
+
+       // RequestProcessor.userResults.put(tempUsername, checkZipFile());
+
+
+
+//        ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
 
 //        String apexCode = "System.debug('SOAAAP');";
 //        String res = hlp.executeAnonymousWithReturnStringDebug(apexCode);

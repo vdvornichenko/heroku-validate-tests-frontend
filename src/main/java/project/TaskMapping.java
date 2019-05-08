@@ -39,11 +39,20 @@ public class TaskMapping {
         fields.add(new sObjectRule.FieldSObjectInnerClass("Amount__c",keyValueTwo));
         Map<String, String> keyValueThree = new HashMap<>();
         fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
-
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
-        METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
 
-        // tests: Test Class => Class
+        METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
+        List<String> trigerEvents = new ArrayList<>();
+        trigerEvents.add("before update");
+        TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
+        METADATA_CHECK.put("HelloWorldTrigger", new ApexTriggerRule("HelloWorldTrigger", triger));
+
+
+
+
+
+
+        // tests: Test Class => Class тестируемый
         TEST_CLASSES.put("WebTest", "IntWebService");
     }
 
@@ -94,6 +103,7 @@ public class TaskMapping {
         Map<String, List<String>> results = new HashMap<>();
         List<String> membersSobject = new ArrayList<>();
         List<String> membersApexClass = new ArrayList<>();
+        List<String> membersTriggerClass = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
             if (METADATA_CHECK.get(item) instanceof sObjectRule){
                 String member = item.substring(0, item.indexOf('.'));
@@ -101,10 +111,14 @@ public class TaskMapping {
             } else if (METADATA_CHECK.get(item) instanceof ApexClassRule){
                 String member = item.substring(0, item.indexOf('.'));
                 membersApexClass.add(member);
+            } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
+                String member = item;
+                membersTriggerClass.add(member);
             }
         }
         results.put("CustomObject", membersSobject);
         results.put("ApexClass", membersApexClass);
+        results.put("ApexTrigger", membersTriggerClass);
         return results;
     }
 

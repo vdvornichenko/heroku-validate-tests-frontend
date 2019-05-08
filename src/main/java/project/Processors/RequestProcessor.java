@@ -40,7 +40,6 @@ public class RequestProcessor {
         System.out.println("TESSSTTTTTT!!!!");
         System.out.println(GoogleHelper.userCreds.keySet());
         Stream<String> creds = Arrays.stream(users.split(";"));
-
         creds.parallel().forEach(value -> {
             System.out.println(value);
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));

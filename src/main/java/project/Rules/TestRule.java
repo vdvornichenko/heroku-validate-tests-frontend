@@ -7,6 +7,7 @@ import com.sforce.ws.ConnectorConfig;
 import project.MetadataLoginUtil;
 import project.TaskMapping;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,31 +17,33 @@ public class TestRule  implements  Rule {
     public String nameUser;
     public List<String> nameClasses;
 
-    public TestRule(String nameUser, List<String> nameClasses){
+    public static String templateFailedTests =  "Failed Tests: {0}";
+
+    public TestRule(String nameUser){
         this.nameUser = nameUser;
-        this.nameClasses = nameClasses;
     }
 
     public List<Results> checkCondition(String nameTest){
         List<Results> results = new ArrayList<>();
+        validateUserResultUsingTest(nameUser);
         return results;
     }
 
     private void validateUserResultUsingTest(String un) {
         String resultForUser = "";
+        List<Results> results = new ArrayList<>();
         String debugThreadName = un;
         System.out.println(debugThreadName + ": >> Test Run");
 
+
         SoapConnection connection;
         ConnectorConfig soapConfig = new ConnectorConfig();
-
+       // results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
         try {
 
             System.out.println("*****************" + debugThreadName + " >> Un: " + un);
             System.out.println("*****************" + debugThreadName + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(un));
-
 //            Thread.sleep(3000);
-
             soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(un).getServerUrl());
             soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(un).getServerUrl().replace("/u/", "/s/"));
             soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(un));
@@ -56,6 +59,8 @@ public class TestRule  implements  Rule {
             for (com.sforce.soap.apex.RunTestFailure item : result.getFailures()) {
                 System.out.println("Failed Tests: " + item.getName());
                 resultForUser += "Failed Tests:" + item.getName();
+//                results.add(new Results("Tests", MessageFormat.format(templateFailedTests, item.getName()), false));
+
             }
 
             if (result.getCodeCoverage() != null) {
@@ -67,13 +72,9 @@ public class TestRule  implements  Rule {
                         if (TaskMapping.TEST_CLASSES.get(item).equals(ccr.getName())) {
                             resultForUser += ": Test Result For Class: " + TaskMapping.TEST_CLASSES.get(item);
                             System.out.println(debugThreadName + ": >> Test Result For Class: " + TaskMapping.TEST_CLASSES.get(item));
-                            resultForUser += ": Coverage: " + (
-                                    ccr.getNumLocations() - ccr.getNumLocationsNotCovered()
-                            ) + " of " + ccr.getNumLocations() + "\n";
-                            System.out.println(
-                                    debugThreadName + ": >> Coverage: " + (
-                                            ccr.getNumLocations() - ccr.getNumLocationsNotCovered()
-                                    ) + " of " + ccr.getNumLocations()
+
+                            resultForUser += ": Coverage: " + (ccr.getNumLocations() - ccr.getNumLocationsNotCovered()) + " of " + ccr.getNumLocations() + "\n";
+                            System.out.println(debugThreadName + ": >> Coverage: " + (ccr.getNumLocations() - ccr.getNumLocationsNotCovered()) + " of " + ccr.getNumLocations()
                             );
                         }
                     }
@@ -100,6 +101,8 @@ public class TestRule  implements  Rule {
         return arr;
     }
 
-
+    private Integer countPercentCoverage(Integer summNumLocations, Integer notCovered) {
+        return notCovered * 100 / summNumLocations;
+    }
 
 }
