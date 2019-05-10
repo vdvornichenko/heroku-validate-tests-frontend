@@ -1,5 +1,7 @@
 package project.Rules;
 
+import project.Util;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +29,11 @@ public class ApexClassRule implements  Rule {
 
     public Results searchString(String file, String strSearch){
         if (file.contains(strSearch) && file != null){
-            return new Results(nameClass, "Found method " + strSearch,true);
+            if (Util.checkNesting(file, strSearch) == 1) {
+                return new Results(nameClass, "Метод " + strSearch + " реализован",true);
+            }
         }
-        return new Results(nameClass, "NOT Found method " + strSearch,false);
+        return new Results(nameClass, "Метод " + strSearch + " не реализован",false);
     }
 
 }

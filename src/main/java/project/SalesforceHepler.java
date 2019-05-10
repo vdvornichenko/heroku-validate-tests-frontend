@@ -3,6 +3,8 @@ package project;
 import project.Rules.*;
 
 import project.Processors.RequestProcessor;
+import project.Storages.FileStorage;
+
 import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -51,15 +53,11 @@ public class SalesforceHepler {
         DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword);
 
         instance.retrieveZip();
-        RequestProcessor.userListResults = checkZipFile();
         //readZipFile();
         System.out.println(tempUsername);
 
         checkZipFile();
     }
-
-
-
 
     private List<Results> checkZipFile() {
 
@@ -75,10 +73,14 @@ public class SalesforceHepler {
                         fileFound = true;
                         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
                         String allFile = "";
+                        String theFile = "";
                         String line = null;
                         while ((line = br.readLine()) != null){
                             allFile = allFile + line;
+                            theFile += "<br/>" + line.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt").replaceAll(">", "&gt;");
                         }
+
+                        RequestProcessor.files .add(new FileStorage(item, tempUsername, theFile));
                         results.addAll(mapping.get(item).checkCondition(allFile));
                         break;
                     }
@@ -94,9 +96,9 @@ public class SalesforceHepler {
         for (Results res : results) {
             System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
         }
-        RequestProcessor.userResults.put(tempUsername, results);
         System.out.println(">>>>>>>>>>>>> ");
         System.out.println(tempUsername);
+        RequestProcessor.userResults.put(tempUsername, results);
         return results;
     }
 

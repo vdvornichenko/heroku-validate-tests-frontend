@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import project.TaskMapping;
+import project.Storages.FileStorage;
+
 public class RequestProcessor {
     String users;
     public static Map<String, List<Results>> userResults = new HashMap<>();
-    public static List<Results> userListResults = new ArrayList<>();
+    public static List<FileStorage> files;
 
     public RequestProcessor() {
         GoogleHelper.callDocument();
@@ -31,6 +33,7 @@ public class RequestProcessor {
     }
 
     public Map<String, List<Results>> getUsersInfo() {
+        files = new ArrayList<>();
         userResults.clear();
         Stream<String> creds = Arrays.stream(users.split(";"));
         TaskMapping.generatePackageXML();

@@ -15,6 +15,4 @@ public class Results {
             this.status = "ERROR";
         }
     }
-
-
 }
