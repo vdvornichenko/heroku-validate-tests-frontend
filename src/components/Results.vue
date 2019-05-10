@@ -15,7 +15,7 @@
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                         <v-btn
-                                v-if="!props.item.message.includes(notFound)"
+                                v-if="!props.item.message.includes(notFound) && !props.item.message.includes('Tests')"
                                 v-on:click="showFile(propertyName, props.item.nameMetadata)"
                         >
                             View file
