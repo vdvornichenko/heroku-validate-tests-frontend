@@ -1,5 +1,5 @@
 {
-  "name": "validation_task",
+  "name": "Task Checker",
   "version": "0.1.0",
   "private": true,
   "scripts": {

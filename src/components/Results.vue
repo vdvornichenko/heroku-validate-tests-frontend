@@ -10,9 +10,17 @@
                           class="elevation-1"
             >
                 <template v-slot:items="props">
-                    <td>{{ props.item.nameMetadata }}</td>
-                    <td class="text-xs-left">{{ props.item.status }}</td>
-                    <td class="text-xs-left">{{ props.item.message }}</td>
+                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.nameMetadata }}</td>
+                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
+                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
+                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                        <v-btn
+                                v-if="!props.item.message.includes(notFound)"
+                                v-on:click="showFile(propertyName, props.item.nameMetadata)"
+                        >
+                            View file
+                        </v-btn>
+                    </td>
                 </template>
             </v-data-table>
         </div>
@@ -20,6 +28,9 @@
 </template>
 
 <script>
+    import { NOT_FOUND_MESSAGE } from "../Constants";
+    import { HTTP_FILE_URL } from "../Constants";
+    import { ERROR_COLOR } from "../Constants";
 
     export default {
         name: "Results",
@@ -29,9 +40,11 @@
             userResultsHeaders : [
                 {text : "Metadata File", value : "nameMetadata"},
                 {text : "Status", value : "status"},
-                {text : "Message", value : "message"}
-            ]
-
+                {text : "Message", value : "message"},
+                {text : "View file", value : "file"}
+            ],
+            notFound: NOT_FOUND_MESSAGE,
+            errorColor: ERROR_COLOR
         }),
 
         mounted() {
@@ -39,6 +52,19 @@
                 this.userResults = results;
                 this.showResults = true;
             });
+        },
+
+        methods: {
+            showFile: function(fileOwner, fileName) {
+                this.$root.$emit('setState', true);
+                this.$http.post(HTTP_FILE_URL, fileOwner + ';' + fileName).then(response => {
+                    this.$root.$emit('setUserFile', response.body);
+                    this.$root.$emit('setState', false);
+                }, response => {
+                    this.$root.$emit('setAlert', response.body.bodyText.error, 'error');
+                    this.$root.$emit('setState', false);
+                });
+            }
         }
     }
 </script>

@@ -33,9 +33,8 @@
 
 <script>
     import { NO_SELECTED_USERS_MESSAGE } from "../Constants";
-    import { HTTP_LOCAL_ENDPOINT } from "../Constants";
-    import { HTTP_HEROKU_ENDPOINT } from "../Constants";
-    import { USERS_RESULTS_LOCAL_ENDPOINT } from "../Constants";
+    import { HTTP_USER_CREDS_URL } from "../Constants";
+    import { HTTP_USERS_INFO_URL } from "../Constants";
     export default {
         name: "UsersTable",
         data: () => ({
@@ -49,11 +48,12 @@
             search: ''
         }),
         created() {
-            this.$http.get(HTTP_LOCAL_ENDPOINT).then(response => {
+            this.$http.get(HTTP_USER_CREDS_URL).then(response => {
                 response.body.forEach((elem, i) => {
                     this.users.push({index : i, userName : elem.userName, password : elem.password, checked: false});
                 });
             });
+
         },
 
         methods: {
@@ -75,7 +75,7 @@
                     this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
                 } else {
                     this.$root.$emit('setState', true);
-                    this.$http.post(USERS_RESULTS_LOCAL_ENDPOINT, users).then(response => {
+                    this.$http.post(HTTP_USERS_INFO_URL, users).then(response => {
                         this.$root.$emit('getUserResults', response.body);
                         this.$root.$emit('setState', false);
                     }, response => {
