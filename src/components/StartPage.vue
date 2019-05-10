@@ -2,8 +2,8 @@
   <v-app id="sandbox" :dark="dark">
     <Header @changeTheme="dark=!dark"/>
     <v-layout row wrap>
-      <v-flex lg3></v-flex>
-      <v-flex lg6>
+      <v-flex lg2></v-flex>
+      <v-flex lg8>
         <v-card style="height: 100%">
         <v-container>
             <div style="height: 100%; padding-top: 50px; position: relative">
@@ -16,7 +16,7 @@
         </v-container>
         </v-card>
       </v-flex>
-      <v-flex lg3/>
+      <v-flex lg2/>
     </v-layout>
     <Footer />
   </v-app>

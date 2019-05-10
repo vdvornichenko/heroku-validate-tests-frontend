@@ -34,12 +34,13 @@
         data: () => ({
             drawers: ['Default (no property)', 'Permanent', 'Temporary'],
             primaryDrawer: {
-                model: null,
+                model: false,
                 type: 'Default (no property)',
                 clipped: true,
                 floating: true,
                 mini: false
             },
+            showDrawer: false
         }),
 
         methods: {
