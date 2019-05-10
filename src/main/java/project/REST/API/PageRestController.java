@@ -4,6 +4,10 @@ import org.springframework.web.bind.annotation.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Results;
 import project.Storages.FileStorage;
+import org.springframework.web.bind.annotation.*;
+import project.Processors.RequestProcessor;
+import project.Rules.Results;
+import project.ToolingHelper;
 
 import java.util.*;
 
@@ -14,6 +18,11 @@ public class PageRestController {
     @PostMapping("/usersInfo")
     public Map<String, List<Results>> getUsersInfo(@RequestBody String userNames) {
         return new RequestProcessor(userNames).getUsersInfo();
+    }
+    public static class User {
+        public String userName;
+        public String pass;
+        public String data = "";
     }
 
     @CrossOrigin

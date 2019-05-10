@@ -1,28 +1,29 @@
 package project.Rules;
 
 import project.Util;
-
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ApexClassRule implements  Rule {
 
     public String nameClass;
-    public List<String> stringsForSearch;
+    public List<String> methodsForSearch;
 
-    public ApexClassRule(String name,List<String> stringsForSearch){
+    public ApexClassRule(String name,List<String> methodsForSearch){
         this.nameClass = name;
-        this.stringsForSearch = stringsForSearch;
+        this.methodsForSearch = methodsForSearch;
     }
 
     public  List<Results>  checkCondition(String file){
         List<Results> results = new ArrayList<>();
-        for (String str: stringsForSearch){
-            results.add(searchString(file, str));
-//                System.out.println(searchString(file, str).message);
-//                System.out.println(searchString(file, str).user);
-//                System.out.println(searchString(file, str).status);
-//                System.out.println(searchString(file, str).nameMetadata);
+        for (String method: methodsForSearch){
+            if (Util.checkNesting(file, method) == 1) {
+                results.add(new Results(nameClass,MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD,  nameClass, method), true));
+            } else {
+                results.add(new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_NOT_FOUND_METHOD,  nameClass, method), false));
+            }
         }
         return results;
     }
@@ -35,5 +36,4 @@ public class ApexClassRule implements  Rule {
         }
         return new Results(nameClass, "Метод " + strSearch + " не реализован",false);
     }
-
 }

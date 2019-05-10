@@ -62,7 +62,5 @@ public class RequestProcessor {
             userName = userCreds.getKey();
             password = userCreds.getValue();
         }
-
-
     }
 }

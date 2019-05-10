@@ -1,16 +1,14 @@
 package project.Rules;
-
 import project.Constants;
 import project.Util;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApexTriggerRule implements Rule {
     String triggerName;
-    TriggerInfo triggerInfo;
+    TriggerInfoWraper triggerInfo;
 
-    public ApexTriggerRule(String triggerName, TriggerInfo triggerInfo) {
+    public ApexTriggerRule(String triggerName, TriggerInfoWraper triggerInfo) {
         this.triggerName = triggerName;
         this.triggerInfo = triggerInfo;
     }
@@ -48,3 +46,4 @@ public class ApexTriggerRule implements Rule {
     }
 
 }
+

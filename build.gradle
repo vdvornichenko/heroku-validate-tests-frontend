@@ -31,7 +31,7 @@ dependencies {
     compile("org.webjars:jquery:2.0.3-1")
     compile('org.webjars:webjars-locator:0.32') 
     compile('org.webjars:bootstrap:3.3.7')
-//    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.springframework.boot:spring-boot-devtools")
 //    testCompile("junit:junit")
 //    api 'org.apache.commons:commons-math3:3.6.1'
 
@@ -58,5 +58,7 @@ dependencies {
     compile 'com.google.api-client:google-api-client:1.23.0'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-docs:v1-rev20190128-1.28.0'
+
+
 }
 

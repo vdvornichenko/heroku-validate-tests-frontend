@@ -73,10 +73,12 @@ public class sObjectRule implements  Rule {
                 XPathExpression expr = xpath.compile("//fields[fullName='"+ name +"']");
                 Node fieldNode = (Node)expr.evaluate(doc, XPathConstants.NODE);
                 if (fieldNode == null) {
+
                     results.add( new Results(fileName, MessageFormat.format(templateNotFoundField, name, fileName), false));
                     return results;
                 }
                 results.add( new Results(fileName,  MessageFormat.format(templateFoundField, name, fileName), true));
+                results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND_FIELD, name, fileName), true));
                 final Node nodeClone = fieldNode.cloneNode(true);
                 for (String key : keyValue.keySet()) {
                     XPathExpression expClone = xpath.compile("//" + key);
@@ -85,6 +87,7 @@ public class sObjectRule implements  Rule {
                         results.add( new Results(fileName,  MessageFormat.format(templateFoundProperty, key, name, fileName), true));
                     } else {
                         results.add( new Results(fileName,  MessageFormat.format(templateNotFoundProperty, key, name, fileName),  false));
+                        results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND__PROPERTY, key, name, fileName), true));
                     }
                 }
             }
@@ -96,7 +99,7 @@ public class sObjectRule implements  Rule {
     }
 
 
-    public static class validationRulesInnerClass implements  Property {
+    public static class validationRulesInnerClass implements sObjectRule.Property {
         public String name;
         public Map<String, String> keyValue;
         public  validationRulesInnerClass(String name, Map<String, String> keyValue) {
@@ -114,6 +117,15 @@ public class sObjectRule implements  Rule {
                     return results;
                 }
                 results.add( new Results(fileName,  MessageFormat.format(templateFoundValidationRules, name, fileName), true));
+                results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND_VALIDATIONRULES, name, fileName), true));
+                final Node nodeClone = validationRulesNode.cloneNode(true);
+                for (String key : keyValue.keySet()) {
+                    XPathExpression expClone = xpath.compile("//" + key);
+                    String fieldKey = (String)expClone.evaluate(nodeClone, XPathConstants.STRING);
+                    if (!fieldKey.contains(keyValue.get(key))){
+                        results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_WRONG_VALIDATIONRULES_FORMULA, name, keyValue.get(key)), false));
+                    }
+                }
             }
             catch (Exception e) {
                 System.out.println("!error FieldSObjectInnerClass" + e.getMessage());
@@ -121,39 +133,4 @@ public class sObjectRule implements  Rule {
             return results;
         }
     }
-
-
-//    public  List<Condition> conditions = new ArrayList<>();
-//    public String nameFile = "";
-
-//    public sObjectRule(String nameFile,  Element element){
-//        this.nameFile = nameFile;
-//        NodeList fields = element.getElementsByTagName("fields");
-//        for (int i = 0; i < fields.getLength(); i++){
-//            conditions.addAll(setFieldsRule(fields.item(i).getChildNodes()));
-//        }
-//    }
-////if("HtmlTag".equals(node.getNodeName()))
-////    String nodeContent=node.getAttributes().getNamedItem("car").getNodeValue()
-//
-//    public List<Condition> setFieldsRule (NodeList fieldsChild){
-//        List<Condition> conds= new ArrayList<>();
-//        for (int i = 0; i < fieldsChild.getLength(); i++){
-//            Node node = fieldsChild.item(i);
-////            Element e = (Element)node;
-////            String name = e.getAttribute("name");
-//            if (node.getNodeType() != Node.TEXT_NODE) {
-////                System.out.println("***************");
-////                System.out.println(node.getNodeName() + ":" + node.getChildNodes().item(0).getTextContent());
-//                conds.add(new Condition( "fields",node.getNodeName(), node.getChildNodes().item(0).getTextContent()));
-//            }
-//        }
-//        return conds;
-//    }
-
-
-
-
-
-
 }
