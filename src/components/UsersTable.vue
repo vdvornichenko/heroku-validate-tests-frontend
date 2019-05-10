@@ -48,6 +48,8 @@
             search: ''
         }),
         created() {
+            // eslint-disable-next-line no-console
+            console.log(HTTP_USER_CREDS_URL);
             this.$http.get(HTTP_USER_CREDS_URL).then(response => {
                 response.body.forEach((elem, i) => {
                     this.users.push({index : i, userName : elem.userName, password : elem.password, checked: false});
