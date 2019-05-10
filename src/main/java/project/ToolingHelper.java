@@ -172,30 +172,9 @@ public class ToolingHelper {
     }
 
 
-    public SObject[] runQuery(String query) {
-        ConnectorConfig soapConfig = new ConnectorConfig();
-        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
-        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
-        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
-        System.out.println("********");
-        System.out.println(MetadataLoginUtil.mapUserToSessionId.get(this.username));
-        System.out.println(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
-        try {
-            PartnerConnection connection = new PartnerConnection(soapConfig);
-            com.sforce.soap.partner.QueryResult result = connection.query(query);
-            System.out.println("getSize");
-            System.out.println(result.getSize());
-            for (SObject record : result.getRecords()) {
-                System.out.println("###### record.Id: " + (String)record.getField("Id"));
-                System.out.println("###### record.Name: " + (String)record.getField("Name"));
-            }
-            return result.getRecords();
-        } catch (ConnectionException ex) {
-            System.out.println( this.username + ".ToolingHelper >>runQuery>> Connection Exception: " + ex);
-        }
-        return null;
-    }
-//    https://eugenebagaev-dev-ed--c.ap7.content.force.com/secur/contentDoor?startURL=https%3A%2F%2Feugenebagaev-dev-ed.my.salesforce.com%2Fapex%2FActionFunctionPage&sid=00D28000001iPqh%21AREAQCb_P6f_EgI8oPU7LCrl.ZShTXH9.I3dKDfW95P.EN1_gmU2tDHUl5klQmr2XFdLmWi6ui4QD5KDwhY0yKWI.OiqgLDP&skipRedirect=1&lm=eyJlbmMiOiJBMjU2R0NNIiwiYXVkIjoiMDBEMjgwMDAwMDFpUHFoIiwia2lkIjoie1widFwiOlwiMDBEMjgwMDAwMDFpUHFoXCIsXCJ2XCI6XCIwMkcwSTAwMDAwMGwyZ3pcIixcImFcIjpcImNvbnRlbnRkb29ydXNlcnRyYW5zaWVudGtleWVuY3J5cHRcIixcInVcIjpcIjAwNTI4MDAwMDA0WGIzWlwifSIsImNyaXQiOlsiaWF0Il0sImlhdCI6MTU1NzQ0NjgwNzQxNiwiZXhwIjowfQ%3D%3D..ZTIRIAwSl7QTZaSc.a8AUYiLW0pNZ6wu6RcuSdg%3D%3D.kPjWhzSBk1g5gq01LFkiwQ%3D%3D
+
+
+
     public String getSessionId() {
         com.sforce.soap.metadata.SessionHeader_element ee = metadataConnection.getSessionHeader();
 
@@ -218,87 +197,75 @@ public class ToolingHelper {
 
     }
 
-    public Map<String, String> getApexPagesAndLink() {
-        Map<String, String> pageLink = new HashMap();
-        try {
-            ListMetadataQuery query = new ListMetadataQuery();
-            query.setType("ApexPage");
-            FileProperties[] listMeta = metadataConnection.listMetadata(new ListMetadataQuery[]{query},TaskMapping.VERSION);
-
-            com.sforce.soap.metadata.SessionHeader_element ee = metadataConnection.getSessionHeader();
-            String sessia = ee.getSessionId();
-
-            String link = MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl();
-            String linkSubstr = link.substring(0,link.indexOf("/services"));
-            String url =  linkSubstr + "/secur/frontdoor.jsp?sid=" + sessia + "&retURL=" + linkSubstr + "/apex/";
-            for (FileProperties fp : listMeta) {
-                pageLink.put(fp.getFullName(), url + fp.getFullName());
-            }
-        } catch (ConnectionException ce) {
-            ce.printStackTrace();
-        }
-        return pageLink;
-    }
-
-    public String getApexPageMetadata(String page) {
-        System.out.println("getApexPageMetadata");
-        TaskMapping.METADATA_CHECK = new HashMap<>();
-        TaskMapping.METADATA_CHECK.put(page, new VisualforcePageRule());
-
-        TaskMapping.generatePackageXML();
-        System.out.println("getApexPageMetadata");
-        DeployRetrieveHelper instance = new DeployRetrieveHelper(username, pass);
-        instance.retrieveZipWithoutSave();
-        System.out.println("getApexPageMetadata");
-//        try {
-//
-//
-//        } catch (ConnectionException ce) {
-//            ce.printStackTrace();
-//        }
-        return "";
-    }
-
-
-//        public static void generatePackageXML(String typesMeta, String memberMeta){
-//            try {
-//                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-//                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-//                // root elements
-//                Document doc = docBuilder.newDocument();
-//                Element rootElement = doc.createElement("Package");
-//                doc.appendChild(rootElement);
-//                Attr attr = doc.createAttribute("xmlns");
-//                attr.setValue("http://soap.sforce.com/2006/04/metadata");
-//                rootElement.setAttributeNode(attr);
-//                // types
-//
-//                Element types = doc.createElement("types");
-//                rootElement.appendChild(types);
-//
-//                Element members = doc.createElement("members");
-//                members.appendChild(doc.createTextNode(memberMeta));
-//                types.appendChild(members);
-//
-//                Element nameMembers = doc.createElement("name");
-//                nameMembers.appendChild(doc.createTextNode(typesMeta));
-//                types.appendChild(nameMembers);
-//
-//                Element version = doc.createElement("version");
-//                version.appendChild(doc.createTextNode(String.valueOf(43.0)));
-//                rootElement.appendChild(version);
-//// save XML
-//                TransformerFactory tf = TransformerFactory.newInstance();
-//                Transformer transformer = tf.newTransformer();
-////            StringWriter writer = new StringWriter();
-//                transformer.transform(new DOMSource(doc), new StreamResult(new File(PathToXMLFile)));
-////            System.out.println(writer.getBuffer().toString());
-//            } catch (ParserConfigurationException | TransformerException e ) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
+//        public static void generatePackageXML(String typesMeta, String memberMeta){}
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+//    public SObject[] runQuery(String query) {
+//        ConnectorConfig soapConfig = new ConnectorConfig();
+//        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+//        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+//        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
+//        System.out.println("********");
+//        System.out.println(MetadataLoginUtil.mapUserToSessionId.get(this.username));
+//        System.out.println(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+//        try {
+//            PartnerConnection connection = new PartnerConnection(soapConfig);
+//            com.sforce.soap.partner.QueryResult result = connection.query(query);
+//            System.out.println("getSize");
+//            System.out.println(result.getSize());
+//            for (SObject record : result.getRecords()) {
+//                System.out.println("###### record.Id: " + (String)record.getField("Id"));
+//                System.out.println("###### record.Name: " + (String)record.getField("Name"));
+////                System.out.println("###### record.Markup: " + (String)record.getField("Markup"));
+//            }
+//            return result.getRecords();
+//        } catch (ConnectionException ex) {
+//            System.out.println( this.username + ".ToolingHelper >>runQuery>> Connection Exception: " + ex);
+//        }
+//        return null;
+//    }
+//
+//    public Map<String, String> getApexPagesAndLink() {
+//        Map<String, String> pageLink = new HashMap();
+//        try {
+//            ListMetadataQuery query = new ListMetadataQuery();
+//            query.setType("ApexPage");
+//            FileProperties[] listMeta = metadataConnection.listMetadata(new ListMetadataQuery[]{query},TaskMapping.VERSION);
+//
+//            com.sforce.soap.metadata.SessionHeader_element ee = metadataConnection.getSessionHeader();
+//            String sessia = ee.getSessionId();
+//
+//            String link = MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl();
+//            String linkSubstr = link.substring(0,link.indexOf("/services"));
+//            String url =  linkSubstr + "/secur/frontdoor.jsp?sid=" + sessia + "&retURL=" + linkSubstr + "/apex/";
+//            for (FileProperties fp : listMeta) {
+//                pageLink.put(fp.getFullName(), url + fp.getFullName());
+//            }
+//        } catch (ConnectionException ce) {
+//            ce.printStackTrace();
+//        }
+//        return pageLink;
+//    }
+//
+//    public String getApexPageMetadata(String page) {
+//        String query = "SELECT Id, Name, Markup FROM ApexPage WHERE Name ='" + page + "'";
+//        System.out.println(query);
+//        SObject[] apexPage = runQuery(query);
+//        String markupApexPage = "";
+//        if (apexPage.length > 0){
+//            markupApexPage = (String)apexPage[0].getField("Markup");
+//        }
+//        return markupApexPage;
+//    }
