@@ -1,5 +1,6 @@
 package project.Rules;
 
+import project.Util;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,5 +26,14 @@ public class ApexClassRule implements  Rule {
             }
         }
         return results;
+    }
+
+    public Results searchString(String file, String strSearch){
+        if (file.contains(strSearch) && file != null){
+            if (Util.checkNesting(file, strSearch) == 1) {
+                return new Results(nameClass, "Метод " + strSearch + " реализован",true);
+            }
+        }
+        return new Results(nameClass, "Метод " + strSearch + " не реализован",false);
     }
 }

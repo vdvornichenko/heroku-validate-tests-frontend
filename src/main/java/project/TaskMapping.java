@@ -25,8 +25,8 @@ public class TaskMapping {
     public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     static {
-//      sObject
         List<sObjectRule.Property> fields = new ArrayList<>();
+
         Map<String, String> keyValue = new HashMap<>();
         keyValue.put("type", "URL");
         keyValue.put("label", "ImageURL");
@@ -40,22 +40,16 @@ public class TaskMapping {
         keyValueThree.put("errorConditionFormula", "vasya__c");
         fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
-//      Apex class
         METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
-//      Trigger
+        List<String> triggerEvents = new ArrayList<>();
+        triggerEvents.add("before insert");
+        triggerEvents.add("before update");
+
+        METADATA_CHECK.put("AccountAddressTrigger.trigger", new ApexTriggerRule("AccountAddressTrigger", new TriggerInfoWraper("Account", triggerEvents, "asd")));
         List<String> trigerEvents = new ArrayList<>();
         trigerEvents.add("before update");
         TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
         METADATA_CHECK.put("HelloWorldTrigger.trigger", new ApexTriggerRule("HelloWorldTrigger", triger));
-
-
-
-////      VisualforcePage
-//        METADATA_CHECK.put("MobileContactList.page", new VisualforcePageRule());
-
-
-
-        // tests: Test Class => Class тестируемый
         TEST_CLASSES.put("WebTest", "IntWebService");
     }
 
@@ -105,6 +99,7 @@ public class TaskMapping {
         Map<String, List<String>> results = new HashMap<>();
         List<String> membersSobject = new ArrayList<>();
         List<String> membersApexClass = new ArrayList<>();
+        List<String> membersTrigger = new ArrayList<>();
         List<String> membersTriggerClass = new ArrayList<>();
         List<String> membersVisualforcePage = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
@@ -114,10 +109,13 @@ public class TaskMapping {
             } else if (METADATA_CHECK.get(item) instanceof ApexClassRule){
                 String member = item.substring(0, item.indexOf('.'));
                 membersApexClass.add(member);
+            } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule) {
+                String member = item.substring(0, item.indexOf('.'));
+                membersTrigger.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
                 String member = item.substring(0, item.indexOf('.'));
                 membersTriggerClass.add(member);
-            }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
+            } else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
                 System.out.println(item);
                 String member = item.substring(0, item.indexOf('.'));
                 membersVisualforcePage.add(member);
@@ -137,8 +135,4 @@ public class TaskMapping {
         }
         return results;
     }
-
-//    public static void checkOnEmpty(){
-//
-//    }
 }

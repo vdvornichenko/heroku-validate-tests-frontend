@@ -64,12 +64,12 @@ public class ValidateByTestHelper {
 
                         if (TaskMapping.TEST_CLASSES.get(nameTestClass).equals(ccr.getName())) {
 
-Integer percentCoverage = checkCoverage((ccr.getNumLocations() - ccr.getNumLocationsNotCovered()), ccr.getNumLocations());
-if(percentCoverage < 75){
-    res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE, nameTestClass, percentCoverage), false));
-} else {
-    res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS,  nameTestClass, percentCoverage), true));
-}
+                            Integer percentCoverage = checkCoverage((ccr.getNumLocations() - ccr.getNumLocationsNotCovered()), ccr.getNumLocations());
+                            if(percentCoverage < 75){
+                                res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE, nameTestClass, percentCoverage), false));
+                            } else {
+                                res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS,  nameTestClass, percentCoverage), true));
+                            }
                             System.out.println(debugThreadName + ": >> Test Result For Class: " + TaskMapping.TEST_CLASSES.get(nameTestClass));
                             System.out.println(debugThreadName + ": >> Coverage: " + (ccr.getNumLocations() - ccr.getNumLocationsNotCovered()) + " of " + ccr.getNumLocations()
                             );
