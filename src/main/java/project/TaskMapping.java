@@ -22,12 +22,11 @@ public class TaskMapping {
 
     public static Map<String, Rule> METADATA_CHECK   = new HashMap<>();
     public static Map<String, String> TEST_CLASSES   = new HashMap<>();
-    public static String VERSION  = "45.0";
+    public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     static {
-
+//      sObject
         List<sObjectRule.Property> fields = new ArrayList<>();
-
         Map<String, String> keyValue = new HashMap<>();
         keyValue.put("type", "URL");
         keyValue.put("label", "ImageURL");
@@ -38,17 +37,21 @@ public class TaskMapping {
         keyValueTwo.put("sss", "aa");
         fields.add(new sObjectRule.FieldSObjectInnerClass("Amount__c",keyValueTwo));
         Map<String, String> keyValueThree = new HashMap<>();
+        keyValueThree.put("errorConditionFormula", "vasya__c");
         fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
-
+//      Apex class
         METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
+//      Trigger
         List<String> trigerEvents = new ArrayList<>();
         trigerEvents.add("before update");
         TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
-        METADATA_CHECK.put("HelloWorldTrigger", new ApexTriggerRule("HelloWorldTrigger", triger));
+        METADATA_CHECK.put("HelloWorldTrigger.trigger", new ApexTriggerRule("HelloWorldTrigger", triger));
 
 
 
+////      VisualforcePage
+//        METADATA_CHECK.put("MobileContactList.page", new VisualforcePageRule());
 
 
 
@@ -67,12 +70,13 @@ public class TaskMapping {
             Attr attr = doc.createAttribute("xmlns");
             attr.setValue("http://soap.sforce.com/2006/04/metadata");
             rootElement.setAttributeNode(attr);
-            // types
+
             Map<String, List<String>> metadataMembers = createMapForXML();
             for (String item :metadataMembers.keySet()) {
-                Element types = doc.createElement("types");
-                rootElement.appendChild(types);
+
                 if (metadataMembers.get(item).size() > 0){
+                    Element types = doc.createElement("types");
+                    rootElement.appendChild(types);
                     for(String m :metadataMembers.get(item)){
                         Element members = doc.createElement("members");
                         members.appendChild(doc.createTextNode(m));
@@ -84,9 +88,8 @@ public class TaskMapping {
                 }
             }
             Element version = doc.createElement("version");
-            version.appendChild(doc.createTextNode(VERSION));
+            version.appendChild(doc.createTextNode(String.valueOf(VERSION)));
             rootElement.appendChild(version);
-
 // save XML
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
@@ -97,13 +100,13 @@ public class TaskMapping {
             e.printStackTrace();
         }
     }
-
-
+    //DELETE .
     private static Map<String, List<String>> createMapForXML(){
         Map<String, List<String>> results = new HashMap<>();
         List<String> membersSobject = new ArrayList<>();
         List<String> membersApexClass = new ArrayList<>();
         List<String> membersTriggerClass = new ArrayList<>();
+        List<String> membersVisualforcePage = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
             if (METADATA_CHECK.get(item) instanceof sObjectRule){
                 String member = item.substring(0, item.indexOf('.'));
@@ -112,17 +115,30 @@ public class TaskMapping {
                 String member = item.substring(0, item.indexOf('.'));
                 membersApexClass.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
-                String member = item;
+                String member = item.substring(0, item.indexOf('.'));
                 membersTriggerClass.add(member);
+            }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
+                System.out.println(item);
+                String member = item.substring(0, item.indexOf('.'));
+                membersVisualforcePage.add(member);
             }
         }
-        results.put("CustomObject", membersSobject);
-        results.put("ApexClass", membersApexClass);
-        results.put("ApexTrigger", membersTriggerClass);
+        if (!membersSobject.isEmpty()) {
+            results.put("CustomObject", membersSobject);
+        }
+        if (!membersApexClass.isEmpty()) {
+            results.put("ApexClass", membersApexClass);
+        }
+        if (!membersTriggerClass.isEmpty()) {
+            results.put("ApexTrigger", membersTriggerClass);
+        }
+        if (!membersVisualforcePage.isEmpty()) {
+            results.put("ApexPage", membersVisualforcePage);
+        }
         return results;
     }
 
-    public static void deleteFiles(){
-
-    }
+//    public static void checkOnEmpty(){
+//
+//    }
 }

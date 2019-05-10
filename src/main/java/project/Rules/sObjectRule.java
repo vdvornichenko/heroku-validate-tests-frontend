@@ -19,12 +19,6 @@ import org.w3c.dom.NodeList;
 
 
 public class sObjectRule implements  Rule {
-    public static String templateNotFoundField =  "Не найдено поле: {0} у обьекта: {1}";
-    public static String templateFoundField =  "Найдено поле: : {0} у обьекта: {1}";
-    public static String templateNotFoundProperty =  "Не орректное свойство: {0}  у поля  {1} у обьекта  {2} ";
-    public static String templateFoundProperty =  "Корректное свойство: {0}  у поля  {1} у обьекта  {2} ";
-    public static String templateNotFoundValidationRules =  "Не найдены validationRules: {0} у обьекта: {1} ";
-    public static String templateFoundValidationRules =  "Найдены validationRules: {0} у обьекта: {1}";
 
     public String nameFile;
     public List<Property> properties;
@@ -73,18 +67,18 @@ public class sObjectRule implements  Rule {
                 XPathExpression expr = xpath.compile("//fields[fullName='"+ name +"']");
                 Node fieldNode = (Node)expr.evaluate(doc, XPathConstants.NODE);
                 if (fieldNode == null) {
-                    results.add( new Results(fileName, MessageFormat.format(templateNotFoundField, name, fileName), false));
+                    results.add( new Results(fileName, MessageFormat.format(Constants.SOBJECT_NOT_FOUND_FIELD, name, fileName), false));
                     return results;
                 }
-                results.add( new Results(fileName,  MessageFormat.format(templateFoundField, name, fileName), true));
+                results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND_FIELD, name, fileName), true));
                 final Node nodeClone = fieldNode.cloneNode(true);
                 for (String key : keyValue.keySet()) {
                     XPathExpression expClone = xpath.compile("//" + key);
                     String fieldKey = (String)expClone.evaluate(nodeClone, XPathConstants.STRING);
                     if (fieldKey.equals(keyValue.get(key))){
-                        results.add( new Results(fileName,  MessageFormat.format(templateFoundProperty, key, name, fileName), true));
+                        results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND__PROPERTY, key, name, fileName), true));
                     } else {
-                        results.add( new Results(fileName,  MessageFormat.format(templateNotFoundProperty, key, name, fileName),  false));
+                        results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_NOT_FOUND__PROPERTY, key, name, fileName),  false));
                     }
                 }
             }
@@ -110,10 +104,18 @@ public class sObjectRule implements  Rule {
                 XPathExpression expr = xpath.compile("//validationRules[fullName='"+ name +"']");
                 Node validationRulesNode = (Node)expr.evaluate(doc, XPathConstants.NODE);
                 if (validationRulesNode == null) {
-                    results.add( new Results(fileName, MessageFormat.format(templateNotFoundValidationRules, name, fileName), false));
+                    results.add( new Results(fileName, MessageFormat.format(Constants.SOBJECT_NOT_FOUND_VALIDATIONRULES, name, fileName), false));
                     return results;
                 }
-                results.add( new Results(fileName,  MessageFormat.format(templateFoundValidationRules, name, fileName), true));
+                results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_FOUND_VALIDATIONRULES, name, fileName), true));
+                final Node nodeClone = validationRulesNode.cloneNode(true);
+                for (String key : keyValue.keySet()) {
+                    XPathExpression expClone = xpath.compile("//" + key);
+                    String fieldKey = (String)expClone.evaluate(nodeClone, XPathConstants.STRING);
+                    if (!fieldKey.contains(keyValue.get(key))){
+                        results.add( new Results(fileName,  MessageFormat.format(Constants.SOBJECT_WRONG_VALIDATIONRULES_FORMULA, name, keyValue.get(key)), false));
+                    }
+                }
             }
             catch (Exception e) {
                 System.out.println("!error FieldSObjectInnerClass" + e.getMessage());

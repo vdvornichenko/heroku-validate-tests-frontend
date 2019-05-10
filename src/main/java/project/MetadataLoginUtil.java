@@ -33,8 +33,7 @@ public class MetadataLoginUtil {
         return createMetadataConnection(loginResult);
     }
 
-    private static MetadataConnection createMetadataConnection(
-            final LoginResult loginResult) throws ConnectionException {
+    private static MetadataConnection createMetadataConnection(final LoginResult loginResult) throws ConnectionException {
         final ConnectorConfig config = new ConnectorConfig();
         config.setServiceEndpoint(loginResult.getMetadataServerUrl());
         config.setSessionId(loginResult.getSessionId());

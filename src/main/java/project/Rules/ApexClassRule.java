@@ -1,5 +1,6 @@
 package project.Rules;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,36 +8,22 @@ import java.util.Map;
 public class ApexClassRule implements  Rule {
 
     public String nameClass;
-    public List<String> stringsForSearch;
+    public List<String> methodsForSearch;
 
-    public ApexClassRule(String name,List<String> stringsForSearch){
+    public ApexClassRule(String name,List<String> methodsForSearch){
         this.nameClass = name;
-        this.stringsForSearch = stringsForSearch;
+        this.methodsForSearch = methodsForSearch;
     }
 
     public  List<Results>  checkCondition(String file){
         List<Results> results = new ArrayList<>();
-        for (String str: stringsForSearch){
-            results.add(searchString(file, str));
-//                System.out.println(searchString(file, str).message);
-//                System.out.println(searchString(file, str).user);
-//                System.out.println(searchString(file, str).status);
-//                System.out.println(searchString(file, str).nameMetadata);
+        for (String method: methodsForSearch){
+            if (Util.checkNesting(file, method) == 1) {
+                results.add(new Results(nameClass,MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD,  nameClass, method), true));
+            } else {
+                results.add(new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_NOT_FOUND_METHOD,  nameClass, method), false));
+            }
         }
         return results;
     }
-
-    public Results searchString(String file, String strSearch){
-        if (file.contains(strSearch) && file != null){
-            return new Results(nameClass, "Found method " + strSearch,true);
-        }
-        return new Results(nameClass, "NOT Found method " + strSearch,false);
-    }
-
-
-
-
-
-
-
 }

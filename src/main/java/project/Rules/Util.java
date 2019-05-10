@@ -1,5 +1,11 @@
 package project.Rules;
 
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,4 +24,5 @@ public class Util {
         }
         return quotes.size();
     }
+
 }

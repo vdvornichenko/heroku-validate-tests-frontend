@@ -14,6 +14,8 @@ import project.Rules.*;
 
 import project.Processors.RequestProcessor;
 import java.io.*;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.NoSuchFileException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -37,15 +39,14 @@ public class SalesforceHepler {
         this.tempPassword = password;
     }
 
-
     public void executeAnonymous() {
         System.out.println("Error creating account: " + tempUsername);
         System.out.println("Error creating account: " + tempPassword);
 
         //TestRule(tempUsername);
         ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
-        TestRule ts = new TestRule(tempUsername);
-        ts.checkCondition("VALERA");
+//        TestRule ts = new TestRule(tempUsername);
+//        ts.checkCondition("VALERA");
 
        // RequestProcessor.userResults.put(tempUsername, checkZipFile());
 
@@ -77,7 +78,7 @@ public class SalesforceHepler {
 //        RequestProcessor.userListResults = checkZipFile();
         RequestProcessor.userResults.put(tempUsername, checkZipFile());
         //readZipFile();
-
+        instance.deleteFileZip();
     }
 
 
@@ -137,6 +138,10 @@ public class SalesforceHepler {
                     results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
                 }
             }
+            // Validate Test
+            ValidateByTestHelper helper = new ValidateByTestHelper();
+            results.addAll(helper.validateUserResultUsingTest(tempUsername));
+
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
         }
@@ -220,11 +225,6 @@ public class SalesforceHepler {
 //        }
     }
 
-    private void validateTasksByRunTests() {
-
-        ValidateByTestHelper helper = new ValidateByTestHelper(tempUsername);
-
-    }
 
 //    public static void checkUsersResults() throws InterruptedException {
 //

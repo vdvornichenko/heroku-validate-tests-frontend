@@ -1,6 +1,8 @@
 package project;
 
 import java.io.*;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import javax.xml.parsers.*;
 import com.sforce.soap.metadata.CodeCoverageWarning;
@@ -8,6 +10,7 @@ import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
+import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -20,7 +23,7 @@ public class DeployRetrieveHelper {
 
     public MetadataConnection metadataConnection;
 
-    private String ZIP_FILE = "src/main/resources" + Thread.currentThread().getName() + ".zip";
+    private String ZIP_FILE = "";
     // manifest file that controls which components get retrieved
     //private String manifest_file = "src/main/resources/package.xml";
     private String manifest_file = TaskMapping.PathToXMLFile;
@@ -37,11 +40,11 @@ public class DeployRetrieveHelper {
     public DeployRetrieveHelper(String username, String pass) {
         this.username = username;
         this.pass = pass;
-
+        this.ZIP_FILE = "src/main/resources/" +  username + ".zip";
         try {
             loginInOrg();
         } catch (ConnectionException ex) {
-            System.out.println(Thread.currentThread().getName() + ". >> Connection Exception: " + ex);
+            System.out.println(username + ". >> Connection Exception: " + ex);
         }
     }
 
@@ -167,11 +170,11 @@ public class DeployRetrieveHelper {
                     }
                 }
                 if (stringBuilder.length() > 0) {
-                    System.out.println(Thread.currentThread().getName() + ". >> Retrieve warnings:\n" + stringBuilder);
+                    System.out.println(this.username + ". >> Retrieve warnings:\n" + stringBuilder);
                 }
 
-                System.out.println(Thread.currentThread().getName() + ". >> Writing results to zip file");
-
+                System.out.println(this.username + ". >> Writing results to zip file");
+                System.out.println(ZIP_FILE + "  !!!!!!!!!!!!!!!!!!!!");
                 File resultsFile = new File(ZIP_FILE);
                 FileOutputStream os = new FileOutputStream(resultsFile);
 
@@ -246,7 +249,7 @@ public class DeployRetrieveHelper {
             }
             result = metadataConnection.checkRetrieveStatus(
                     asyncResultId, true);
-            System.out.println(Thread.currentThread().getName() + ". >> Retrieve Status: " + result.getStatus());
+            System.out.println(this.username+ ". >> Retrieve Status: " + result.getStatus());
         } while (!result.isDone());
 
         return result;
@@ -320,4 +323,66 @@ public class DeployRetrieveHelper {
 
         return packageManifest;
     }
+
+
+    public void deleteFileZip()  {
+        try {
+            File file = new File(ZIP_FILE);
+            if (file.exists()) {
+                file.delete();
+                System.out.println("DELETE FILE !!!!!!!!!" + ZIP_FILE + " ***********");
+            } else {
+                System.out.println("DELETE NOT EXIST !!!!!!!!!" + ZIP_FILE + " ***********");
+            }
+
+        }
+        catch(Exception e){
+            System.out.println("ERROR Exception DELETE FILE " + ZIP_FILE);
+        }
+    }
+
+    public void retrieveZipWithoutSave() {
+        try {
+
+            RetrieveRequest retrieveRequest = new RetrieveRequest();
+            // The version in package.xml overrides the version in RetrieveRequest
+            retrieveRequest.setApiVersion(API_VERSION);
+            setUnpackaged(retrieveRequest);
+            AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest);
+            RetrieveResult result = waitForRetrieveCompletion(asyncResult);
+
+            if (result.getStatus() == RetrieveStatus.Failed) {
+                throw new Exception(result.getErrorStatusCode() + " msg: " +
+                        result.getErrorMessage());
+            } else if (result.getStatus() == RetrieveStatus.Succeeded) {
+
+                String s = new String(result.getZipFile());
+                System.out.println(s);
+
+                // Print out any warning messages
+
+//                result.load();
+
+
+//                StringBuilder stringBuilder = new StringBuilder();
+//                if (result.getMessages() != null) {
+//                    for (RetrieveMessage rm : result.getMessages()) {
+//                        stringBuilder.append(rm.getFileName() + " - " + rm.getProblem() + "\n");
+//                        System.out.println(rm.getFileName() + " - " + rm.getProblem() + "\n");
+//                    }
+//                }
+//                if (stringBuilder.length() > 0) {
+//                    System.out.println(this.username + ". >> Retrieve warnings:\n" + stringBuilder);
+//                }
+            }
+
+
+        } catch (Exception ex) {
+            System.out.println("Ex: " + ex.getMessage());
+        }
+
+    }
+
+
+
 }
