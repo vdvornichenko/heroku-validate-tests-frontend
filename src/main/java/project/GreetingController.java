@@ -69,15 +69,15 @@ public class GreetingController {
 //            String pass = "naspuh2018$";
             String name = "eugene.bagaev@gmail.com";
             String pass = "Gp14kost";
-            ToolingHelper hlp = new ToolingHelper(name, pass);
+//            ToolingHelper hlp = new ToolingHelper(name, pass);
 //             https://ap8.salesforce.com/apex/TestPage
 //            https://eugenebagaev-dev-ed--c.ap7.visual.force.com/apex/ActionFunctionPage
             String link = MetadataLoginUtil.mapUserToLoginResult.get(name).getServerUrl();
             System.out.println(link.substring(0,link.indexOf("/services")) + "/apex/TestPage");
-            String ses = hlp.getSessionId();
-            httpServletResponse.setHeader("Content-Type", "application/json;charset=UTF-8");
-            System.out.println(hlp.getSessionId());
-            httpServletResponse.sendRedirect(link.substring(0,link.indexOf("/services")) + "/secur/frontdoor.jsp?sid=" + ses + "&retURL=" + link.substring(0,link.indexOf("/services")) + "/apex/ActionFunctionPage");
+//            String ses = hlp.getSessionId();
+//            httpServletResponse.setHeader("Content-Type", "application/json;charset=UTF-8");
+//            System.out.println(hlp.getSessionId());
+//            httpServletResponse.sendRedirect(link.substring(0,link.indexOf("/services")) + "/secur/frontdoor.jsp?sid=" + ses + "&retURL=" + link.substring(0,link.indexOf("/services")) + "/apex/ActionFunctionPage");
 //            httpServletResponse.sendRedirect(link.substring(0,link.indexOf("/services")) + "/secur/frontdoor.jsp?sid=" + ses + "&retURL=" + link.substring(0,link.indexOf("/services")) + "/apex/TestPage");
 
         } catch (Exception e){
@@ -87,31 +87,31 @@ public class GreetingController {
 
     @PostMapping ("query")
     public String url(@RequestParam(name = "query", required = false) String query, Model model) {
-        System.out.println(query);
-        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
-        com.sforce.soap.partner.sobject.SObject[] sObj =  hlp.runQuery(query);
-        String res = "";
-        for(com.sforce.soap.partner.sobject.SObject s:sObj){
-            res = res +s.getSObjectField("Name") + ",  ";
-        }
-        model.addAttribute("results", res);
+//        System.out.println(query);
+//        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
+//        com.sforce.soap.partner.sobject.SObject[] sObj =  hlp.runQuery(query);
+//        String res = "";
+//        for(com.sforce.soap.partner.sobject.SObject s:sObj){
+//            res = res +s.getSObjectField("Name") + ",  ";
+//        }
+//        model.addAttribute("results", res);
         return "inputPage";
     }
 
     @PostMapping ("runCode")
     public String runCode(@RequestParam(name = "runCode", required = false) String runCode, Model model) {
-        System.out.println(runCode);
-        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
-        String res =  hlp.executeAnonymousWithReturnStringDebug(runCode);
-        model.addAttribute("results", res);
+//        System.out.println(runCode);
+//        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
+//        String res =  hlp.executeAnonymousWithReturnStringDebug(runCode);
+//        model.addAttribute("results", res);
         return "inputPage";
     }
 
     @PostMapping ("apexClass")
     public String createApexClass(@RequestParam(name = "text", required = false) String text, Model model) {
        System.out.println(text);
-        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
-        hlp.createApexClass(text);
+//        ToolingHelper hlp = new ToolingHelper("eugene.bagaev@gmail.com", "Gp14kost");
+//        hlp.createApexClass(text);
         return "inputPage";
     }
 }

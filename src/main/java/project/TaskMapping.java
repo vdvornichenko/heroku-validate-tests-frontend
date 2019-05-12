@@ -2,6 +2,8 @@ package project;
 
 
 import java.io.File;
+import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,6 +15,15 @@ import java.io.StringWriter;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+
+import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.reflect.*;
+import org.mortbay.util.ajax.JSON;
+import org.mortbay.util.ajax.JSONObjectConvertor;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,6 +33,8 @@ public class TaskMapping {
 
     public static Map<String, Rule> METADATA_CHECK   = new HashMap<>();
     public static Map<String, String> TEST_CLASSES   = new HashMap<>();
+    public static  ArrayList<CheckExecuteMethodWraper> TEST_METHOD   = new ArrayList<>();
+
     public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     static {
@@ -40,23 +53,98 @@ public class TaskMapping {
         keyValueThree.put("errorConditionFormula", "vasya__c");
         fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
+
 //      Apex class
         METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
+
 //      Trigger
         List<String> trigerEvents = new ArrayList<>();
         trigerEvents.add("before update");
         TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
         METADATA_CHECK.put("HelloWorldTrigger.trigger", new ApexTriggerRule("HelloWorldTrigger", triger));
+//
+// use key-word "button", "table" for search values in this tags
+//      VisualforcePage
+        Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
+        ArrayList<String> searchInTable = new ArrayList<String>() {
+            {
+                add("Image");
+                add("Name");
+                add("Description");
+                add("Price");
+                add("Available  Units");
+            }
+        };
+        tagValuesForSearchVF.put("table", searchInTable);
+        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("Save");}});
+        tagValuesForSearchVF.put("dt", new ArrayList<String>() {{ add("First Label");}});
+        METADATA_CHECK.put("MobileContactList.page", new VisualforcePageRule("MobileContactList", tagValuesForSearchVF));
 
-
-
-////      VisualforcePage
-//        METADATA_CHECK.put("MobileContactList.page", new VisualforcePageRule());
-
-
-
+        TEST_METHOD.add(new CheckExecuteMethodWraper(
+                        "AccountUtils",
+                        "accounts",
+                        "AccountUtils cl = new AccountUtils(); List<Account> executeMethod = cl.accounts();"));
         // tests: Test Class => Class тестируемый
         TEST_CLASSES.put("WebTest", "IntWebService");
+
+//        JSONObject obj = new JSONObject();
+//        obj.put("METADATA_CHECK", METADATA_CHECK);
+//        obj.put("TEST_METHOD", TEST_METHOD);
+//        obj.put("TEST_CLASSES", TEST_CLASSES);
+
+
+        GsonBuilder builder = new GsonBuilder();
+        Type type = new TypeToken<TaskMapping>() {}.getType();
+        Gson gson = builder
+                .setPrettyPrinting()
+                .registerTypeAdapter(type, new TaskMappingConverter())
+                .create();
+        String json = gson.toJson(gson.toJson(METADATA_CHECK));
+        System.out.println(json);
+        Object natural = gson.fromJson(json, Object.class);
+        System.out.println("sssss");
+        System.out.println( natural.getClass().getName());
+        System.out.println(natural);
+
+//
+//        Map<String,Object> map = new HashMap<String,Object>();
+//        map = (Map<String,Object>) gson.fromJson(json, map.getClass());
+
+
+//        Map<String, Rule> empJoiningDateMap = gson.fromJson(json, type);
+//        System.out.println(json);
+//        System.out.println(empJoiningDateMap);
+
+
+
+
+
+
+
+
+//        Map map = gson.fromJson(json, Map.class);
+//        System.out.println(map);
+//        System.out.println(map.size());
+
+//        Type empMapType = new TypeToken<Map<String, Rule>>() {}.getType();
+//        Map<String, Rule> nameEmployeeMap = gson.fromJson(json, empMapType);
+//
+//        for (String s: nameEmployeeMap.keySet()){
+//            System.out.println(s);
+//        }
+
+
+
+        try{
+        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
+        file.write(gson.toJson(METADATA_CHECK));
+        file.flush();
+    } catch(Exception e){
+
+    }
+
+
+
     }
 
     public static void generatePackageXML(){
@@ -109,17 +197,16 @@ public class TaskMapping {
         List<String> membersVisualforcePage = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
             if (METADATA_CHECK.get(item) instanceof sObjectRule){
-                String member = item.substring(0, item.indexOf('.'));
+                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersSobject.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexClassRule){
-                String member = item.substring(0, item.indexOf('.'));
+                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersApexClass.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
-                String member = item.substring(0, item.indexOf('.'));
+                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersTriggerClass.add(member);
             }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
-                System.out.println(item);
-                String member = item.substring(0, item.indexOf('.'));
+                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersVisualforcePage.add(member);
             }
         }

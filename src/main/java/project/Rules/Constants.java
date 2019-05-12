@@ -23,6 +23,14 @@ public class Constants {
     public static final String SOBJECT_NOT_FOUND_VALIDATIONRULES =  "Не найдены validationRules: {0} у обьекта: {1} ";
     public static final String SOBJECT_FOUND_VALIDATIONRULES =  "Найдены validationRules: {0} у обьекта: {1}";
     public static final String SOBJECT_WRONG_VALIDATIONRULES_FORMULA =  "Некоректная формула у validationRules: {0}, не найдено поле: {1}";
+    //   for VF pages
+    public static final String VF_NOT_FOUND_TAG =  "В VisualforcePage: {0} не найден тэг {1}";
+    public static final String VF_FOUND_VALUE_IN_TAG =  "В VisualforcePage: {0} в теге: {1} найдено значение {2}";
+    public static final String VF_NOT_FOUND_VALUE_IN_TAG =  "В VisualforcePage: {0} в теге: {1} не найдено значение {2}";
+    //   for METHOD
+    public static final String METHOD_SUCCESS =  "Метод: {0} в классе {1} успешно выполнился";
+    public static final String METHOD_EXECUTE_FAIL =  "Метод: {0}  в классе {1}  выполнился с ошибкой";
+    public static final String METHOD_NOT_COMPILE =  "Метод {0} в в классе {1} не скомпилировался";
 
 
 
