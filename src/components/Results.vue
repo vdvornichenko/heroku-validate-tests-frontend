@@ -10,7 +10,12 @@
                           :items="value"
                           class="elevation-1"
             >
-                <template v-slot:items="props">
+                <template v-slot:no-data v-if="usersErrors[propertyName]">
+                    <v-alert :value="true" color="error" icon="warning" v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
+                        {{ error }}
+                    </v-alert>
+                </template>
+                <template v-slot:items="props" v-if="!usersErrors[propertyName]">
                     <td>{{ props.item.index }}</td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                         <v-btn
@@ -55,6 +60,7 @@
     import { HTTP_FILE_URL } from "../Constants";
     import { ERROR_COLOR } from "../Constants";
     import { ERRORS_NUMBER_MESSAGE} from "../Constants";
+    import Spinner from "./CallbackSpinner"
 
     export default {
         name: "Results",
@@ -69,7 +75,8 @@
                 {text : "View file", value : "file"}
             ],
             notFound: NOT_FOUND_MESSAGE,
-            errorColor: ERROR_COLOR
+            errorColor: ERROR_COLOR,
+            usersErrors: {}
         }),
 
         mounted() {
@@ -78,26 +85,34 @@
                 for (let userName in results) {
                     let resultsOfUser = [];
                     results[userName].forEach(res => {
-                        if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
-                            let fileResults = results[userName].filter(elem => elem.nameMetadata === res.nameMetadata);
-
-                            let errors = fileResults.filter(val => val.status === 'ERROR');
-                            let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
-                            if (errors.length === 1) {
-                                if (errors[0].message.includes(NOT_FOUND_MESSAGE)) {
-                                    resultMessage = errors[0].message;
-                                    fileResults = [];
-                                }
+                        if (res.nameMetadata === null) {
+                            let errors = this.usersErrors[userName];
+                            if (!errors) {
+                                errors = [res.message];
                             }
-                            let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
-                            resultsOfUser.push({
-                                index: resultsOfUser.length + 1,
-                                nameMetadata: res.nameMetadata,
-                                status: status,
-                                message: resultMessage,
-                                resultsList: fileResults,
-                                showResultsList: false
-                            });
+                            this.usersErrors[userName] = errors;
+                        } else {
+                            if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
+                                let fileResults = results[userName].filter(elem => elem.nameMetadata === res.nameMetadata);
+
+                                let errors = fileResults.filter(val => val.status === 'ERROR');
+                                let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
+                                if (errors.length === 1) {
+                                    if (errors[0].message.includes(NOT_FOUND_MESSAGE)) {
+                                        resultMessage = errors[0].message;
+                                        fileResults = [];
+                                    }
+                                }
+                                let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
+                                resultsOfUser.push({
+                                    index: resultsOfUser.length + 1,
+                                    nameMetadata: res.nameMetadata,
+                                    status: status,
+                                    message: resultMessage,
+                                    resultsList: fileResults,
+                                    showResultsList: false
+                                });
+                            }
                         }
                     });
                     totalResults[userName] = resultsOfUser;
@@ -109,14 +124,11 @@
 
         methods: {
             showFile: function(fileOwner, fileName) {
-                this.$root.$emit('setState', true);
-                this.$http.post(HTTP_FILE_URL, fileOwner + ';' + fileName).then(response => {
-                    this.$root.$emit('setUserFile', response.body);
-                    this.$root.$emit('setState', false);
-                }, response => {
-                    this.$root.$emit('setAlert', response.body.bodyText.error, 'error');
-                    this.$root.$emit('setState', false);
-                });
+                this.$root.$emit(
+                    'runCallback',
+                    this.$http.post(HTTP_FILE_URL, fileOwner + ';' + fileName),
+                    'setUserFile'
+                );
             },
 
             showMetadataResults: function(result) {
@@ -130,8 +142,11 @@
                 let beginningTasks = result.filter(val => val.resultsList.length !== 0);
                 let finishedTasks = beginningTasks.filter(el => el.status === 'SUCCESS').length;
                 beginningTasks = beginningTasks.length - finishedTasks;
+                let notBeginningTasks = result.length - beginningTasks - finishedTasks;
 
-                return 'Заданий выполнено без ошибок: ' + finishedTasks + ', Заданий выполнено с ошибками: ' + beginningTasks;
+                return 'Заданий выполнено без ошибок: ' + finishedTasks +
+                    ', Заданий выполнено с ошибками: ' + beginningTasks +
+                    ', Заданий не выполнено: ' + notBeginningTasks;
             }
         }
     }

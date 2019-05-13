@@ -1,7 +1,15 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-card>
-        <v-card-title>
-            All users
+        <v-container>
+        <v-select
+                multiple
+                :items="Array.from(groups).sort((a, b) => a - b)"
+                label="Выберите номер группы"
+                v-model="currentGroups"
+        ></v-select>
+        </v-container>
+        <v-card-title v-if="currentGroups.length > 0">
+            Группы {{ currentGroups.join(', ') }}
             <v-spacer></v-spacer>
             <v-text-field
                     v-model="search"
@@ -13,9 +21,10 @@
         </v-card-title>
         <v-data-table disable-initial-sort
                       :headers="usersTableHeaders"
-                      :items="users"
+                      :items="getCurrentUsers()"
                       class="elevation-1"
                       :search="search"
+                      v-if="currentGroups.length > 0"
         >
             <template v-slot:items="props" >
                 <td>{{ props.item.index + 1 }}</td>
@@ -25,12 +34,14 @@
                         {{ props.item.userName }}
                     </a>
                 </td>
-                <td class="text-xs-left">{{ props.item.password }}</td>
+                <td class="text-xs-left">{{ props.item.fio }}</td>
+                <td class="text-xs-left">{{ props.item.group }}</td>
             </template>
         </v-data-table>
-        <div style="float: right;">
+        <div style="float: right;" v-if="currentGroups.length > 0">
             <v-btn color="info" v-on:click="getAllUsersInfo">Show Results for all users</v-btn>
             <v-btn color="info" v-on:click="getSelectedUsersInfo">Show Results for selected users</v-btn>
+            <v-btn color="info" v-on:click="refresh">Refresh</v-btn>
         </div>
     </v-card>
 </template>
@@ -44,32 +55,60 @@
         data: () => ({
             users : [],
             usersTableHeaders : [
-            {text : "#", value : "index", sortable: false, align: "left"},
-            {text : "Select User", value : "checked", sortable : false},
-            {text : "User Name", value : "userName"},
-            {text : "Password", value : "password"}
+                {text : "#", value : "index", sortable: false, align: "left"},
+                {text : "Select User", value : "checked", sortable : false},
+                {text : "Login", value : "userName", sortable: false},
+                {text : 'User name', value : 'fio', sortable: false},
+                {text : "Group", value : "group", sortable: false},
+
             ],
-            search: ''
+            search: '',
+            groups: [''],
+            currentGroups: []
         }),
         created() {
-            // eslint-disable-next-line no-console
-            console.log(HTTP_USER_CREDS_URL);
-            this.$http.get(HTTP_USER_CREDS_URL).then(response => {
-                response.body.forEach((elem, i) => {
-                    this.users.push({index : i, userName : elem.userName, password : elem.password, checked: false});
-                });
-            });
-
+            this.getUsersCreds();
         },
 
         methods: {
+            getUsersCreds: function() {
+                this.$root.$emit('setState', true);
+                this.$http.get(HTTP_USER_CREDS_URL).then(response => {
+                    let groups = [];
+                    response.body.forEach((elem, i) => {
+                        this.users.push({
+                            index : i, userName : elem.userName,
+                            password : elem.password, checked: false,
+                            group: elem.group, fio: elem.fio
+                        });
+                        groups.push(elem.group);
+                    });
+                    this.groups = new Set(groups);
+                    this.$root.$emit('setState', false);
+
+                });
+            },
+
+            getCurrentUsers: function() {
+                return  this.users.filter(elem => this.currentGroups.includes(elem.group));
+            },
+
+            refresh: function() {
+                this.users = [];
+                this.getUsersCreds();
+            },
+
             getAllUsersInfo: function () {
-                this.getResults("all");
+                let users = [];
+                this.getCurrentUsers().forEach((elem) => {
+                    users.push(elem.userName);
+                });
+                this.getResults(users.join(";"));
             },
 
             getSelectedUsersInfo: function () {
                 let users = [];
-                this.users.forEach((elem) => {
+                this.getCurrentUsers().forEach((elem) => {
                     if (elem.checked) {
                         users.push(elem.userName);
                     }
@@ -80,14 +119,7 @@
                 if (users === "") {
                     this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
                 } else {
-                    this.$root.$emit('setState', true);
-                    this.$http.post(HTTP_USERS_INFO_URL, users).then(response => {
-                        this.$root.$emit('getUserResults', response.body);
-                        this.$root.$emit('setState', false);
-                    }, response => {
-                        this.$root.$emit('setAlert', response.body.bodyText.error, 'error');
-                        this.$root.$emit('setState', false);
-                    });
+                    this.$root.$emit('runCallback', this.$http.post(HTTP_USERS_INFO_URL, users), 'getUserResults');
                 }
             }
         }
