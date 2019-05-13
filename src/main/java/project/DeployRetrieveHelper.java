@@ -5,6 +5,9 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 import javax.xml.parsers.*;
+
+import com.sforce.soap.apex.ExecuteAnonymousResult;
+import com.sforce.soap.apex.SoapConnection;
 import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
@@ -12,14 +15,15 @@ import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import com.sforce.soap.metadata.*;
 
 public class DeployRetrieveHelper {
 
-    private String username;
-    private String pass;
+    public String username;
+    public String pass;
 
     public MetadataConnection metadataConnection;
 
@@ -35,7 +39,6 @@ public class DeployRetrieveHelper {
     private static final int MAX_NUM_POLL_REQUESTS = 50;
 
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
 
     public DeployRetrieveHelper(String username, String pass) {
         this.username = username;

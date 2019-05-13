@@ -1,8 +1,9 @@
 # Ignore Gradle project-specific cache directory
 .gradle
 .idea
+src/resources/
 .zip
-
+src/main/java/project/GreetingController.*
 
 # Ignore Gradle build output directory
 build

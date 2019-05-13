@@ -1,0 +1,62 @@
+{
+  "HelloWorldTrigger.trigger": {
+    "triggerName": "HelloWorldTrigger",
+    "triggerInfo": {
+      "objName": "HelloWorldTrigger",
+      "triggerEvents": [
+        "before update"
+      ],
+      "helperName": "HelloWorldTriggerHelper"
+    }
+  },
+  "Product__c.object": {
+    "nameFile": "Product__c",
+    "properties": [
+      {
+        "name": "ImageURL",
+        "keyValue": {
+          "label": "ImageURL",
+          "type": "URL"
+        }
+      },
+      {
+        "name": "Amount__c",
+        "keyValue": {
+          "sss": "aa",
+          "label": "Amount",
+          "type": "Number"
+        }
+      },
+      {
+        "name": "DateReleaseEx",
+        "keyValue": {
+          "errorConditionFormula": "vasya__c"
+        }
+      }
+    ]
+  },
+  "AccountUtils.cls": {
+    "nameClass": "AccountUtils",
+    "methodsForSearch": [
+      "accountsByState"
+    ]
+  },
+  "MobileContactList.page": {
+    "nameFile": "MobileContactList",
+    "tagValuesSearch": {
+      "button": [
+        "Save"
+      ],
+      "dt": [
+        "First Label"
+      ],
+      "table": [
+        "Image",
+        "Name",
+        "Description",
+        "Price",
+        "Available  Units"
+      ]
+    }
+  }
+}

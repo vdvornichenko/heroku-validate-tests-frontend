@@ -46,7 +46,7 @@ public class SalesforceHepler {
         System.out.println("Error creating account: " + tempPassword);
 
         //TestRule(tempUsername);
-        ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
+//        ToolingHelper hlp = new ToolingHelper(tempUsername, tempPassword);
 //        TestRule ts = new TestRule(tempUsername);
 //        ts.checkCondition("VALERA");
 
@@ -144,8 +144,10 @@ public class SalesforceHepler {
                 }
             }
             // Validate Test
-            ValidateByTestHelper helper = new ValidateByTestHelper();
-            results.addAll(helper.validateUserResultUsingTest(tempUsername));
+            ValidateByTestHelper helper = new ValidateByTestHelper(tempUsername);
+            results.addAll(helper.validateUserResultUsingTest());
+            // Validate Apex  Method
+            results.addAll(helper.validateApexMethod());
 
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());

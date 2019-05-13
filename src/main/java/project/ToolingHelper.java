@@ -20,6 +20,7 @@ import org.mortbay.util.ajax.JSON;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import project.Rules.Results;
 import project.Rules.VisualforcePageRule;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -39,54 +40,21 @@ import java.util.List;
 import java.util.Map;
 
 public class ToolingHelper {
+
     private String username;
-    private String pass;
     public MetadataConnection metadataConnection;
-    public ToolingHelper(String username, String pass) {
+    public ToolingHelper(String username) {
         this.username = username;
-        this.pass = pass;
-        try {
-            getConnection();
-        } catch (ConnectionException ex) {
-            System.out.println( this.username + ".ToolingHelper >> Connection Exception: " + ex);
-        }
     }
 
-    private void getConnection() throws ConnectionException {
-         this.metadataConnection = MetadataLoginUtil.login(this.username, this.pass);
+
+    public List<Results>  validateApexMethod() {
+        List<Results> res = new ArrayList<>();
+
+        return res;
     }
 
-    public String executeAnonymousWithReturnStringDebug(String apexCode) {
-        String debug = "none(((";
-        ConnectorConfig soapConfig = new ConnectorConfig();
-        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
-        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl().replace("/u/", "/s/"));
-        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
-        try {
 
-            SoapConnection connection = new SoapConnection(soapConfig);
-            LogInfo infoApex = new LogInfo();
-            infoApex.setCategory(LogCategory.Apex_code);
-            infoApex.setLevel(LogCategoryLevel.Debug);
-            connection.setDebuggingHeader(new LogInfo[] { infoApex }, LogType.Debugonly);
-            ExecuteAnonymousResult result  = connection.executeAnonymous(apexCode);
-            debug = connection.getDebuggingInfo().getDebugLog();
-            if (result.isCompiled()) {
-                if (result.isSuccess()) {
-                    System.out.println("Apex code excuted sucessfully");
-                    System.out.println(">>" + debug + "<<");
-                } else {
-                    throw new RuntimeException("Apex code execution failed :" + result.getExceptionMessage());
-                }
-            } else {
-                throw new RuntimeException("Apex code compilition failed :"
-                        + result.getCompileProblem());
-            }
-        } catch (ConnectionException ex) {
-            System.out.println( this.username + ".ToolingHelper >>executeAnonymousWithReturnStringDebug>> Connection Exception: " + ex);
-        }
-        return debug;
-    }
 
 
     public void createApexClass(String classBody) {
@@ -175,27 +143,6 @@ public class ToolingHelper {
 
 
 
-    public String getSessionId() {
-        com.sforce.soap.metadata.SessionHeader_element ee = metadataConnection.getSessionHeader();
-
-        try {
-
-            ListMetadataQuery query = new ListMetadataQuery();
-            query.setType("ApexPage");
-//            query.setType("CustomObject");
-            FileProperties[] listMeta = metadataConnection.listMetadata(new ListMetadataQuery[]{query},43.00);
-            System.out.println("***************");
-            for (FileProperties fp : listMeta) {
-                System.out.println(fp.getFullName());
-            }
-            System.out.println("***************");
-
-        } catch (ConnectionException ce) {
-            ce.printStackTrace();
-        }
-        return ee.getSessionId();
-
-    }
 
 //        public static void generatePackageXML(String typesMeta, String memberMeta){}
 
@@ -268,4 +215,38 @@ public class ToolingHelper {
 //            markupApexPage = (String)apexPage[0].getField("Markup");
 //        }
 //        return markupApexPage;
+//    }
+//
+// public Results executeAnonymousWithReturnStringDebug(String apexCode, CheckExecuteMethodWraper methodWraper) {
+//        String debug = "none(((";
+//        ConnectorConfig soapConfig = new ConnectorConfig();
+//        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+//        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl().replace("/u/", "/s/"));
+//        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
+//        try {
+//            SoapConnection connection = new SoapConnection(soapConfig);
+//            LogInfo infoApex = new LogInfo();
+//            infoApex.setCategory(LogCategory.Apex_code);
+//            infoApex.setLevel(LogCategoryLevel.Debug);
+//            connection.setDebuggingHeader(new LogInfo[] { infoApex }, LogType.Debugonly);
+//            ExecuteAnonymousResult result  = connection.executeAnonymous(apexCode);
+//            debug = connection.getDebuggingInfo().getDebugLog();
+//            if (result.isCompiled()) {
+//                if (result.isSuccess()) {
+////                    new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD, nameClass, method), true)
+//                    System.out.println("Apex code excuted sucessfully");
+//                    System.out.println(">>" + debug + "<<");
+//                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_SUCCESS, methodWraper.nameMethod, methodWraper.nameClass), true);
+//                } else {
+//                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_EXECUTE_FAIL, methodWraper.nameMethod, methodWraper.nameClass), false);
+////                    throw new RuntimeException("Apex code execution failed :" + result.getExceptionMessage());
+//                }
+//            } else {
+//                return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_FOUND, methodWraper.nameMethod, methodWraper.nameClass), false);
+////                throw new RuntimeException("Apex code compilition failed :" + result.getCompileProblem());
+//            }
+//        } catch (ConnectionException ex) {
+//            System.out.println( this.username + ".ToolingHelper >>executeAnonymousWithReturnStringDebug>> Connection Exception: " + ex);
+//        }
+//        return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_COMPILE, methodWraper.nameMethod, methodWraper.nameClass), false);
 //    }

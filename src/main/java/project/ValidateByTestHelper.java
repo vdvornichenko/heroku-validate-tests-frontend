@@ -1,12 +1,11 @@
 package project;
 
-import com.sforce.soap.apex.CodeCoverageResult;
-import com.sforce.soap.apex.CodeLocation;
-import com.sforce.soap.apex.SoapConnection;
+import com.sforce.soap.apex.*;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import project.Processors.RequestProcessor;
 import project.REST.API.PageRestController;
+import project.Rules.CheckExecuteMethodWraper;
 import project.Rules.Constants;
 import project.Rules.Results;
 
@@ -18,31 +17,33 @@ import java.util.Set;
 
 public class ValidateByTestHelper {
 
-    public List<Results> results;
+    public String username;
 
-    public ValidateByTestHelper() {
-
+    public ValidateByTestHelper(String username) {
+        this.username = username;
     }
 
-    public List<Results> validateUserResultUsingTest(String un) {
+
+
+        public List<Results> validateUserResultUsingTest() {
 
         List<Results> res = new ArrayList<>();
 
-        String debugThreadName = un;
+        String debugThreadName = this.username;
         System.out.println(debugThreadName + ": >> Test Run");
         SoapConnection connection;
         ConnectorConfig soapConfig = new ConnectorConfig();
 
         try {
 
-            System.out.println("*****************" + debugThreadName + " >> Un: " + un);
-            System.out.println("*****************" + debugThreadName + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(un));
+            System.out.println("*****************" + debugThreadName + " >> Un: " + this.username);
+            System.out.println("*****************" + debugThreadName + " >> SI " + MetadataLoginUtil.mapUserToSessionId.get(this.username));
 
 //            Thread.sleep(3000);
 
-            soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(un).getServerUrl());
-            soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(un).getServerUrl().replace("/u/", "/s/"));
-            soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(un));
+            soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+            soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl().replace("/u/", "/s/"));
+            soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
 
             connection = new SoapConnection(soapConfig);
 
@@ -99,5 +100,73 @@ public class ValidateByTestHelper {
             arr[i++] = x;
         return arr;
     }
+
+
+    public List<Results> validateApexMethod() {
+        System.out.println("validateApexMethod");
+        List<Results> res = new ArrayList<>();
+        for(CheckExecuteMethodWraper methodWraper : TaskMapping.TEST_METHOD){
+            // VARIANT 1
+//            String fields  = "";
+//                for(String f : methodWraper.fields){
+//                    fields = fields + f + ", ";
+//                }
+//            fields = fields.substring(0, fields.length() - 2);
+//            String code = "{0} cl = new {0}();" +
+//                    " List<{1}> executeMethod = cl.{2}();" +
+//                    " List<{1}> query = [SELECT {3} FROM {1}];" +
+//                    " Map<id, {1}> firstMap = new Map<id, {1}>(executeMethod);" +
+//                    " Map<id, {1}> secondMap = new Map<id, {1}>(query);";
+//            String apexCode = MessageFormat.format(code, methodWraper.nameClass, methodWraper.returnsObjectName, methodWraper.nameMethod, fields);
+//            apexCode = apexCode + " If( secondMap.keySet().containsAll(firstMap.keySet())){" +
+//                    "  System.debug('ZZZZZZZZZZ');" +
+//                    " }";
+            // VARIANT 2
+//            String code = "{0} cl = new {0}();" +
+//                    " List<{1}> executeMethod = cl.{2}();" +
+//                    " System.debug(executeMethod);";
+            String apexCode = methodWraper.stringExecuted;
+            System.out.println(apexCode);
+            res.add(executeAnonymousWithReturnStringDebug(apexCode, methodWraper));
+         }
+        return res;
+    }
+
+
+    public Results executeAnonymousWithReturnStringDebug(String apexCode, CheckExecuteMethodWraper methodWraper) {
+        String debug = "none(((";
+        ConnectorConfig soapConfig = new ConnectorConfig();
+        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
+        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl().replace("/u/", "/s/"));
+        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
+        try {
+            SoapConnection connection = new SoapConnection(soapConfig);
+            LogInfo infoApex = new LogInfo();
+            infoApex.setCategory(LogCategory.Apex_code);
+            infoApex.setLevel(LogCategoryLevel.Debug);
+            connection.setDebuggingHeader(new LogInfo[] { infoApex }, LogType.Debugonly);
+            ExecuteAnonymousResult result  = connection.executeAnonymous(apexCode);
+            debug = connection.getDebuggingInfo().getDebugLog();
+            if (result.isCompiled()) {
+                if (result.isSuccess()) {
+//                    new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD, nameClass, method), true)
+                    System.out.println("Apex code excuted sucessfully");
+                    System.out.println(">>" + debug + "<<");
+                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_SUCCESS, methodWraper.nameMethod, methodWraper.nameClass), true);
+                } else {
+                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_EXECUTE_FAIL, methodWraper.nameMethod, methodWraper.nameClass), false);
+//                    throw new RuntimeException("Apex code execution failed :" + result.getExceptionMessage());
+                }
+            } else {
+                return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_COMPILE, methodWraper.nameMethod, methodWraper.nameClass), false);
+//                throw new RuntimeException("Apex code compilition failed :" + result.getCompileProblem());
+            }
+        } catch (ConnectionException ex) {
+            System.out.println( this.username + ".ToolingHelper >>executeAnonymousWithReturnStringDebug>> Connection Exception: " + ex);
+        }
+        return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_COMPILE, methodWraper.nameMethod, methodWraper.nameClass), false);
+    }
+
+
 
 }

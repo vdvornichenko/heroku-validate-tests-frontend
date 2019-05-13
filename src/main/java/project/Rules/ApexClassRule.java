@@ -10,19 +10,21 @@ public class ApexClassRule implements  Rule {
 
     public String nameClass;
     public List<String> methodsForSearch;
+    public List<CheckExecuteMethodWraper> checkExecuteMethods;
 
-    public ApexClassRule(String name,List<String> methodsForSearch){
+    public ApexClassRule(String name, List<String> methodsForSearch) {
         this.nameClass = name;
         this.methodsForSearch = methodsForSearch;
+        this.checkExecuteMethods = checkExecuteMethods;
     }
 
-    public  List<Results>  checkCondition(String file){
+    public List<Results> checkCondition(String file) {
         List<Results> results = new ArrayList<>();
-        for (String method: methodsForSearch){
+        for (String method : methodsForSearch) {
             if (Util.checkNesting(file, method) == 1) {
-                results.add(new Results(nameClass,MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD,  nameClass, method), true));
+                results.add(new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD, nameClass, method), true));
             } else {
-                results.add(new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_NOT_FOUND_METHOD,  nameClass, method), false));
+                results.add(new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_NOT_FOUND_METHOD, nameClass, method), false));
             }
         }
         return results;
@@ -36,4 +38,18 @@ public class ApexClassRule implements  Rule {
         }
         return new Results(nameClass, "Метод " + strSearch + " не реализован",false);
     }
+
 }
+//    List<Account> firstList;
+//    List<Account> secondList;
+//
+//    Map<id, Account> firstMap = new Map<id, Account>(firstList);
+//    Map<id, Account> secondMap = new Map<id, Account>(secondList);
+//
+//    If( firstMap.keySet().contailsAll(secondMap.keySet()) && secondMap.keySet().contailsAll(firstMap.keySet())  ){
+//        System.debug('List are equals');
+//    }
+
+
+
+
