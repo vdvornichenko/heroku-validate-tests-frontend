@@ -5,11 +5,13 @@
                 <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
             </v-toolbar>
             <v-data-table
+                          disable-initial-sort
                           :headers="userResultsHeaders"
                           :items="value"
                           class="elevation-1"
             >
                 <template v-slot:items="props">
+                    <td>{{ props.item.index }}</td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                         <v-btn
                                 outline fab small
@@ -36,6 +38,13 @@
                         </v-btn>
                     </td>
                 </template>
+                <template v-slot:footer>
+                    <td :colspan="userResultsHeaders.length">
+                        <strong style="float: right">
+                            {{ getReport(value) }}
+                        </strong>
+                    </td>
+                </template>
             </v-data-table>
         </div>
     </div>
@@ -53,7 +62,7 @@
             showResults : false,
             userResults : [],
             userResultsHeaders : [
-                {text: '#', value: 'index'},
+                {text: '#', value: 'index', sortable: false},
                 {text : "Metadata File", value : "nameMetadata"},
                 {text : "Status", value : "status"},
                 {text : "Message", value : "message"},
@@ -82,6 +91,7 @@
                             }
                             let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
                             resultsOfUser.push({
+                                index: resultsOfUser.length + 1,
                                 nameMetadata: res.nameMetadata,
                                 status: status,
                                 message: resultMessage,
@@ -114,6 +124,14 @@
                 if (result.status === 'ERROR' || result.status === '') {
                     result.status = (result.status === 'ERROR') ? '' : 'ERROR';
                 }
+            },
+
+            getReport: function(result) {
+                let beginningTasks = result.filter(val => val.resultsList.length !== 0);
+                let finishedTasks = beginningTasks.filter(el => el.status === 'SUCCESS').length;
+                beginningTasks = beginningTasks.length - finishedTasks;
+
+                return 'Заданий выполнено без ошибок: ' + finishedTasks + ', Заданий выполнено с ошибками: ' + beginningTasks;
             }
         }
     }
