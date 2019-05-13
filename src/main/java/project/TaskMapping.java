@@ -39,35 +39,53 @@ public class TaskMapping {
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     static {
         List<sObjectRule.Property> fields = new ArrayList<>();
-
+//        •  Поле для хранения цены на продукт Field Name = ImageURL
         Map<String, String> keyValue = new HashMap<>();
-        keyValue.put("type", "URL");
-        keyValue.put("label", "ImageURL");
+        keyValue.put("type", "URL"); // Type = URL
+        keyValue.put("label", "ImageURL"); // Label = ImageURL
         fields.add(new sObjectRule.FieldSObjectInnerClass("ImageURL",keyValue));
+//        •  Поле для хранения цены на продукт Field Name = UnitPrice
         Map<String, String> keyValueTwo = new HashMap<>();
-        keyValueTwo.put("type", "Number");
-        keyValueTwo.put("label", "Amount");
-        keyValueTwo.put("sss", "aa");
-        fields.add(new sObjectRule.FieldSObjectInnerClass("Amount__c",keyValueTwo));
+        keyValueTwo.put("type", "Currency");  //Type = Currency
+        keyValueTwo.put("label", "UnitPrice"); //Label = UnitPrice
+        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitPrice",keyValueTwo));
+//        • Поле для хранения количества продуктов Field Name = UnitsAvailable
         Map<String, String> keyValueThree = new HashMap<>();
-        keyValueThree.put("errorConditionFormula", "vasya__c");
-        fields.add(new sObjectRule.validationRulesInnerClass("DateReleaseEx",keyValueThree));
+        keyValueThree.put("type", "Number");  //Type = Number
+        keyValueThree.put("label", "UnitsAvailable"); //Label = UnitsAvailable
+        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitsAvailable",keyValueThree));
+//        • Поле для хранения количества продуктов Field Name = UnitsAvailable
+        Map<String, String> keyValueFour = new HashMap<>();
+        keyValueFour.put("type", "Long Text Area");  //Type = Number
+        keyValueFour.put("label", "Description"); //Label = UnitsAvailable
+        fields.add(new sObjectRule.FieldSObjectInnerClass("Description",keyValueFour));
+//        • Поле для хранения даты добавления продукта Field Name = AddedDate
+        Map<String, String> keyValueFive = new HashMap<>();
+        keyValueFive.put("type", "DateTime");  //Type = Number
+        keyValueFive.put("label", "AddedDate"); //Label = UnitsAvailable
+        fields.add(new sObjectRule.FieldSObjectInnerClass("AddedDate",keyValueFive));
+//        Создать Validation Rule, который не будет позволять создавать записи Product, если
+        Map<String, String> keyValueValidRule = new HashMap<>();
+        keyValueValidRule.put("errorConditionFormula", "UnitPrice__c");
+        fields.add(new sObjectRule.validationRulesInnerClass("CorrectPriceValidation",keyValueValidRule));
+//          Label = Product
+        fields.add(new sObjectRule.labelInnerClass("Product"));
+
+
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
-//      Apex class
-        METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
 
 //      Trigger
-        METADATA_CHECK.put("AccountUtils.cls", new ApexClassRule( "AccountUtils", Arrays.asList("accountsByState")));
         List<String> triggerEvents = new ArrayList<>();
         triggerEvents.add("before insert");
         triggerEvents.add("before update");
-
-        METADATA_CHECK.put("AccountAddressTrigger.trigger", new ApexTriggerRule("AccountAddressTrigger", new TriggerInfoWraper("Account", triggerEvents, "asd")));
+        METADATA_CHECK.put("ProductTrigger.trigger", new ApexTriggerRule("ProductTrigger", new TriggerInfoWraper("Product__c", triggerEvents, "ProductTriggerHelper")));
         List<String> trigerEvents = new ArrayList<>();
         trigerEvents.add("before update");
         TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
         METADATA_CHECK.put("HelloWorldTrigger.trigger", new ApexTriggerRule("HelloWorldTrigger", triger));
-//
+
+        //      Apex class
+        METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts")));
 // use key-word "button", "table" for search values in this tags
 //      VisualforcePage
         Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
@@ -81,16 +99,23 @@ public class TaskMapping {
             }
         };
         tagValuesForSearchVF.put("table", searchInTable);
+        tagValuesForSearchVF.put("apex:page", new ArrayList<String>() {{ add("ProductTablePageController");}});
+        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");}});
         tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("Save");}});
-        tagValuesForSearchVF.put("dt", new ArrayList<String>() {{ add("First Label");}});
-        METADATA_CHECK.put("MobileContactList.page", new VisualforcePageRule("MobileContactList", tagValuesForSearchVF));
+        METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
 
         TEST_METHOD.add(new CheckExecuteMethodWraper(
-                        "AccountUtils",
-                        "accounts",
-                        "AccountUtils cl = new AccountUtils(); List<Account> executeMethod = cl.accounts();"));
+                        "ProductTablePageController",
+                        "getProducts",
+                        "ProductTablePageController cl = new ProductTablePageController();"
+                                + " List<Product__c> executeMethod = cl.getProducts();"));
         // tests: Test Class => Class тестируемый
-        TEST_CLASSES.put("WebTest", "IntWebService");
+        TEST_CLASSES.put("ProductTablePageController", "TestProductTablePageController");
+        TEST_CLASSES.put("ProductTrigger", "TestProductTrigger");
+        TEST_CLASSES.put("ProductTriggerHelper", "TestProductTriggerHelper");
+
+
+
 
 //        JSONObject obj = new JSONObject();
 //        obj.put("METADATA_CHECK", METADATA_CHECK);
@@ -98,18 +123,18 @@ public class TaskMapping {
 //        obj.put("TEST_CLASSES", TEST_CLASSES);
 
 
-        GsonBuilder builder = new GsonBuilder();
-        Type type = new TypeToken<TaskMapping>() {}.getType();
-        Gson gson = builder
-                .setPrettyPrinting()
-                .registerTypeAdapter(type, new TaskMappingConverter())
-                .create();
-        String json = gson.toJson(gson.toJson(METADATA_CHECK));
-        System.out.println(json);
-        Object natural = gson.fromJson(json, Object.class);
-        System.out.println("sssss");
-        System.out.println( natural.getClass().getName());
-        System.out.println(natural);
+//        GsonBuilder builder = new GsonBuilder();
+//        Type type = new TypeToken<TaskMapping>() {}.getType();
+//        Gson gson = builder
+//                .setPrettyPrinting()
+//                .registerTypeAdapter(type, new TaskMappingConverter())
+//                .create();
+//        String json = gson.toJson(gson.toJson(METADATA_CHECK));
+//        System.out.println(json);
+//        Object natural = gson.fromJson(json, Object.class);
+//        System.out.println("sssss");
+//        System.out.println( natural.getClass().getName());
+//        System.out.println(natural);
 
 //
 //        Map<String,Object> map = new HashMap<String,Object>();
@@ -140,15 +165,15 @@ public class TaskMapping {
 
 
 
-        try{
-        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
-        file.write(gson.toJson(METADATA_CHECK));
-        file.flush();
-    } catch(Exception e){
+//        try{
+//        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
+//        file.write(gson.toJson(METADATA_CHECK));
+//        file.flush();
+//    } catch(Exception e){
+//
+//    }
 
-    }
 
-        TEST_CLASSES.put("WebTest", "IntWebService");
     }
 
     public static void generatePackageXML(){
