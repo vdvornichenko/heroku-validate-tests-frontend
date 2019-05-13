@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><Package xmlns="http://soap.sforce.com/2006/04/metadata"><types><members>MobileContactList</members><name>ApexPage</name></types><types><members>Product__c</members><name>CustomObject</name></types><types><members>AccountUtils</members><name>ApexClass</name></types><types><members>HelloWorldTrigger</members><name>ApexTrigger</name></types><version>45.0</version></Package>
-=======
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><Package xmlns="http://soap.sforce.com/2006/04/metadata"><types><members>Product__c</members><name>CustomObject</name></types><types><members>AccountUtils</members><name>ApexClass</name></types><version>45.0</version></Package>
->>>>>>> a082a9eb1b549eb553fa493f40a0455e05531324
