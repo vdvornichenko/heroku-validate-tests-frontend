@@ -10,12 +10,26 @@
                           class="elevation-1"
             >
                 <template v-slot:items="props">
-                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.nameMetadata }}</td>
+                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                        <v-btn
+                                outline fab small
+                                v-if="props.item.resultsList.length > 0"
+                                v-on:click="showMetadataResults(props.item)"
+                        >
+                            <v-icon>list</v-icon>
+                        </v-btn>
+                        {{ props.item.nameMetadata }}
+                        <table v-if="props.item.showResultsList">
+                            <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
+                                <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                            </tr>
+                        </table>
+                    </td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
                     <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                         <v-btn
-                                v-if="!props.item.message.includes(notFound) && !props.item.message.includes('Tests')"
+                                v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
                                 v-on:click="showFile(propertyName, props.item.nameMetadata)"
                         >
                             View file
@@ -31,6 +45,7 @@
     import { NOT_FOUND_MESSAGE } from "../Constants";
     import { HTTP_FILE_URL } from "../Constants";
     import { ERROR_COLOR } from "../Constants";
+    import { ERRORS_NUMBER_MESSAGE} from "../Constants";
 
     export default {
         name: "Results",
@@ -38,6 +53,7 @@
             showResults : false,
             userResults : [],
             userResultsHeaders : [
+                {text: '#', value: 'index'},
                 {text : "Metadata File", value : "nameMetadata"},
                 {text : "Status", value : "status"},
                 {text : "Message", value : "message"},
@@ -49,7 +65,34 @@
 
         mounted() {
             this.$root.$on('getUserResults', results => {
-                this.userResults = results;
+                let totalResults = {};
+                for (let userName in results) {
+                    let resultsOfUser = [];
+                    results[userName].forEach(res => {
+                        if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
+                            let fileResults = results[userName].filter(elem => elem.nameMetadata === res.nameMetadata);
+
+                            let errors = fileResults.filter(val => val.status === 'ERROR');
+                            let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
+                            if (errors.length === 1) {
+                                if (errors[0].message.includes(NOT_FOUND_MESSAGE)) {
+                                    resultMessage = errors[0].message;
+                                    fileResults = [];
+                                }
+                            }
+                            let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
+                            resultsOfUser.push({
+                                nameMetadata: res.nameMetadata,
+                                status: status,
+                                message: resultMessage,
+                                resultsList: fileResults,
+                                showResultsList: false
+                            });
+                        }
+                    });
+                    totalResults[userName] = resultsOfUser;
+                }
+                this.userResults = totalResults;
                 this.showResults = true;
             });
         },
@@ -64,6 +107,13 @@
                     this.$root.$emit('setAlert', response.body.bodyText.error, 'error');
                     this.$root.$emit('setState', false);
                 });
+            },
+
+            showMetadataResults: function(result) {
+                result.showResultsList = !result.showResultsList;
+                if (result.status === 'ERROR' || result.status === '') {
+                    result.status = (result.status === 'ERROR') ? '' : 'ERROR';
+                }
             }
         }
     }

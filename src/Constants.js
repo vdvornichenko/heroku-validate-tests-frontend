@@ -5,4 +5,5 @@ export var HTTP_FILE_URL = (window.location.href.includes('localhost')) ? 'http:
 
 export const NOT_FOUND_MESSAGE = 'Не найден файл';
 export const NO_SELECTED_USERS_MESSAGE = 'You must select at least 1 user';
+export const ERRORS_NUMBER_MESSAGE = 'Количество ошибок - ';
 export const ERROR_COLOR = '#EF5350';
