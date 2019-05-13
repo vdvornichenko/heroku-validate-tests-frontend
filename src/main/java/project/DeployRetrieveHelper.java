@@ -19,6 +19,8 @@ import com.sforce.ws.ConnectorConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import com.sforce.soap.metadata.*;
+import project.Processors.RequestProcessor;
+import project.Rules.Results;
 
 public class DeployRetrieveHelper {
 
@@ -46,8 +48,14 @@ public class DeployRetrieveHelper {
         this.ZIP_FILE = "src/main/resources/" +  username + ".zip";
         try {
             loginInOrg();
+            retrieveZip();
         } catch (ConnectionException ex) {
-            System.out.println(username + ". >> Connection Exception: " + ex);
+            System.out.println(username + ". >> Connection Exception: " + ex.toString());
+            List<Results> results = new ArrayList<>();
+            results.add(new Results(null, "Invalid username, password, security token; or user locked out.", false));
+            RequestProcessor.userResults.put(username, results);
+            SalesforceHepler.zip_file_for_read = "";
+            System.out.println(RequestProcessor.userResults);
         }
     }
 

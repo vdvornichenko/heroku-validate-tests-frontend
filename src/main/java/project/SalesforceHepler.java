@@ -76,11 +76,14 @@ public class SalesforceHepler {
 
         DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword);
 
-        instance.retrieveZip();
+//        instance.retrieveZip();
 //        RequestProcessor.userListResults = checkZipFile();
-        RequestProcessor.userResults.put(tempUsername, checkZipFile());
+        if (!zip_file_for_read.equalsIgnoreCase("")) {
+            checkZipFile();
+            instance.deleteFileZip();
+        }
         //readZipFile();
-        instance.deleteFileZip();
+//
     }
 
 //    public void disableFeedTrackingHeaderSample() {
@@ -133,7 +136,7 @@ public class SalesforceHepler {
                             theFile += "<br/>" + line.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt").replaceAll(">", "&gt;");
                         }
 
-                        RequestProcessor.files .add(new FileStorage(item, tempUsername, theFile));
+                        RequestProcessor.files.add(new FileStorage(item, tempUsername, theFile));
                         results.addAll(mapping.get(item).checkCondition(allFile));
                         break;
                     }

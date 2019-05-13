@@ -16,9 +16,11 @@ import project.Storages.FileStorage;
 public class RequestProcessor {
     String users;
     public static Map<String, List<Results>> userResults = new HashMap<>();
+    public static List<CredentialsStorage> userLogins = new ArrayList<>();
     public static List<FileStorage> files;
 
     public RequestProcessor() {
+        userLogins = new ArrayList<>();
         GoogleHelper.callDocument();
     }
 
@@ -47,20 +49,20 @@ public class RequestProcessor {
 
     public List<CredentialsStorage> getUserLogins() {
 
-        List<CredentialsStorage> credentials = new ArrayList<>();
-        for(Map.Entry<String, String> userCreds : GoogleHelper.userCreds.entrySet()) {
-            credentials.add(new CredentialsStorage(userCreds));
-        }
-        return credentials;
+        return userLogins;
     }
 
-    public class CredentialsStorage {
+    public static class CredentialsStorage {
         public String userName;
         public String password;
+        public String fio;
+        public String group;
 
-        public CredentialsStorage(Map.Entry<String, String> userCreds) {
-            userName = userCreds.getKey();
-            password = userCreds.getValue();
+        public CredentialsStorage(String userName, String password, String fio, String group) {
+            this.userName = userName;
+            this.password = password;
+            this.fio = fio;
+            this.group = group;
         }
     }
 }
