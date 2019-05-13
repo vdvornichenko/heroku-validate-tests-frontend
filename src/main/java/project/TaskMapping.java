@@ -215,9 +215,6 @@ public class TaskMapping {
                 membersTriggerClass.add(member);
             }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
                 String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
-            } else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
-                System.out.println(item);
-                String member = item.substring(0, item.indexOf('.'));
                 membersVisualforcePage.add(member);
             }
         }
