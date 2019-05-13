@@ -13,6 +13,8 @@ import com.sforce.ws.ConnectorConfig;
 import project.Rules.*;
 
 import project.Processors.RequestProcessor;
+import project.Storages.FileStorage;
+
 import java.io.*;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.NoSuchFileException;
@@ -81,7 +83,6 @@ public class SalesforceHepler {
         instance.deleteFileZip();
     }
 
-
 //    public void disableFeedTrackingHeaderSample() {
 //        try {
 //// Insert a large number of accounts.
@@ -125,10 +126,14 @@ public class SalesforceHepler {
                         fileFound = true;
                         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
                         String allFile = "";
+                        String theFile = "";
                         String line = null;
                         while ((line = br.readLine()) != null){
                             allFile = allFile + line;
+                            theFile += "<br/>" + line.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt").replaceAll(">", "&gt;");
                         }
+
+                        RequestProcessor.files .add(new FileStorage(item, tempUsername, theFile));
                         results.addAll(mapping.get(item).checkCondition(allFile));
                         break;
                     }
@@ -150,6 +155,9 @@ public class SalesforceHepler {
         for (Results res : results) {
             System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
         }
+        System.out.println(">>>>>>>>>>>>> ");
+        System.out.println(tempUsername);
+        RequestProcessor.userResults.put(tempUsername, results);
         return results;
     }
 
