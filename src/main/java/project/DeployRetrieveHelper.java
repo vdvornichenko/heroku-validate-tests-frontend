@@ -50,7 +50,7 @@ public class DeployRetrieveHelper {
             System.out.println(username + ". >> Connection Exception: " + ex.toString());
             List<Results> results = new ArrayList<>();
             MailService.getInstance().setSubject("Connection Exception")
-                    .setBody("Connection Exception occur" + MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + getClass())
+                    .setBody(MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + " " +getClass())
                     .sendMail();
             results.add(new Results(null, "Invalid username, password, security token; or user locked out.", false));
             RequestProcessor.userResults.put(username, results);
