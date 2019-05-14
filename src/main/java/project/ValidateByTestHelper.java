@@ -50,21 +50,18 @@ public class ValidateByTestHelper {
             com.sforce.soap.apex.RunTestsRequest request = new com.sforce.soap.apex.RunTestsRequest();
 
             request.setClasses(setStringToArray(TaskMapping.TEST_CLASSES.keySet()));
-
             com.sforce.soap.apex.RunTestsResult result = connection.runTests(request);
-
             for (com.sforce.soap.apex.RunTestFailure item : result.getFailures()) {
                 System.out.println("Failed Tests: " + item.getName());
                 res.add(new Results("Test", MessageFormat.format(Constants.TEST_FAILED, item.getName()), false));
             }
             if (result.getCodeCoverage() != null) {
 
-                for (CodeCoverageResult ccr : result.getCodeCoverage()) {
-
-                    for (String nameTestClass : TaskMapping.TEST_CLASSES.keySet()) {
-
+                for (String nameTestClass : TaskMapping.TEST_CLASSES.keySet()) {
+                    Boolean testRun = false;
+                    for (CodeCoverageResult ccr : result.getCodeCoverage()) {
                         if (TaskMapping.TEST_CLASSES.get(nameTestClass).equals(ccr.getName())) {
-
+                            testRun = true;
                             Integer percentCoverage = checkCoverage((ccr.getNumLocations() - ccr.getNumLocationsNotCovered()), ccr.getNumLocations());
                             if(percentCoverage < 75){
                                 res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE, nameTestClass, percentCoverage), false));
@@ -76,7 +73,11 @@ public class ValidateByTestHelper {
                             );
                         }
                     }
+                    if(!testRun) res.add(new Results("Test", MessageFormat.format(Constants.TEST_NOT_FOUND,  nameTestClass), false));
+
                 }
+            } else{
+                System.out.println(" else: ");
             }
 
         } catch (ConnectionException ex) {
@@ -84,6 +85,7 @@ public class ValidateByTestHelper {
         } catch (Exception commEx) {
             System.out.println("Ex: " + commEx);
         }
+            System.out.println(" end: ");
             return res;
     }
 

@@ -12,6 +12,7 @@ public class Constants {
     public static final String TEST_FAILED =  "Failed Test: {0}";
     public static final String TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE =  "Tests: {0} SUCCESS but not enough coverage: {1} %";
     public static final String TEST_SUCCESS =  "Tests: {0} SUCCESS with coverage: {1} %";
+    public static final String TEST_NOT_FOUND =  "Tests: {0} not found";
 //   for ApexClass
     public static final String APEXCLASS_NOT_FOUND_METHOD =  "У класса: {0} не найден метод: {1}";
     public static final String APEXCLASS_FOUND_METHOD =  "Найден метод: {1} у класса: {0}";
@@ -23,6 +24,10 @@ public class Constants {
     public static final String SOBJECT_NOT_FOUND_VALIDATIONRULES =  "Не найдены validationRules: {0} у обьекта: {1} ";
     public static final String SOBJECT_FOUND_VALIDATIONRULES =  "Найдены validationRules: {0} у обьекта: {1}";
     public static final String SOBJECT_WRONG_VALIDATIONRULES_FORMULA =  "Некоректная формула у validationRules: {0}, не найдено поле: {1}";
+    public static final String SOBJECT_NOT_FOUND_LABEL =  "Не найдена Label: {0} у обьекта: {1}";
+    public static final String SOBJECT_FOUND_LABEL =  "Найдена Label: {0} у обьекта: {1}";
+
+
     //   for VF pages
     public static final String VF_NOT_FOUND_TAG =  "В VisualforcePage: {0} не найден тэг {1}";
     public static final String VF_FOUND_VALUE_IN_TAG =  "В VisualforcePage: {0} в теге: {1} найдено значение {2}";
