@@ -78,26 +78,24 @@ public class TaskMapping {
         triggerEvents.add("before insert");
         triggerEvents.add("before update");
         METADATA_CHECK.put("ProductTrigger.trigger", new ApexTriggerRule("ProductTrigger", new TriggerInfoWraper("Product__c", triggerEvents, "ProductTriggerHelper")));
-
         //      Apex class
         METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts")));
 // use key-word "button", "table" for search values in this tags
 //      VisualforcePage
         Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
-//        ArrayList<String> searchInTable = new ArrayList<String>() {
-//            {
-//                add("Image");
-//                add("Name");
-//                add("Description");
-//                add("Price");
-//                add("Available  Units");
-//            }
-//        };
-//        tagValuesForSearchVF.put("table", searchInTable);
-//        tagValuesForSearchVF.put("apex:page", new ArrayList<String>() {{ add("ProductTablePageController");}});
-//        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");}});
-//        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("Save");}});
-//        METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
+        ArrayList<String> searchInTable = new ArrayList<String>() {
+            {
+                add("Image");
+                add("Name");
+                add("Description");
+                add("Price");
+                add("Available Units");
+            }
+        };
+        tagValuesForSearchVF.put("table", searchInTable);
+        tagValuesForSearchVF.put("apex:page", new ArrayList<String>() {{ add("ProductTablePageController");}});
+        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");add("Save");}});
+        METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
 
         TEST_METHOD.add(new CheckExecuteMethodWraper(
                         "ProductTablePageController",
@@ -105,9 +103,6 @@ public class TaskMapping {
                         "ProductTablePageController cl = new ProductTablePageController();"
                                 + " List<Product__c> executeMethod = cl.getProducts();"));
         // tests: Test Class => Class тестируемый
-//        TEST_CLASSES.put("ProductTablePageController", "TestProductTablePageController");
-//        TEST_CLASSES.put("ProductTrigger", "TestProductTrigger");
-//        TEST_CLASSES.put("ProductTriggerHelper", "TestProductTriggerHelper");
         TEST_CLASSES.put("TestProductTablePageController", "ProductTablePageController");
         TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
         TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");

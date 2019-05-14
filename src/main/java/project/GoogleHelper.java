@@ -126,13 +126,19 @@ public class GoogleHelper {
         String[] credsLines = data.split("\n");
 
         for (String item : credsLines) {
+            if(item.contains("https://login.salesforce.com/?un=learning-dev.koverchik.artem@gmail.com&pw=qwerty321 - Artem Koverchik. Group 1")) {
+                continue;
+            }
             String login = item.substring(item.indexOf("un=") + 3, item.indexOf("&"));
             String pass = item.substring(item.indexOf("&pw=") + 4, item.indexOf("-") - 1);
             if (item.indexOf("Группа") != -1) {
+
                 String fio = item.substring(item.indexOf(" - ") + 3, item.indexOf(". Группа"));
                 String group = item.substring(item.indexOf("Группа") + 6);
                 RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(login, pass, fio, group));
             }
+            System.out.println(login);
+            System.out.println(pass);
             userCreds.put(login, pass);
         }
 
