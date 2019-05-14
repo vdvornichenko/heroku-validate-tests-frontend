@@ -71,7 +71,6 @@ public class TaskMapping {
 //          Label = Product
         fields.add(new sObjectRule.labelInnerClass("Product"));
 
-
         METADATA_CHECK.put("Product__c.object", new sObjectRule("Product__c", fields));
 
 //      Trigger
@@ -79,10 +78,6 @@ public class TaskMapping {
         triggerEvents.add("before insert");
         triggerEvents.add("before update");
         METADATA_CHECK.put("ProductTrigger.trigger", new ApexTriggerRule("ProductTrigger", new TriggerInfoWraper("Product__c", triggerEvents, "ProductTriggerHelper")));
-        List<String> trigerEvents = new ArrayList<>();
-        trigerEvents.add("before update");
-        TriggerInfoWraper triger = new TriggerInfoWraper("HelloWorldTrigger", trigerEvents,"HelloWorldTriggerHelper");
-        METADATA_CHECK.put("HelloWorldTrigger.trigger", new ApexTriggerRule("HelloWorldTrigger", triger));
 
         //      Apex class
         METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts")));
