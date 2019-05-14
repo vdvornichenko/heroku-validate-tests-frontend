@@ -142,7 +142,7 @@ public class sObjectRule implements  Rule {
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 XPathExpression expr = xpath.compile("/CustomObject/label");
                 Node validationLabel = (Node)expr.evaluate(doc, XPathConstants.NODE);
-                if (validationLabel.getTextContent().equals("value")) {
+                if (validationLabel.getTextContent().equals(value)) {
                     results.add( new Results(fileName, MessageFormat.format(Constants.SOBJECT_FOUND_LABEL, value, fileName), false));
                 } else {
                     results.add( new Results(fileName, MessageFormat.format(Constants.SOBJECT_NOT_FOUND_LABEL, value, fileName), false));

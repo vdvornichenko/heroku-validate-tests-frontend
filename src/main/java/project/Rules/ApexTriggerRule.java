@@ -37,7 +37,7 @@ public class ApexTriggerRule implements Rule {
                     true
             ));
         }
-        if (Util.checkNesting(triggerName, triggerInfo.helperName) > 0) {
+        if (Util.checkNesting(file, triggerInfo.helperName) > 0) {
             results.add(new Results(triggerName, Constants.TRIGGER_HELPER_SUCCESS_MESSAGE, true));
         } else {
             results.add(new Results(triggerName, Constants.TRIGGER_HELPER_ERROR_MESSAGE, false));
