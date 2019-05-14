@@ -41,29 +41,29 @@ public class TaskMapping {
         List<sObjectRule.Property> fields = new ArrayList<>();
 //        •  Поле для хранения цены на продукт Field Name = ImageURL
         Map<String, String> keyValue = new HashMap<>();
-        keyValue.put("type", "URL"); // Type = URL
+        keyValue.put("type", "Url"); // Type = URL
         keyValue.put("label", "ImageURL"); // Label = ImageURL
-        fields.add(new sObjectRule.FieldSObjectInnerClass("ImageURL",keyValue));
+        fields.add(new sObjectRule.FieldSObjectInnerClass("ImageURL__c",keyValue));
 //        •  Поле для хранения цены на продукт Field Name = UnitPrice
         Map<String, String> keyValueTwo = new HashMap<>();
         keyValueTwo.put("type", "Currency");  //Type = Currency
         keyValueTwo.put("label", "UnitPrice"); //Label = UnitPrice
-        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitPrice",keyValueTwo));
+        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitPrice__c",keyValueTwo));
 //        • Поле для хранения количества продуктов Field Name = UnitsAvailable
         Map<String, String> keyValueThree = new HashMap<>();
         keyValueThree.put("type", "Number");  //Type = Number
         keyValueThree.put("label", "UnitsAvailable"); //Label = UnitsAvailable
-        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitsAvailable",keyValueThree));
+        fields.add(new sObjectRule.FieldSObjectInnerClass("UnitsAvailable__c",keyValueThree));
 //        • Поле для хранения количества продуктов Field Name = UnitsAvailable
         Map<String, String> keyValueFour = new HashMap<>();
-        keyValueFour.put("type", "Long Text Area");  //Type = Number
+        keyValueFour.put("type", "LongTextArea");  //Type = Number
         keyValueFour.put("label", "Description"); //Label = UnitsAvailable
-        fields.add(new sObjectRule.FieldSObjectInnerClass("Description",keyValueFour));
+        fields.add(new sObjectRule.FieldSObjectInnerClass("Description__c",keyValueFour));
 //        • Поле для хранения даты добавления продукта Field Name = AddedDate
         Map<String, String> keyValueFive = new HashMap<>();
         keyValueFive.put("type", "DateTime");  //Type = Number
         keyValueFive.put("label", "AddedDate"); //Label = UnitsAvailable
-        fields.add(new sObjectRule.FieldSObjectInnerClass("AddedDate",keyValueFive));
+        fields.add(new sObjectRule.FieldSObjectInnerClass("AddedDate__c",keyValueFive));
 //        Создать Validation Rule, который не будет позволять создавать записи Product, если
         Map<String, String> keyValueValidRule = new HashMap<>();
         keyValueValidRule.put("errorConditionFormula", "UnitPrice__c");
@@ -84,20 +84,20 @@ public class TaskMapping {
 // use key-word "button", "table" for search values in this tags
 //      VisualforcePage
         Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
-        ArrayList<String> searchInTable = new ArrayList<String>() {
-            {
-                add("Image");
-                add("Name");
-                add("Description");
-                add("Price");
-                add("Available  Units");
-            }
-        };
-        tagValuesForSearchVF.put("table", searchInTable);
-        tagValuesForSearchVF.put("apex:page", new ArrayList<String>() {{ add("ProductTablePageController");}});
-        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");}});
-        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("Save");}});
-        METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
+//        ArrayList<String> searchInTable = new ArrayList<String>() {
+//            {
+//                add("Image");
+//                add("Name");
+//                add("Description");
+//                add("Price");
+//                add("Available  Units");
+//            }
+//        };
+//        tagValuesForSearchVF.put("table", searchInTable);
+//        tagValuesForSearchVF.put("apex:page", new ArrayList<String>() {{ add("ProductTablePageController");}});
+//        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");}});
+//        tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("Save");}});
+//        METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
 
         TEST_METHOD.add(new CheckExecuteMethodWraper(
                         "ProductTablePageController",
@@ -105,10 +105,12 @@ public class TaskMapping {
                         "ProductTablePageController cl = new ProductTablePageController();"
                                 + " List<Product__c> executeMethod = cl.getProducts();"));
         // tests: Test Class => Class тестируемый
-        TEST_CLASSES.put("ProductTablePageController", "TestProductTablePageController");
-        TEST_CLASSES.put("ProductTrigger", "TestProductTrigger");
-        TEST_CLASSES.put("ProductTriggerHelper", "TestProductTriggerHelper");
-
+//        TEST_CLASSES.put("ProductTablePageController", "TestProductTablePageController");
+//        TEST_CLASSES.put("ProductTrigger", "TestProductTrigger");
+//        TEST_CLASSES.put("ProductTriggerHelper", "TestProductTriggerHelper");
+        TEST_CLASSES.put("TestProductTablePageController", "ProductTablePageController");
+        TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
+        TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");
 
 
 
@@ -217,7 +219,6 @@ public class TaskMapping {
         Map<String, List<String>> results = new HashMap<>();
         List<String> membersSobject = new ArrayList<>();
         List<String> membersApexClass = new ArrayList<>();
-        List<String> membersTrigger = new ArrayList<>();
         List<String> membersTriggerClass = new ArrayList<>();
         List<String> membersVisualforcePage = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
@@ -226,8 +227,6 @@ public class TaskMapping {
                 membersSobject.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexClassRule){
                 membersApexClass.add(member);
-            } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule) {
-                membersTrigger.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
                 membersTriggerClass.add(member);
             }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
