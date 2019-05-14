@@ -55,6 +55,7 @@ public class ValidateByTestHelper {
                 System.out.println("Failed Tests: " + item.getName());
                 res.add(new Results("Test", MessageFormat.format(Constants.TEST_FAILED, item.getName()), false));
             }
+
             if (result.getCodeCoverage() != null) {
 
                 for (String nameTestClass : TaskMapping.TEST_CLASSES.keySet()) {
@@ -90,7 +91,9 @@ public class ValidateByTestHelper {
     }
 
     private Integer checkCoverage(Integer summNumLocationsCovered, Integer summNumLocations) {
-        return summNumLocationsCovered * 100 / summNumLocationsCovered;
+        if (summNumLocationsCovered == 0) return 0;
+        Integer total = summNumLocationsCovered * 100 / summNumLocations;
+        return total;
     }
 
     private String[] setStringToArray(Set<String> originalSet) {
