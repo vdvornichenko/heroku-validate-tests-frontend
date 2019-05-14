@@ -221,20 +221,16 @@ public class TaskMapping {
         List<String> membersTriggerClass = new ArrayList<>();
         List<String> membersVisualforcePage = new ArrayList<>();
         for (String item : METADATA_CHECK.keySet()) {
+            String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
             if (METADATA_CHECK.get(item) instanceof sObjectRule){
-                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersSobject.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexClassRule){
-                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersApexClass.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule) {
-                String member = item.substring(0, item.indexOf('.'));
                 membersTrigger.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
-                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersTriggerClass.add(member);
             }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
-                String member = (item.contains(".")  ? item.substring(0, item.indexOf('.')) : item);
                 membersVisualforcePage.add(member);
             }
         }
