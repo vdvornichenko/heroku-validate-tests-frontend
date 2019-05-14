@@ -13,6 +13,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.docs.v1.Docs;
 import com.google.api.services.docs.v1.DocsScopes;
 import com.google.api.services.docs.v1.model.*;
+import project.Processors.RequestProcessor;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -127,7 +128,11 @@ public class GoogleHelper {
         for (String item : credsLines) {
             String login = item.substring(item.indexOf("un=") + 3, item.indexOf("&"));
             String pass = item.substring(item.indexOf("&pw=") + 4, item.indexOf("-") - 1);
-
+            if (item.indexOf("Группа") != -1) {
+                String fio = item.substring(item.indexOf(" - ") + 3, item.indexOf(". Группа"));
+                String group = item.substring(item.indexOf("Группа") + 6);
+                RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(login, pass, fio, group));
+            }
             userCreds.put(login, pass);
         }
 
