@@ -52,6 +52,8 @@ dependencies {
 
     compile group: 'kz.idsoftware.sforce', name: 'sforce-tooling-api', version: '35.0'
     compile group: 'com.force.api', name: 'force-apex-api', version: '39.0.0'
+    compile group: 'javax.mail', name: 'mail', version: '1.4.5'
+    compile group: 'javax.activation', name: 'activation', version: '1.1.1'
 
 
     // google & google doc integration
@@ -62,6 +64,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     // JSON object
     compile 'com.google.code.gson:gson:2.8.5'
+    compile 'io.vertx:vertx-mail-client:3.7.0'
 
 }
 

@@ -1,26 +1,23 @@
 package project;
 
 import java.io.*;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.NoSuchFileException;
+import java.text.MessageFormat;
 import java.util.*;
 import javax.xml.parsers.*;
 
-import com.sforce.soap.apex.ExecuteAnonymousResult;
-import com.sforce.soap.apex.SoapConnection;
 import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
-import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import com.sforce.soap.metadata.*;
+import project.Emails.MailService;
 import project.Processors.RequestProcessor;
 import project.Rules.Results;
+import project.Rules.Constants;
 
 public class DeployRetrieveHelper {
 
@@ -52,6 +49,9 @@ public class DeployRetrieveHelper {
         } catch (ConnectionException ex) {
             System.out.println(username + ". >> Connection Exception: " + ex.toString());
             List<Results> results = new ArrayList<>();
+            MailService.getInstance().setSubject("Connection Exception")
+                    .setBody("Connection Exception occur" + MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + getClass())
+                    .sendMail();
             results.add(new Results(null, "Invalid username, password, security token; or user locked out.", false));
             RequestProcessor.userResults.put(username, results);
             SalesforceHepler.zip_file_for_read = "";
@@ -199,6 +199,8 @@ public class DeployRetrieveHelper {
             }
 
         } catch (Exception ex) {
+            MailService.getInstance().setBody(MessageFormat.format(Constants.RETRIEVE_EX_MESSAGE, username, ex.toString()))
+                    .setSubject("Retrieve zip error").sendMail();
             System.out.println("Ex: " + ex.getMessage());
         }
 
