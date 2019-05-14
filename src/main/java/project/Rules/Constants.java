@@ -39,7 +39,7 @@ public class Constants {
 
 
     public static final String FROM_EMAIL_ADDRESS = "tesk.checker@vrp.com";
-    public static final String TO_EMAIL_ADDRESS = "dee-ded@mail.ru";
+    public static final String TO_EMAIL_ADDRESS = "vrpvalidationtask2019@gmail.com";
 
     public static final String CONNECTION_EX_MESSAGE = "Connection exception occur. User: {0}. Exception text: {1}";
     public static final String RETRIEVE_EX_MESSAGE = "Retrieve zip exception occur. User: {0}. Exception text: {1}";
