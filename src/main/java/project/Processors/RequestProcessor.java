@@ -40,6 +40,8 @@ public class RequestProcessor {
         Stream<String> creds = Arrays.stream(users.split(";"));
         TaskMapping.generatePackageXML();
         creds.parallel().forEach(value -> {
+            System.out.println(value);
+            System.out.println(GoogleHelper.userCreds.get(value));
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
             helper.processUser();
 
@@ -61,9 +63,6 @@ public class RequestProcessor {
         public String lastTaskPassword;
 
         public CredentialsStorage(List<Object> info) {
-            System.out.println(info.get(0));
-            System.out.println(info.get(1));
-            System.out.println(info.get(2));
             this.userName = String.valueOf(info.get(0));
             this.password = String.valueOf(info.get(1));
             this.lastTaskPassword = String.valueOf(info.get(3));

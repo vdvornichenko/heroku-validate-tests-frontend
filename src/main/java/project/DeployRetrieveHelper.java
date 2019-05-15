@@ -52,7 +52,7 @@ public class DeployRetrieveHelper {
             MailService.getInstance().setSubject("Connection Exception")
                     .setBody(MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + " " +getClass())
                     .sendMail();
-            results.add(new Results(null, "Invalid username, password, security token; or user locked out.", false));
+            results.add(new Results(null, "Invalid username, password, security token; or user locked out. " + username + " pass: " + pass, false));
             RequestProcessor.userResults.put(username, results);
             SalesforceHepler.zip_file_for_read = "";
             System.out.println(RequestProcessor.userResults);
