@@ -40,6 +40,8 @@ public class RequestProcessor {
         Stream<String> creds = Arrays.stream(users.split(";"));
         TaskMapping.generatePackageXML();
         creds.parallel().forEach(value -> {
+            System.out.println(value);
+            System.out.println(GoogleHelper.userCreds.get(value));
             SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
             helper.processUser();
 
