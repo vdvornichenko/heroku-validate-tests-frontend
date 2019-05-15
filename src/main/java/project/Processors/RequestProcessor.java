@@ -57,12 +57,16 @@ public class RequestProcessor {
         public String password;
         public String fio;
         public String group;
+        public String lastTaskUserName;
+        public String lastTaskPassword;
 
-        public CredentialsStorage(String userName, String password, String fio, String group) {
-            this.userName = userName;
-            this.password = password;
-            this.fio = fio;
-            this.group = group;
+        public CredentialsStorage(List<Object> info) {
+            this.userName = String.valueOf(info.get(0));
+            this.password = String.valueOf(info.get(1));
+            this.lastTaskPassword = String.valueOf(info.get(3));
+            this.lastTaskUserName = String.valueOf(info.get(2));
+            this.fio = String.valueOf(info.get(4));
+            this.group = String.valueOf(info.get(5));
         }
     }
 }
