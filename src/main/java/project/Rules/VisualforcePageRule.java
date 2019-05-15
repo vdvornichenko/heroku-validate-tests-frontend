@@ -19,7 +19,7 @@ public class VisualforcePageRule implements Rule {
         this.tagValuesSearch = tagValuesSearch;
     }
 
-    public List<Results> checkCondition(String file) {
+    public List<Results> checkCondition(String file, String userName) {
         List<Results> results = new ArrayList<>();
         Document doc = Jsoup.parse(file);
         for(String tag : tagValuesSearch.keySet()) {

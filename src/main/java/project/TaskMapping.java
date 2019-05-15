@@ -39,7 +39,7 @@ public class TaskMapping {
             "ProductTablePageController.cls",
             "ProductTrigger.trigger"
     );
-    public static  ArrayList<CheckExecuteMethodWraper> TEST_METHOD   = new ArrayList<>();
+
 
     public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
@@ -84,8 +84,16 @@ public class TaskMapping {
         triggerEvents.add("before insert");
         triggerEvents.add("before update");
         METADATA_CHECK.put("ProductTrigger.trigger", new ApexTriggerRule("ProductTrigger", new TriggerInfoWraper("Product__c", triggerEvents, "ProductTriggerHelper")));
-        //      Apex class
-        METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts")));
+
+//      Apex class
+        List<CheckExecuteMethodWraper> executedMethods = new ArrayList<>();
+        executedMethods.add(new CheckExecuteMethodWraper(
+                "ProductTablePageController",
+                "getProducts",
+                "ProductTablePageController cl = new ProductTablePageController();"
+                        + " List<Product__c> executeMethod = cl.getProducts();"));
+        METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts"), executedMethods));
+
 // use key-word "button", "table" for search values in this tags
 //      VisualforcePage
         Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
@@ -103,65 +111,12 @@ public class TaskMapping {
         tagValuesForSearchVF.put("button", new ArrayList<String>() {{ add("New");add("Save");}});
         METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
 
-        TEST_METHOD.add(new CheckExecuteMethodWraper(
-                        "ProductTablePageController",
-                        "getProducts",
-                        "ProductTablePageController cl = new ProductTablePageController();"
-                                + " List<Product__c> executeMethod = cl.getProducts();"));
         // tests: Test Class => Class тестируемый
         TEST_CLASSES.put("TestProductTablePageController", "ProductTablePageController");
         TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
         TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");
 
-
-
-//        JSONObject obj = new JSONObject();
-//        obj.put("METADATA_CHECK", METADATA_CHECK);
-//        obj.put("TEST_METHOD", TEST_METHOD);
-//        obj.put("TEST_CLASSES", TEST_CLASSES);
-
-
-//        GsonBuilder builder = new GsonBuilder();
-//        Type type = new TypeToken<TaskMapping>() {}.getType();
-//        Gson gson = builder
-//                .setPrettyPrinting()
-//                .registerTypeAdapter(type, new TaskMappingConverter())
-//                .create();
-//        String json = gson.toJson(gson.toJson(METADATA_CHECK));
-//        System.out.println(json);
-//        Object natural = gson.fromJson(json, Object.class);
-//        System.out.println("sssss");
-//        System.out.println( natural.getClass().getName());
-//        System.out.println(natural);
-
-//
-//        Map<String,Object> map = new HashMap<String,Object>();
-//        map = (Map<String,Object>) gson.fromJson(json, map.getClass());
-
-
-//        Map<String, Rule> empJoiningDateMap = gson.fromJson(json, type);
-//        System.out.println(json);
-//        System.out.println(empJoiningDateMap);
-
-
-
-
-
-
-
-
-//        Map map = gson.fromJson(json, Map.class);
-//        System.out.println(map);
-//        System.out.println(map.size());
-
-//        Type empMapType = new TypeToken<Map<String, Rule>>() {}.getType();
-//        Map<String, Rule> nameEmployeeMap = gson.fromJson(json, empMapType);
-//
-//        for (String s: nameEmployeeMap.keySet()){
-//            System.out.println(s);
-//        }
-
-
+//        METADATA_CHECK.put("TestProductTablePageController.cls", new TestRule(TEST_CLASSES));
 
 //        try{
 //        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
@@ -215,7 +170,7 @@ public class TaskMapping {
             e.printStackTrace();
         }
     }
-    //DELETE .
+
     private static Map<String, List<String>> createMapForXML(){
         Map<String, List<String>> results = new HashMap<>();
         List<String> membersSobject = new ArrayList<>();
@@ -230,9 +185,13 @@ public class TaskMapping {
                 membersApexClass.add(member);
             } else if (METADATA_CHECK.get(item) instanceof ApexTriggerRule){
                 membersTriggerClass.add(member);
-            }else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
+            } else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
                 membersVisualforcePage.add(member);
             }
+//            for (String testCl : TEST_CLASSES.keySet()){
+//                member = (testCl.contains(".")  ? testCl.substring(0, testCl.indexOf('.')) : testCl);
+//                membersApexClass.add(member);
+//            }
         }
         if (!membersSobject.isEmpty()) {
             results.put("CustomObject", membersSobject);

@@ -13,7 +13,7 @@ public class ApexTriggerRule implements Rule {
         this.triggerInfo = triggerInfo;
     }
 
-    public List<Results> checkCondition(String file) {
+    public List<Results> checkCondition(String file, String userName) {
         List<Results> results = new ArrayList<>();
         if (Util.checkNesting(file, triggerInfo.objName) == 0) {
             results.add(new Results(triggerName, Constants.TRIGGER_OBJECT_SUCCESS_MESSAGE, true));

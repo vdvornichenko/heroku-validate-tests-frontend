@@ -139,7 +139,7 @@ public class SalesforceHepler {
                         }
 
                         RequestProcessor.files.add(new FileStorage(item, tempUsername, theFile));
-                        results.addAll(mapping.get(item).checkCondition(allFile));
+                        results.addAll(mapping.get(item).checkCondition(allFile, this.tempUsername));
                         break;
                     }
                 }
@@ -149,10 +149,9 @@ public class SalesforceHepler {
                 }
             }
             // Validate Test
-            ValidateByTestHelper helper = new ValidateByTestHelper(tempUsername);
+            ValidateByTestHelper helper = new ValidateByTestHelper(this.tempUsername);
             results.addAll(helper.validateUserResultUsingTest());
-            // Validate Apex  Method
-            results.addAll(helper.validateApexMethod());
+
 
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
@@ -167,7 +166,34 @@ public class SalesforceHepler {
     }
 
 
+    private List<Results> validateTEST() {
+        List<Results> results = new ArrayList<>();
 
+        return results;
+    }
+
+
+
+
+    private List<String> getFileString(ZipEntry entry, ZipFile file) {
+        List<String> resFile = new ArrayList<>();
+         try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
+            String allFile = "";
+            String theFile = "";
+            String line = null;
+            while ((line = br.readLine()) != null){
+                allFile = allFile + line;
+                theFile += "<br/>" + line.replaceAll(" ", "&nbsp;")
+                        .replaceAll("<", "&lt").replaceAll(">", "&gt;");
+            }
+             resFile.add(allFile);
+             resFile.add(theFile);
+        } catch (IOException ex) {
+            System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
+        }
+        return resFile;
+    }
 
 
 

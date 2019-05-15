@@ -1,19 +1,21 @@
+
+
 package project;
 
-import com.sforce.soap.apex.*;
-import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
-import project.Processors.RequestProcessor;
-import project.REST.API.PageRestController;
-import project.Rules.CheckExecuteMethodWraper;
-import project.Rules.Constants;
-import project.Rules.Results;
+        import com.sforce.soap.apex.*;
+        import com.sforce.ws.ConnectionException;
+        import com.sforce.ws.ConnectorConfig;
+        import project.Processors.RequestProcessor;
+        import project.REST.API.PageRestController;
+        import project.Rules.CheckExecuteMethodWraper;
+        import project.Rules.Constants;
+        import project.Rules.Results;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+        import java.text.MessageFormat;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Map;
+        import java.util.Set;
 
 public class ValidateByTestHelper {
 
@@ -25,7 +27,7 @@ public class ValidateByTestHelper {
 
 
 
-        public List<Results> validateUserResultUsingTest() {
+    public List<Results> validateUserResultUsingTest() {
 
         List<Results> res = new ArrayList<>();
 
@@ -86,8 +88,8 @@ public class ValidateByTestHelper {
         } catch (Exception commEx) {
             System.out.println("Ex: " + commEx);
         }
-            System.out.println(" end: ");
-            return res;
+        System.out.println(" end: ");
+        return res;
     }
 
     private Integer checkCoverage(Integer summNumLocationsCovered, Integer summNumLocations) {
@@ -106,34 +108,14 @@ public class ValidateByTestHelper {
         return arr;
     }
 
-
-    public List<Results> validateApexMethod() {
+    public List<Results> validateApexMethod( List<CheckExecuteMethodWraper> checkExecuteMethods) {
         System.out.println("validateApexMethod");
         List<Results> res = new ArrayList<>();
-        for(CheckExecuteMethodWraper methodWraper : TaskMapping.TEST_METHOD){
-            // VARIANT 1
-//            String fields  = "";
-//                for(String f : methodWraper.fields){
-//                    fields = fields + f + ", ";
-//                }
-//            fields = fields.substring(0, fields.length() - 2);
-//            String code = "{0} cl = new {0}();" +
-//                    " List<{1}> executeMethod = cl.{2}();" +
-//                    " List<{1}> query = [SELECT {3} FROM {1}];" +
-//                    " Map<id, {1}> firstMap = new Map<id, {1}>(executeMethod);" +
-//                    " Map<id, {1}> secondMap = new Map<id, {1}>(query);";
-//            String apexCode = MessageFormat.format(code, methodWraper.nameClass, methodWraper.returnsObjectName, methodWraper.nameMethod, fields);
-//            apexCode = apexCode + " If( secondMap.keySet().containsAll(firstMap.keySet())){" +
-//                    "  System.debug('ZZZZZZZZZZ');" +
-//                    " }";
-            // VARIANT 2
-//            String code = "{0} cl = new {0}();" +
-//                    " List<{1}> executeMethod = cl.{2}();" +
-//                    " System.debug(executeMethod);";
+        for(CheckExecuteMethodWraper methodWraper : checkExecuteMethods){
             String apexCode = methodWraper.stringExecuted;
             System.out.println(apexCode);
             res.add(executeAnonymousWithReturnStringDebug(apexCode, methodWraper));
-         }
+        }
         return res;
     }
 
