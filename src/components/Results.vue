@@ -81,6 +81,8 @@
 
         mounted() {
             this.$root.$on('getUserResults', results => {
+                // eslint-disable-next-line no-console
+                console.log(results);
                 let totalResults = {};
                 for (let userName in results) {
                     let resultsOfUser = [];
