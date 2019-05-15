@@ -30,7 +30,8 @@
     export default {
         name: "CallbackSpinner",
         data: () => ({
-            callbackState: false
+            callbackState: false,
+            promise: null,
         }),
 
         mounted() {
@@ -40,8 +41,9 @@
 
             this.$root.$on('runCallback', (callback, eventName) => {
                 this.callbackState = true;
+                this.promise = callback;
                callback.then(response => {
-                   if (this.callbackState) {
+                   if (this.callbackState && this.promise === callback) {
                        this.$root.$emit(eventName, response.body);
                        this.callbackState = false;
                    }
