@@ -28,7 +28,7 @@ public class GoogleHelper {
     // Document ID for read
     private static final String DOCUMENT_ID             = "1dDgQMWnuCChGrh-vdHxMNFi_qHH1UdUFgFELWHBWlCY";
     // Google cred JSON
-    private static final String CREDENTIALS_FILE_PATH   = "/credentials.json";
+    private static final String CREDENTIALS_FILE_PATH   = "src/main/resources/credentials.json";
     private static final String TOKENS_DIRECTORY_PATH   = "tokens";
     // users creds for calling orgs
     public static Map<String, String> userCreds         = new HashMap<String, String>();
