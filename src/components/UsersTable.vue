@@ -146,6 +146,8 @@
                 this.getResults(users);
             },
             getResults: function (users) {
+                // eslint-disable-next-line no-console
+                console.log(users);
                 if (users.length === 0) {
                     this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
                 } else if (users.includes('')) {
