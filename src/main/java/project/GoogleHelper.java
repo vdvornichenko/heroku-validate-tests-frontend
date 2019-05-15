@@ -80,8 +80,10 @@ public class GoogleHelper {
 
     public static void populateMapWithUsersCreds(List<List<Object>> tableStrings) {
         for (List<Object> str : tableStrings) {
-            RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(str));
-            userCreds.put(String.valueOf(str.get(0)), String.valueOf(str.get(1)));
+            if (str.size() == 6) {
+                RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(str));
+                userCreds.put(String.valueOf(str.get(0)), String.valueOf(str.get(1)));
+            }
         }
     }
 }

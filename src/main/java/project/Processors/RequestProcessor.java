@@ -61,6 +61,9 @@ public class RequestProcessor {
         public String lastTaskPassword;
 
         public CredentialsStorage(List<Object> info) {
+            System.out.println(info.get(0));
+            System.out.println(info.get(1));
+            System.out.println(info.get(2));
             this.userName = String.valueOf(info.get(0));
             this.password = String.valueOf(info.get(1));
             this.lastTaskPassword = String.valueOf(info.get(3));

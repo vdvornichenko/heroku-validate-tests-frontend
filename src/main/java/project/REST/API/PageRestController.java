@@ -36,7 +36,8 @@ public class PageRestController {
     public FileStorage getUserFile(@RequestBody String userNameAndFile) {
         String[] info = userNameAndFile.split(";");
         for (FileStorage file : RequestProcessor.files) {
-            if (!info[0].equalsIgnoreCase(file.fileOwner) || !file.fileName.contains(info[1])) continue;
+            if (!info[0].equalsIgnoreCase(file.fileOwner)
+                    || !file.fileName.substring(0, file.fileName.indexOf(".")).equalsIgnoreCase(info[1])) continue;
             return file;
         }
         return null;
