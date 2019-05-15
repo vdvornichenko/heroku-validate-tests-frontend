@@ -28,7 +28,7 @@
                               class="elevation-1"
                 >
                     <template v-slot:items="props">
-                        <td>{{ props.item.index }}</td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.index }}</td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                             <v-btn
                                     outline fab small

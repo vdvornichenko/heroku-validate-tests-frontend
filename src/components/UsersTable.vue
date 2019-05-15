@@ -133,7 +133,7 @@
                 this.getCurrentUsers().forEach((elem) => {
                     users.push(elem.userName);
                 });
-                this.getResults(users.join(";"));
+                this.getResults(users);
             },
 
             getSelectedUsersInfo: function () {
@@ -143,13 +143,15 @@
                         users.push(elem.userName);
                     }
                 });
-                this.getResults(users.join(";"));
+                this.getResults(users);
             },
             getResults: function (users) {
-                if (users === "") {
+                if (users.length === 0) {
                     this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
+                } else if (users.includes('')) {
+                    this.$root.$emit('setAlert', 'Выбраны пользователи без логинов', 'error');
                 } else {
-                    this.$root.$emit('runCallback', this.$http.post(HTTP_USERS_INFO_URL, users), 'getUserResults');
+                    this.$root.$emit('runCallback', this.$http.post(HTTP_USERS_INFO_URL, users.join(';')), 'getUserResults');
                 }
             }
         }
