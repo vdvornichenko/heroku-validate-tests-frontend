@@ -46,7 +46,7 @@
                        this.callbackState = false;
                    }
                }, response => {
-                   this.$root.$emit('setAlert', 'Error', 'error');
+                   this.$root.$emit('setAlert', response.body.message, 'error');
                    this.$root.$emit('setState', false);
                });
             })
