@@ -26,7 +26,7 @@ public class GoogleHelper {
     // app name
     private static final String APPLICATION_NAME        = "Google Sheets API Java Quickstart";
     // Document ID for read
-    private static final String DOCUMENT_ID             = "1dDgQMWnuCChGrh-vdHxMNFi_qHH1UdUFgFELWHBWlCY";
+    private static final String DOCUMENT_ID             = "1y5SmAB5364Iwzxpl12QLMWTbivsX9DYhwUZa6y55OHU";
     // Google cred JSON
     private static final String CREDENTIALS_FILE_PATH   = "/credentials.json";
     private static final String TOKENS_DIRECTORY_PATH   = "tokens";
