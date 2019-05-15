@@ -1,56 +1,69 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-    <div v-if="showResults" style="padding-top: 30px">
-        <div v-for="(value, propertyName, index) in userResults" v-bind:key="index" style="padding-top: 30px">
-            <v-toolbar flat>
-                <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
-            </v-toolbar>
-            <v-data-table
-                          disable-initial-sort
-                          :headers="userResultsHeaders"
-                          :items="value"
-                          class="elevation-1"
-            >
-                <template v-slot:no-data v-if="usersErrors[propertyName]">
+    <div v-if="showResults" style="padding-top: 50px">
+        <v-text-field
+                v-model="userForSearch"
+                append-icon="search"
+                label="Введите имя пользователя"
+                single-line
+                hide-details
+        ></v-text-field>
+        <div style="padding-top: 30px" v-if="Object.keys(userResults).filter(res => res.includes(userForSearch)).length === 0">
+            No users
+        </div>
+        <div v-for="(value, propertyName, index) in userResults" v-bind:key="index">
+            <div v-if="propertyName.includes(userForSearch)" style="padding-top: 30px">
+                <v-toolbar flat>
+                    <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
+                </v-toolbar>
+                <template v-if="usersErrors[propertyName]">
                     <v-alert :value="true" color="error" icon="warning" v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
                         {{ error }}
                     </v-alert>
                 </template>
-                <template v-slot:items="props" v-if="!usersErrors[propertyName]">
-                    <td>{{ props.item.index }}</td>
-                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                        <v-btn
-                                outline fab small
-                                v-if="props.item.resultsList.length > 0"
-                                v-on:click="showMetadataResults(props.item)"
-                        >
-                            <v-icon>list</v-icon>
-                        </v-btn>
-                        {{ props.item.nameMetadata }}
-                        <table v-if="props.item.showResultsList">
-                            <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
-                                <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
-                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
-                    <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                        <v-btn
-                                v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
-                                v-on:click="showFile(propertyName, props.item.nameMetadata)"
-                        >
-                            View file
-                        </v-btn>
-                    </td>
-                </template>
-                <template v-slot:footer>
-                    <td :colspan="userResultsHeaders.length">
-                        <strong style="float: right">
-                            {{ getReport(value) }}
-                        </strong>
-                    </td>
-                </template>
-            </v-data-table>
+                <v-data-table
+                              v-if="!usersErrors[propertyName]"
+                              disable-initial-sort
+                              :headers="userResultsHeaders"
+                              :items="value"
+                              class="elevation-1"
+                >
+                    <template v-slot:items="props">
+                        <td>{{ props.item.index }}</td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                            <v-btn
+                                    outline fab small
+                                    v-if="props.item.resultsList.length > 0"
+                                    v-on:click="showMetadataResults(props.item)"
+                            >
+                                <v-icon>list</v-icon>
+                            </v-btn>
+                            {{ props.item.nameMetadata }}
+                            <table v-if="props.item.showResultsList">
+                                <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
+                                    <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                            <v-btn
+                                    v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
+                                    v-on:click="showFile(propertyName, props.item.nameMetadata)"
+                            >
+                                View file
+                            </v-btn>
+                        </td>
+                    </template>
+                    <template v-slot:footer>
+                        <td :colspan="userResultsHeaders.length">
+                            <strong style="float: right">
+                                {{ getReport(value) }}
+                            </strong>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
         </div>
     </div>
 </template>
@@ -60,7 +73,6 @@
     import { HTTP_FILE_URL } from "../Constants";
     import { ERROR_COLOR } from "../Constants";
     import { ERRORS_NUMBER_MESSAGE} from "../Constants";
-    import Spinner from "./CallbackSpinner"
 
     export default {
         name: "Results",
@@ -76,7 +88,8 @@
             ],
             notFound: NOT_FOUND_MESSAGE,
             errorColor: ERROR_COLOR,
-            usersErrors: {}
+            usersErrors: {},
+            userForSearch: ''
         }),
 
         mounted() {

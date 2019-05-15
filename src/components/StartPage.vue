@@ -4,9 +4,9 @@
     <v-layout row wrap>
       <v-flex lg2></v-flex>
       <v-flex lg8>
-        <v-card style="height: 100%">
+        <v-card style="min-height: 100%; margin-bottom:30px">
         <v-container>
-            <div style="height: 100%; padding-top: 50px; position: relative">
+            <div style="min-height: 100%; padding-top: 50px; position: relative">
               <AlertComponent />
               <CallbackSpinner />
               <UsersTable />

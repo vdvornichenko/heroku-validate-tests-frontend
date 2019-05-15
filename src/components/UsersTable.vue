@@ -1,15 +1,30 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-card>
         <v-container>
-        <v-select
-                multiple
-                :items="Array.from(groups).sort((a, b) => a - b)"
-                label="Выберите номер группы"
-                v-model="currentGroups"
-        ></v-select>
+            <v-select
+                    multiple
+                    :items="Array.from(groups).sort((a, b) => a - b)"
+                    label="Выберите номер группы"
+                    v-model="currentGroups"
+            >
+                <template v-slot:prepend-item>
+                    <v-list-tile
+                            ripple
+                            @click="toggle"
+                    >
+                        <v-list-tile-action>
+                            <v-checkbox v-model="allSelected"/>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Select All</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-divider class="mt-2"></v-divider>
+                </template>
+            </v-select>
         </v-container>
-        <v-card-title v-if="currentGroups.length > 0">
-            Группы {{ currentGroups.join(', ') }}
+        <v-card-title>
+            Группы: {{ currentGroups.length === 0 ? 'все группы' : currentGroups.join(', ') }}
             <v-spacer></v-spacer>
             <v-text-field
                     v-model="search"
@@ -24,7 +39,6 @@
                       :items="getCurrentUsers()"
                       class="elevation-1"
                       :search="search"
-                      v-if="currentGroups.length > 0"
         >
             <template v-slot:items="props" >
                 <td>{{ props.item.index + 1 }}</td>
@@ -38,7 +52,7 @@
                 <td class="text-xs-left">{{ props.item.group }}</td>
             </template>
         </v-data-table>
-        <div style="float: right;" v-if="currentGroups.length > 0">
+        <div style="float: right;">
             <v-btn color="info" v-on:click="getAllUsersInfo">Show Results for all users</v-btn>
             <v-btn color="info" v-on:click="getSelectedUsersInfo">Show Results for selected users</v-btn>
             <v-btn color="info" v-on:click="refresh">Refresh</v-btn>
@@ -64,13 +78,23 @@
             ],
             search: '',
             groups: [''],
-            currentGroups: []
+            currentGroups: [],
+            allSelected: false
         }),
+
         created() {
             this.getUsersCreds();
         },
 
         methods: {
+            toggle: function() {
+                if (this.allSelected) {
+                    this.currentGroups = Array.from(this.groups).sort((a, b) => a - b);
+                } else {
+                    this.currentGroups = [];
+                }
+            },
+
             getUsersCreds: function() {
                 this.$root.$emit('setState', true);
                 this.$http.get(HTTP_USER_CREDS_URL).then(response => {
@@ -90,6 +114,9 @@
             },
 
             getCurrentUsers: function() {
+                if (this.currentGroups.length === 0) {
+                    return this.users;
+                }
                 return  this.users.filter(elem => this.currentGroups.includes(elem.group));
             },
 
