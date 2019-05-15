@@ -33,6 +33,12 @@ public class TaskMapping {
 
     public static Map<String, Rule> METADATA_CHECK   = new HashMap<>();
     public static Map<String, String> TEST_CLASSES   = new HashMap<>();
+    public static List<String> tasks                 = Arrays.asList(
+            "Product__c.object",
+            "ProductTablePage.page",
+            "ProductTablePageController.cls",
+            "ProductTrigger.trigger"
+    );
     public static  ArrayList<CheckExecuteMethodWraper> TEST_METHOD   = new ArrayList<>();
 
     public static double VERSION  = 45.0;

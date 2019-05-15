@@ -120,7 +120,8 @@ public class SalesforceHepler {
         List<Results> results = new ArrayList<>();
         try {
             ZipFile file = new ZipFile(zip_file_for_read);
-            for (String item : mapping.keySet()) {
+
+            for (String item : TaskMapping.tasks) {
                 Enumeration< ? extends ZipEntry > e = file.entries();
                 boolean fileFound = false;
                 while (e.hasMoreElements()) {
@@ -133,7 +134,8 @@ public class SalesforceHepler {
                         String line = null;
                         while ((line = br.readLine()) != null){
                             allFile = allFile + line;
-                            theFile += "<br/>" + line.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt").replaceAll(">", "&gt;");
+                            theFile += "<br/>" + line.replaceAll(" ", "&nbsp;")
+                                    .replaceAll("<", "&lt").replaceAll(">", "&gt;");
                         }
 
                         RequestProcessor.files.add(new FileStorage(item, tempUsername, theFile));

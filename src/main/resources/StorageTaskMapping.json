@@ -1,14 +1,4 @@
 {
-  "HelloWorldTrigger.trigger": {
-    "triggerName": "HelloWorldTrigger",
-    "triggerInfo": {
-      "objName": "HelloWorldTrigger",
-      "triggerEvents": [
-        "before update"
-      ],
-      "helperName": "HelloWorldTriggerHelper"
-    }
-  },
   "Product__c.object": {
     "nameFile": "Product__c",
     "properties": [
@@ -20,44 +10,55 @@
         }
       },
       {
-        "name": "Amount__c",
+        "name": "UnitPrice",
         "keyValue": {
-          "sss": "aa",
-          "label": "Amount",
+          "label": "UnitPrice",
+          "type": "Currency"
+        }
+      },
+      {
+        "name": "UnitsAvailable",
+        "keyValue": {
+          "label": "UnitsAvailable",
           "type": "Number"
         }
       },
       {
-        "name": "DateReleaseEx",
+        "name": "Description",
         "keyValue": {
-          "errorConditionFormula": "vasya__c"
+          "label": "Description",
+          "type": "Long Text Area"
+        }
+      },
+      {
+        "name": "AddedDate",
+        "keyValue": {
+          "label": "AddedDate",
+          "type": "DateTime"
+        }
+      },
+      {
+        "name": "CorrectPriceValidation",
+        "keyValue": {
+          "errorConditionFormula": "UnitPrice <= 0"
         }
       }
     ]
   },
-  "AccountUtils.cls": {
-    "nameClass": "AccountUtils",
-    "methodsForSearch": [
-      "accountsByState"
+  "ProductTablePage": {
+    "table": [
+      "Image",
+      "Name",
+      "Description",
+      "Price",
+      "Available Units"
     ]
   },
-  "MobileContactList.page": {
-    "nameFile": "MobileContactList",
-    "tagValuesSearch": {
-      "button": [
-        "Save"
-      ],
-      "dt": [
-        "First Label"
-      ],
-      "table": [
-        "Image",
-        "Name",
-        "Description",
-        "Price",
-        "Available  Units"
-      ]
-    }
+  "ProductTablePageController.cls": {
+    "nameClass": "ProductTablePageController",
+    "methodsForSearch": [
+      "getProducts"
+    ]
   },
   "AccountAddressTrigger.trigger": {
     "triggerName": "AccountAddressTrigger",

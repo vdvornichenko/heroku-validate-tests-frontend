@@ -19,6 +19,8 @@ import project.Processors.RequestProcessor;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GoogleHelper {
 
@@ -26,7 +28,7 @@ public class GoogleHelper {
     // app name
     private static final String APPLICATION_NAME        = "Google Sheets API Java Quickstart";
     // Document ID for read
-    private static final String DOCUMENT_ID             = "1dDgQMWnuCChGrh-vdHxMNFi_qHH1UdUFgFELWHBWlCY";
+    private static final String DOCUMENT_ID             = "1y5SmAB5364Iwzxpl12QLMWTbivsX9DYhwUZa6y55OHU";
     // Google cred JSON
     private static final String CREDENTIALS_FILE_PATH   = "/credentials.json";
     private static final String TOKENS_DIRECTORY_PATH   = "tokens";
@@ -34,7 +36,8 @@ public class GoogleHelper {
     public static Map<String, String> userCreds         = new HashMap<String, String>();
     public static String documentNname                  = "";
 
-    private static final String range = "Q:V";
+    private static final String range = "Q3:U";
+    private static final String range1 = "A3:A";
     // Service config. Do not touch
     private static final JsonFactory JSON_FACTORY       = JacksonFactory.getDefaultInstance();
     private static final List<String> SCOPES            = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
@@ -67,9 +70,9 @@ public class GoogleHelper {
             System.out.println("Auth successfully");
 
             ValueRange table = service.spreadsheets().values().get(DOCUMENT_ID, range).execute();
-            List<List<Object>> values = table.getValues();
+            ValueRange table1 = service.spreadsheets().values().get(DOCUMENT_ID, range1).execute();
 
-            populateMapWithUsersCreds(values);
+            populateMapWithUsersCreds(table.getValues(), table1.getValues());
 
         } catch (IOException ioEx) {
             System.out.println("IO Ex: " + ioEx);
@@ -78,11 +81,28 @@ public class GoogleHelper {
         }
     }
 
-    public static void populateMapWithUsersCreds(List<List<Object>> tableStrings) {
-        for (List<Object> str : tableStrings) {
-            if (str.size() == 6) {
-                RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(str));
-                userCreds.put(String.valueOf(str.get(0)), String.valueOf(str.get(1)));
+    public static void populateMapWithUsersCreds(List<List<Object>> tableStrings, List<List<Object>> groupsColumn) {
+        String currentGroup = "";
+        for (int i = 0; i < tableStrings.size(); i ++) {
+            if (tableStrings.get(i).size() == 5) {
+                String text = String.valueOf(tableStrings.get(i).get(4));
+                Pattern pattern = Pattern.compile("[а-яА-Яa-zA-Z]");
+
+                Matcher matcher = pattern.matcher(text);
+                if (!matcher.find()) continue;
+                if (!(groupsColumn.size() - 1 < i)) {
+                    if (!groupsColumn.get(i).isEmpty()) {
+                        String gr = String.valueOf(groupsColumn.get(i).get(0));
+                        if (gr.toLowerCase().contains("group")) {
+                            currentGroup = gr;
+                        }
+                    }
+                }
+                if (!currentGroup.equalsIgnoreCase("")) {
+                    tableStrings.get(i).add((Object) currentGroup);
+                    RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(tableStrings.get(i)));
+                    userCreds.put(String.valueOf(tableStrings.get(i).get(0)), String.valueOf(tableStrings.get(i).get(1)));
+                }
             }
         }
     }
