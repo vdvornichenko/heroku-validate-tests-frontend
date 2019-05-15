@@ -44,7 +44,10 @@
                 <td>{{ props.item.index + 1 }}</td>
                 <td><input type="checkbox" v-model="props.item.checked"/></td>
                 <td class="text-xs-left">
-                    <a v-bind:href="'https://login.salesforce.com/?un=' + props.item.userName + '&pw=' + props.item.password">
+                    <a
+                            v-bind:href="'https://login.salesforce.com/?un=' + props.item.userName + '&pw=' + props.item.password"
+                            target="_blank"
+                    >
                         {{ props.item.userName }}
                     </a>
                 </td>
