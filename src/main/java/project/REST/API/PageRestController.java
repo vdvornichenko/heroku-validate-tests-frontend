@@ -35,11 +35,15 @@ public class PageRestController {
     @PostMapping("/userFile")
     public FileStorage getUserFile(@RequestBody String userNameAndFile) {
         String[] info = userNameAndFile.split(";");
+
         for (FileStorage file : RequestProcessor.files) {
+            String fileName = (file.fileName.contains(".")  ? file.fileName.substring(0, file.fileName.indexOf('.')) : file.fileName);
             if (!info[0].equalsIgnoreCase(file.fileOwner)
-                    || !file.fileName.substring(0, file.fileName.indexOf(".")).equalsIgnoreCase(info[1])) continue;
+                    || !fileName.equalsIgnoreCase(info[1])) continue;
             return file;
         }
+
+
         return null;
     }
 }

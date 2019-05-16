@@ -19,12 +19,6 @@ import org.w3c.dom.NodeList;
 
 
 public class sObjectRule implements  Rule {
-//    public static String templateNotFoundField =  "Не найдено поле: {0} у обьекта: {1}";
-//    public static String templateFoundField =  "Найдено поле: : {0} у обьекта: {1}";
-//    public static String templateNotFoundProperty =  "Не корректное свойство: {0}  у поля  {1} у обьекта  {2} ";
-//    public static String templateFoundProperty =  "Корректное свойство: {0}  у поля  {1} у обьекта  {2} ";
-//    public static String templateNotFoundValidationRules =  "Не найдены validationRules: {0} у обьекта: {1} ";
-//    public static String templateFoundValidationRules =  "Найдены validationRules: {0} у обьекта: {1}";
 
     public String nameFile;
     public List<Property> properties;
@@ -41,7 +35,7 @@ public class sObjectRule implements  Rule {
         return doc;
     }
 
-    public List<Results> checkCondition (String file){
+    public List<Results> checkCondition (String file, String userName){
         List<Results> results = new ArrayList<>();
         try {
             Document doc = getDocument(file);

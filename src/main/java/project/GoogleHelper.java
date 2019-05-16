@@ -15,6 +15,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import project.Processors.RequestProcessor;
+import project.Rules.Results;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -61,7 +62,7 @@ public class GoogleHelper {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    public static void callDocument() {
+    public static void callDocument(List<RequestProcessor.CredentialsStorage> userLogins) {
         try {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -72,7 +73,7 @@ public class GoogleHelper {
             ValueRange table = service.spreadsheets().values().get(DOCUMENT_ID, range).execute();
             ValueRange table1 = service.spreadsheets().values().get(DOCUMENT_ID, range1).execute();
 
-            populateMapWithUsersCreds(table.getValues(), table1.getValues());
+            populateMapWithUsersCreds(table.getValues(), table1.getValues(), userLogins);
 
         } catch (IOException ioEx) {
             System.out.println("IO Ex: " + ioEx);
@@ -81,7 +82,11 @@ public class GoogleHelper {
         }
     }
 
-    public static void populateMapWithUsersCreds(List<List<Object>> tableStrings, List<List<Object>> groupsColumn) {
+    public static void populateMapWithUsersCreds(
+            List<List<Object>> tableStrings,
+            List<List<Object>> groupsColumn,
+            List<RequestProcessor.CredentialsStorage> userLogins
+    ) {
         String currentGroup = "";
         for (int i = 0; i < tableStrings.size(); i ++) {
             if (tableStrings.get(i).size() == 5) {
@@ -100,7 +105,7 @@ public class GoogleHelper {
                 }
                 if (!currentGroup.equalsIgnoreCase("")) {
                     tableStrings.get(i).add((Object) currentGroup);
-                    RequestProcessor.userLogins.add(new RequestProcessor.CredentialsStorage(tableStrings.get(i)));
+                    userLogins.add(new RequestProcessor.CredentialsStorage(tableStrings.get(i)));
                     userCreds.put(String.valueOf(tableStrings.get(i).get(0)), String.valueOf(tableStrings.get(i).get(1)));
                 }
             }

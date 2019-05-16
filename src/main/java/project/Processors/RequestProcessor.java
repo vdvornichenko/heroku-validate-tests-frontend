@@ -15,34 +15,28 @@ import project.Storages.FileStorage;
 
 public class RequestProcessor {
     String users;
-    public static Map<String, List<Results>> userResults = new HashMap<>();
-    public static List<CredentialsStorage> userLogins = new ArrayList<>();
-    public static List<FileStorage> files;
+    public Map<String, List<Results>> userResults;
+    public List<CredentialsStorage> userLogins;
+    public static List<FileStorage> files = new ArrayList<>();
 
     public RequestProcessor() {
         userLogins = new ArrayList<>();
-        GoogleHelper.callDocument();
+        GoogleHelper.callDocument(userLogins);
     }
 
     public RequestProcessor(String userNames) {
-        GoogleHelper.callDocument();
         users = userNames;
-
         if (userNames.equalsIgnoreCase("all")) {
             users = String.join(";", GoogleHelper.userCreds.keySet());
-            System.out.println(users);
         }
     }
 
     public Map<String, List<Results>> getUsersInfo() {
-        files = new ArrayList<>();
-        userResults.clear();
+        userResults = new HashMap<>();
         Stream<String> creds = Arrays.stream(users.split(";"));
         TaskMapping.generatePackageXML();
         creds.parallel().forEach(value -> {
-            System.out.println(value);
-            System.out.println(GoogleHelper.userCreds.get(value));
-            SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value));
+            SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value), userResults);
             helper.processUser();
 
         });

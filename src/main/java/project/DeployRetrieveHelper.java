@@ -23,6 +23,7 @@ public class DeployRetrieveHelper {
 
     public String username;
     public String pass;
+    private Map<String, List<Results>> userResults;
 
     public MetadataConnection metadataConnection;
 
@@ -39,9 +40,10 @@ public class DeployRetrieveHelper {
 
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public DeployRetrieveHelper(String username, String pass) {
+    public DeployRetrieveHelper(String username, String pass, Map<String, List<Results>> userResults) {
         this.username = username;
         this.pass = pass;
+        this.userResults = userResults;
         this.ZIP_FILE = "src/main/resources/" +  username + ".zip";
         try {
             loginInOrg();
@@ -52,10 +54,9 @@ public class DeployRetrieveHelper {
             MailService.getInstance().setSubject("Connection Exception")
                     .setBody(MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + " " +getClass())
                     .sendMail();
-            results.add(new Results(null, "Invalid username, password, security token; or user locked out. " + username + " pass: " + pass, false));
-            RequestProcessor.userResults.put(username, results);
+            results.add(new Results(null, "Invalid username, password, security token; or user locked out", false));
+            userResults.put(username, results);
             SalesforceHepler.zip_file_for_read = "";
-            System.out.println(RequestProcessor.userResults);
         }
     }
 
