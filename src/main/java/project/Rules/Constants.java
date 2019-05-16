@@ -9,12 +9,11 @@ public class Constants {
     public static final String TRIGGER_HELPER_SUCCESS_MESSAGE = "Вспомогательный класс создан и использован";
     public static final String TRIGGER_HELPER_ERROR_MESSAGE = "Не создан вспомогательный класс или неправильно назван";
 //   for TEST
-    public static final String TEST_FAILED =  "Failed Test: {0}";
     public static final String TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE =  "Tests: {0} SUCCESS but not enough coverage: {1} %";
     public static final String TEST_SUCCESS =  "Tests: {0} SUCCESS with coverage: {1} %";
     public static final String TEST_NOT_FOUND =  "Tests: {0} not found";
-    public static final String TEST_SUCCESS_ASSERT =  "В тесте: {0} использовалось  assert функция";
-    public static final String TEST_FAIL_ASSERT =  "В тесте: {0} НЕ использовалось  assert функция";
+    public static final String TEST_SUCCESS_ASSERT =  "Tests: {0} использовалось  assert функция";
+    public static final String TEST_FAIL_ASSERT =  "Tests: {0} НЕ использовалось  assert функция";
 //   for ApexClass
     public static final String APEXCLASS_NOT_FOUND_METHOD =  "У класса: {0} не найден метод: {1}";
     public static final String APEXCLASS_FOUND_METHOD =  "Найден метод: {1} у класса: {0}";

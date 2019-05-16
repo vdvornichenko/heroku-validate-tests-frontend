@@ -21,19 +21,17 @@ public class TestRule implements Rule {
     public TestRule(String TestClass, String CoveregeClass) {
         this.TestClass = TestClass;
         this.CoveregeClass = CoveregeClass;
-
     }
 
     public List<Results> checkCondition(String file, String userName) {
         List<Results> results = new ArrayList<>();
-//        if (    Util.checkNesting(file, "System.assert") > 1 ||
-//                Util.checkNesting(file, "System.assertEquals") > 1 ||
-//                Util.checkNesting(file, "System.assertNotEquals") > 1 ) {
-//            results.add(new Results("TEST", MessageFormat.format(Constants.TEST_SUCCESS_ASSERT,  "Test"), true));
-//        } else {
-//            results.add(new Results("TEST",  MessageFormat.format(Constants.TEST_FAIL_ASSERT,  "Test"), false));
-//        }
-//        ValidateByTestHelper helper = new ValidateByTestHelper(userName);
+        if (    Util.checkNesting(file, "System.assert") > 1 ||
+                Util.checkNesting(file, "System.assertEquals") > 1 ||
+                Util.checkNesting(file, "System.assertNotEquals") > 1 ) {
+            results.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_ASSERT,  this.TestClass), true));
+        } else {
+            results.add(new Results("Test",  MessageFormat.format(Constants.TEST_FAIL_ASSERT,  this.TestClass), false));
+        }
         results.addAll(validateUserResultUsingTest(userName,  this.TestClass, this.CoveregeClass));
         return results;
     }
@@ -62,21 +60,13 @@ public class TestRule implements Rule {
             String arr[] = new String[1];
             arr[0] = testCl;
             request.setClasses(arr);
-//            request.setClasses(setStringToArray(TaskMapping.TEST_CLASSES.keySet()));
             com.sforce.soap.apex.RunTestsResult result = connection.runTests(request);
-//            for (com.sforce.soap.apex.RunTestFailure item : result.getFailures()) {
-//                System.out.println("Failed Tests: " + item.getName());
-//                res.add(new Results("Test", MessageFormat.format(Constants.TEST_FAILED, item.getName()), false));
-//            }
 
             if (result.getCodeCoverage() != null) {
 
-//                for (String nameTestClass : TaskMapping.TEST_CLASSES.keySet()) {
                     Boolean testRun = false;
                     for (CodeCoverageResult ccr : result.getCodeCoverage()) {
-                        System.out.println("AAAAAAAAAAAA: " + CoveregeCl);
-                        System.out.println("AAAAAAAAAAAA: " + ccr.getName());
-                        System.out.println(CoveregeCl.equals(ccr.getName()));
+
                         if (CoveregeCl.equals(ccr.getName())) {
 
 //                        if (TaskMapping.TEST_CLASSES.get(nameTestClass).equals(ccr.getName())) {
@@ -92,7 +82,6 @@ public class TestRule implements Rule {
                             );
                         }
                     }
-                System.out.println("AAAAAAAAAAAA: " + testCl);
 
                     if(!testRun) res.add(new Results("Test", MessageFormat.format(Constants.TEST_NOT_FOUND,  testCl), false));
 
