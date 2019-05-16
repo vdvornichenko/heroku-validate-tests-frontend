@@ -28,8 +28,6 @@ public class DeployRetrieveHelper {
     public MetadataConnection metadataConnection;
 
     private String ZIP_FILE = "";
-    // manifest file that controls which components get retrieved
-    //private String manifest_file = "src/main/resources/package.xml";
     private String manifest_file = TaskMapping.PathToXMLFile;
 
     private static final double API_VERSION = 45.0;
@@ -279,7 +277,6 @@ public class DeployRetrieveHelper {
                     "for unpackaged content. Looking for " +
                     unpackedManifest.getAbsolutePath());
         }
-
         // Note that we use the fully qualified class name because
         // of a collision with the java.lang.Package class
         com.sforce.soap.metadata.Package p = parsePackageManifest(unpackedManifest);
@@ -316,14 +313,8 @@ public class DeployRetrieveHelper {
                 }
                 PackageTypeMembers packageTypes = new PackageTypeMembers();
 
-//                System.out.println("Metadata Component Element Name = " + name);
-
                 packageTypes.setName(name);
                 packageTypes.setMembers(members.toArray(new String[members.size()]));
-
-//                for (String member : members.toArray(new String[members.size()])) {
-//                    System.out.println("Metadata Component Member Name = " + member);
-//                }
 
                 listPackageTypes.add(packageTypes);
             }
@@ -355,47 +346,7 @@ public class DeployRetrieveHelper {
         }
     }
 
-    public void retrieveZipWithoutSave() {
-        try {
 
-            RetrieveRequest retrieveRequest = new RetrieveRequest();
-            // The version in package.xml overrides the version in RetrieveRequest
-            retrieveRequest.setApiVersion(API_VERSION);
-            setUnpackaged(retrieveRequest);
-            AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest);
-            RetrieveResult result = waitForRetrieveCompletion(asyncResult);
-
-            if (result.getStatus() == RetrieveStatus.Failed) {
-                throw new Exception(result.getErrorStatusCode() + " msg: " +
-                        result.getErrorMessage());
-            } else if (result.getStatus() == RetrieveStatus.Succeeded) {
-
-                String s = new String(result.getZipFile());
-                System.out.println(s);
-
-                // Print out any warning messages
-
-//                result.load();
-
-
-//                StringBuilder stringBuilder = new StringBuilder();
-//                if (result.getMessages() != null) {
-//                    for (RetrieveMessage rm : result.getMessages()) {
-//                        stringBuilder.append(rm.getFileName() + " - " + rm.getProblem() + "\n");
-//                        System.out.println(rm.getFileName() + " - " + rm.getProblem() + "\n");
-//                    }
-//                }
-//                if (stringBuilder.length() > 0) {
-//                    System.out.println(this.username + ". >> Retrieve warnings:\n" + stringBuilder);
-//                }
-            }
-
-
-        } catch (Exception ex) {
-            System.out.println("Ex: " + ex.getMessage());
-        }
-
-    }
 
 
 
