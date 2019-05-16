@@ -41,6 +41,14 @@
                             <table v-if="props.item.showResultsList">
                                 <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
                                     <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                                    <!--  -->
+                                          <v-btn
+                                                    v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
+                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' SUCCESS')))"
+                                            >
+                                                View file
+                                            </v-btn>
+<!--  -->
                                 </tr>
                             </table>
                         </td>
