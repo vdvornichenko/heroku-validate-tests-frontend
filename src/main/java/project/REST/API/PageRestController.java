@@ -1,7 +1,9 @@
 package project.REST.API;
 
 import org.springframework.web.bind.annotation.*;
+import project.GoogleDocsWriter;
 import project.Processors.RequestProcessor;
+import project.Rules.Constants;
 import project.Rules.Results;
 import project.Storages.FileStorage;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +47,11 @@ public class PageRestController {
 
 
         return null;
+    }
+
+    @CrossOrigin
+    @PostMapping("/feedback")
+    public void appendFeedBackTextToFile(@RequestBody String text) {
+        new GoogleDocsWriter(Constants.FEEDBACK_DOCUMENT_ID, text).writeTextToFile();
     }
 }

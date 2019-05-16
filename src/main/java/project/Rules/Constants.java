@@ -45,5 +45,6 @@ public class Constants {
     public static final String CONNECTION_EX_MESSAGE = "Connection exception occur. User: {0}. Exception text: {1}";
     public static final String RETRIEVE_EX_MESSAGE = "Retrieve zip exception occur. User: {0}. Exception text: {1}";
 
+    public static final String FEEDBACK_DOCUMENT_ID = "1GLBSicy1cTK5nOiA3XHDf1PxI7FBP_DH0pqaQUP3itA";
 
 }
