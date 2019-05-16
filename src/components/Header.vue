@@ -19,10 +19,16 @@
             <v-toolbar-title>Task Checker</v-toolbar-title>
             <v-spacer></v-spacer>
             <div style="float: right">
-                <br/>
-                <v-flex xs12 md6>
-                    <v-switch primary label="Dark" v-on:change="chooseTheme"></v-switch>
-                </v-flex>
+                <v-layout row wrap>
+                    <v-flex lg6>
+                        <br/>
+                        <v-icon large color="blue darken-2" v-on:click="sendFeedBack">chat</v-icon>
+                    </v-flex>
+                    <v-flex lg6>
+                        <br/>
+                        <v-switch primary label="Dark" v-on:change="chooseTheme"></v-switch>
+                    </v-flex>
+                </v-layout>
             </div>
         </v-toolbar>
     </div>
@@ -46,6 +52,9 @@
         methods: {
             chooseTheme: function () {
                 this.$emit('changeTheme');
+            },
+            sendFeedBack: function () {
+                this.$root.$emit('setFeedBack');
             }
         }
     }
