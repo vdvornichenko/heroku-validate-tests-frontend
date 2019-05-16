@@ -68,7 +68,6 @@ public class ApexClassRule implements  Rule {
             debug = connection.getDebuggingInfo().getDebugLog();
             if (result.isCompiled()) {
                 if (result.isSuccess()) {
-//                    new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD, nameClass, method), true)
                     System.out.println("Apex code excuted sucessfully");
                     System.out.println(">>" + debug + "<<");
                     return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_SUCCESS, methodWraper.nameMethod, methodWraper.nameClass), true);
