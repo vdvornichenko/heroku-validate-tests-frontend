@@ -217,36 +217,3 @@ public class ToolingHelper {
 //        return markupApexPage;
 //    }
 //
-// public Results executeAnonymousWithReturnStringDebug(String apexCode, CheckExecuteMethodWraper methodWraper) {
-//        String debug = "none(((";
-//        ConnectorConfig soapConfig = new ConnectorConfig();
-//        soapConfig.setAuthEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl());
-//        soapConfig.setServiceEndpoint(MetadataLoginUtil.mapUserToLoginResult.get(this.username).getServerUrl().replace("/u/", "/s/"));
-//        soapConfig.setSessionId(MetadataLoginUtil.mapUserToSessionId.get(this.username));
-//        try {
-//            SoapConnection connection = new SoapConnection(soapConfig);
-//            LogInfo infoApex = new LogInfo();
-//            infoApex.setCategory(LogCategory.Apex_code);
-//            infoApex.setLevel(LogCategoryLevel.Debug);
-//            connection.setDebuggingHeader(new LogInfo[] { infoApex }, LogType.Debugonly);
-//            ExecuteAnonymousResult result  = connection.executeAnonymous(apexCode);
-//            debug = connection.getDebuggingInfo().getDebugLog();
-//            if (result.isCompiled()) {
-//                if (result.isSuccess()) {
-////                    new Results(nameClass, MessageFormat.format(Constants.APEXCLASS_FOUND_METHOD, nameClass, method), true)
-//                    System.out.println("Apex code excuted sucessfully");
-//                    System.out.println(">>" + debug + "<<");
-//                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_SUCCESS, methodWraper.nameMethod, methodWraper.nameClass), true);
-//                } else {
-//                    return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_EXECUTE_FAIL, methodWraper.nameMethod, methodWraper.nameClass), false);
-////                    throw new RuntimeException("Apex code execution failed :" + result.getExceptionMessage());
-//                }
-//            } else {
-//                return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_FOUND, methodWraper.nameMethod, methodWraper.nameClass), false);
-////                throw new RuntimeException("Apex code compilition failed :" + result.getCompileProblem());
-//            }
-//        } catch (ConnectionException ex) {
-//            System.out.println( this.username + ".ToolingHelper >>executeAnonymousWithReturnStringDebug>> Connection Exception: " + ex);
-//        }
-//        return new Results(methodWraper.nameClass, MessageFormat.format(Constants.METHOD_NOT_COMPILE, methodWraper.nameMethod, methodWraper.nameClass), false);
-//    }
