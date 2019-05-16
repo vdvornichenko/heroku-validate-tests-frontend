@@ -44,7 +44,7 @@
                                     <!--  -->
                                           <v-btn
                                                     v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' SUCCESS')))"
+                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
                                             >
                                                 View file
                                             </v-btn>
