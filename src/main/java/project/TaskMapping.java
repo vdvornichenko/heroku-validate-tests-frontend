@@ -37,7 +37,10 @@ public class TaskMapping {
             "Product__c.object",
             "ProductTablePage.page",
             "ProductTablePageController.cls",
-            "ProductTrigger.trigger"
+            "ProductTrigger.trigger",
+            "TestProductTablePageController.cls",
+            "TestProductTrigger.cls",
+            "TestProductTriggerHelper.cls"
     );
 
 
@@ -116,7 +119,9 @@ public class TaskMapping {
         TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
         TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");
 
-//        METADATA_CHECK.put("TestProductTablePageController.cls", new TestRule(TEST_CLASSES));
+        METADATA_CHECK.put("TestProductTablePageController.cls", new TestRule("TestProductTablePageController", "ProductTablePageController"));
+        METADATA_CHECK.put("TestProductTrigger.cls", new TestRule("TestProductTrigger", "ProductTrigger"));
+        METADATA_CHECK.put("TestProductTriggerHelper.cls", new TestRule("TestProductTriggerHelper","ProductTriggerHelper" ));
 
 //        try{
 //        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
@@ -187,11 +192,9 @@ public class TaskMapping {
                 membersTriggerClass.add(member);
             } else if (METADATA_CHECK.get(item) instanceof VisualforcePageRule){
                 membersVisualforcePage.add(member);
+            } else if (METADATA_CHECK.get(item) instanceof TestRule){
+                membersApexClass.add(member);
             }
-//            for (String testCl : TEST_CLASSES.keySet()){
-//                member = (testCl.contains(".")  ? testCl.substring(0, testCl.indexOf('.')) : testCl);
-//                membersApexClass.add(member);
-//            }
         }
         if (!membersSobject.isEmpty()) {
             results.put("CustomObject", membersSobject);

@@ -145,13 +145,13 @@ public class SalesforceHepler {
                 }
                 // not found file
                 if (!fileFound){
-                    results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
+                    if (item.contains("Test")){
+                        results.add(new Results("Test", MessageFormat.format(templateNotFoundFile, item), false));
+                    } else {
+                        results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
+                    }
                 }
             }
-            // Validate Test
-            ValidateByTestHelper helper = new ValidateByTestHelper(this.tempUsername);
-            results.addAll(helper.validateUserResultUsingTest());
-
 
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());

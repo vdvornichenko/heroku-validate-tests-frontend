@@ -41,11 +41,13 @@ public class PageRestController {
                 if (info[0].equalsIgnoreCase(file.fileOwner)){
                     System.out.println(file.fileName);
                 }
-
+            String fileName = (file.fileName.contains(".")  ? file.fileName.substring(0, file.fileName.indexOf('.')) : file.fileName);
             if (!info[0].equalsIgnoreCase(file.fileOwner)
-                    || !file.fileName.substring(0, file.fileName.indexOf(".")).equalsIgnoreCase(info[1])) continue;
+                    || !fileName.equalsIgnoreCase(info[1])) continue;
             return file;
         }
+
+
         return null;
     }
 }
