@@ -94,7 +94,8 @@ public class TaskMapping {
                 "ProductTablePageController",
                 "getProducts",
                 "ProductTablePageController cl = new ProductTablePageController();"
-                        + " List<Product__c> executeMethod = cl.getProducts();"));
+                        + " List<Product__c> executeMethod = cl.getProducts();"
+                        + " Integer checkOnNull = executeMethod.size();"));
         METADATA_CHECK.put("ProductTablePageController.cls", new ApexClassRule( "ProductTablePageController", Arrays.asList("getProducts"), executedMethods));
 
 // use key-word "button", "table" for search values in this tags
