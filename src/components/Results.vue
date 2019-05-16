@@ -31,11 +31,14 @@
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.index }}</td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                             <v-btn
-                                    outline fab small
+
+                                    flat
+                                     fab small
                                     v-if="props.item.resultsList.length > 0"
                                     v-on:click="showMetadataResults(props.item)"
                             >
-                                <v-icon>list</v-icon>
+                                <v-icon v-if="!props.item.showResultsList">list</v-icon>
+                                <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
                             </v-btn>
                             {{ props.item.nameMetadata }}
                             <table v-if="props.item.showResultsList">
@@ -44,7 +47,7 @@
                                     <!--  -->
                                           <v-btn
                                                     v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' SUCCESS')))"
+                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
                                             >
                                                 View file
                                             </v-btn>
