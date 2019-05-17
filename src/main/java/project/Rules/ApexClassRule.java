@@ -5,12 +5,10 @@ import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import project.MetadataLoginUtil;
 import project.Util;
-import project.ValidateByTestHelper;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ApexClassRule implements  Rule {
 
