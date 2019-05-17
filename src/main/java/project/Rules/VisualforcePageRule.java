@@ -52,7 +52,7 @@ public class VisualforcePageRule implements Rule {
                 return results;
             }
             for (String searchVal :values){
-                long count = text.stream().filter(e -> e.contains(searchVal)).count();
+                long count = text.stream().filter(e -> e.toLowerCase().contains(searchVal.toLowerCase())).count();
                 System.out.println(count);
                 if (count == 0)  {
                     results.add(new Results(this.nameFile,  MessageFormat.format(Constants.VF_NOT_FOUND_VALUE_IN_TAG, this.nameFile, resTag, searchVal),  false));
