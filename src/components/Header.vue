@@ -10,23 +10,20 @@
 <!--                absolute-->
 <!--                overflow-->
 <!--                app-->
-<!--        ></v-navigation-drawer>-->
-        <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute fixed>
-<!--            <v-toolbar-side-icon-->
-<!--                    v-if="primaryDrawer.type !== 'permanent'"-->
-<!--                    @click.stop="primaryDrawer.model = !primaryDrawer.model"-->
-<!--            ></v-toolbar-side-icon>-->
+<!--        >-->
+<!--        </v-navigation-drawer>-->
+        <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
             <v-toolbar-title>Task Checker</v-toolbar-title>
             <v-spacer></v-spacer>
-            <div style="float: right">
+            <div class="right-part">
                 <v-layout row wrap>
-                    <v-flex lg6>
-                        <br/>
-                        <v-icon large color="blue darken-2" v-on:click="sendFeedBack">chat</v-icon>
+                    <v-flex lg9 style="padding-top:15px">
+                        <v-btn v-on:click="sendFeedBack" color="info" style="padding-right: 20px">Оставить пожелание</v-btn>
+<!--                        <v-icon large color="blue darken-2" v-on:click="sendFeedBack">chat</v-icon>-->
                     </v-flex>
-                    <v-flex lg6>
+                    <v-flex lg3>
                         <br/>
-                        <v-switch primary label="Dark" v-on:change="chooseTheme"></v-switch>
+                        <v-switch primary :label="dark ? 'Dark' : 'Light'" v-on:change="chooseTheme"></v-switch>
                     </v-flex>
                 </v-layout>
             </div>
@@ -46,12 +43,14 @@
                 floating: true,
                 mini: false
             },
-            showDrawer: false
+            showDrawer: false,
+            dark: true
         }),
 
         methods: {
             chooseTheme: function () {
                 this.$emit('changeTheme');
+                this.dark = !this.dark;
             },
             sendFeedBack: function () {
                 this.$root.$emit('setFeedBack');
@@ -62,4 +61,8 @@
 
 <style scoped>
 
+    .right-part {
+        float: right;
+        padding-right: 30px;
+    }
 </style>

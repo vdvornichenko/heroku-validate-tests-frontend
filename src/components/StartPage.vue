@@ -1,24 +1,32 @@
 <template>
   <v-app id="sandbox" :dark="dark">
-    <Header @changeTheme="dark=!dark"/>
+    <fixed-header :threshold="100">
+      <div class="navbar" style="z-index: 20">
+        <Header @changeTheme="dark=!dark"/>
+      </div>
+    </fixed-header>
     <v-layout row wrap>
-      <v-flex lg2></v-flex>
+      <v-flex lg2>
+        <div style="padding-top:50px; position:sticky; top:0">
+          <LeftSidebar/>
+        </div>
+      </v-flex>
       <v-flex lg8>
-        <v-card style="min-height: 100%; margin-bottom:30px">
+        <v-card class="content-card">
         <v-container>
-            <div style="min-height: 100%; padding-top: 50px; position: relative">
+            <div class="content-card-container">
               <AlertComponent />
               <CallbackSpinner />
               <UsersTable />
               <Results />
-              <FilesCmp/>
+              <FilesCmp />
+              <LoginComponent :showThis="showLoginForm"/>
             </div>
         </v-container>
         </v-card>
       </v-flex>
       <v-flex lg2/>
     </v-layout>
-    <Footer />
   </v-app>
 </template>
 
@@ -28,8 +36,12 @@
   import Header from './Header'
   import AlertComponent from './AlertComponent'
   import CallbackSpinner from './CallbackSpinner'
-  import Footer from './FooterCmp'
   import FilesCmp from './FilesComponent'
+  import FixedHeader from 'vue-fixed-header'
+  import LeftSidebar from './LeftSidebar'
+  import LoginComponent from './LoginComponent'
+  import { AUTH_TOKEN } from "../Constants";
+
   export default {
     components: {
       UsersTable,
@@ -37,8 +49,10 @@
       Header,
       AlertComponent,
       CallbackSpinner,
-      Footer,
-      FilesCmp
+      FilesCmp,
+      FixedHeader,
+      LeftSidebar,
+      LoginComponent
     },
     data: () => ({
       ecosystem: [
@@ -92,11 +106,38 @@
         }
 
       ],
-      dark: true
-    })
+      dark: true,
+      showLoginForm: false
+    }),
+
+    created() {
+      if (this.$cookies.get(AUTH_TOKEN) + '' === 'null') {
+        this.showLoginForm = true;
+      } else {
+        this.$emit('openTable');
+
+      }
+    }
   }
 </script>
 
 <style>
 
+  .content-card {
+    min-height: 100%;
+    padding-top: 40px;
+  }
+
+  .content-card-container {
+    min-height: 100%;
+    padding-top: 50px;
+    position: relative
+  }
+
+  .navbar.vue-fixed-header--isFixed {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+  }
 </style>

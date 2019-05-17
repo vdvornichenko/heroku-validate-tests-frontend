@@ -1,59 +1,68 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-    <div v-if="showResults" style="padding-top: 50px">
-        <v-text-field
-                v-model="userForSearch"
-                append-icon="search"
-                label="Введите имя пользователя"
-                single-line
-                hide-details
-        ></v-text-field>
-        <div style="padding-top: 30px" v-if="Object.keys(userResults).filter(res => res.includes(userForSearch)).length === 0">
+    <div v-if="showResults" class="results">
+        <div class="results-table"
+             v-if="Object.keys(userResults).filter(res => res.includes(userForSearch)).length === 0">
             No users
         </div>
         <div v-for="(value, propertyName, index) in userResults" v-bind:key="index">
-            <div v-if="propertyName.includes(userForSearch)" style="padding-top: 30px">
+            <div v-if="propertyName.includes(userForSearch)" class="results-table">
                 <v-toolbar flat>
                     <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
                 </v-toolbar>
                 <template v-if="usersErrors[propertyName]">
-                    <v-alert :value="true" color="error" icon="warning" v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
+                    <v-alert :value="true" color="error" icon="warning"
+                             v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
                         {{ error }}
                     </v-alert>
                 </template>
                 <v-data-table
-                              v-if="!usersErrors[propertyName]"
-                              disable-initial-sort
-                              :headers="userResultsHeaders"
-                              :items="value"
-                              class="elevation-1"
+                        v-if="!usersErrors[propertyName]"
+                        disable-initial-sort
+                        :headers="userResultsHeaders"
+                        :items="value"
+                        class="elevation-1"
                 >
                     <template v-slot:items="props">
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.index }}</td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            <v-btn
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <span v-on="on">{{ props.item.index }}</span>
+                                </template>
+                                <span>asd</span>
+                            </v-tooltip>
+                        </td>
+                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <span v-on="on">
+                                        <v-btn
 
-                                    flat
-                                     fab small
-                                    v-if="props.item.resultsList.length > 0"
-                                    v-on:click="showMetadataResults(props.item)"
-                            >
-                                <v-icon v-if="!props.item.showResultsList">list</v-icon>
-                                <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
-                            </v-btn>
-                            {{ props.item.nameMetadata }}
-                            <table v-if="props.item.showResultsList">
-                                <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
-                                    <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
-                                    <!--  -->
-                                          <v-btn
-                                                    v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                    v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
-                                            >
-                                                View file
-                                            </v-btn>
-<!--  -->
-                                </tr>
-                            </table>
+                                                flat
+                                                fab small
+                                                v-if="props.item.resultsList.length > 0"
+                                                v-on:click="showMetadataResults(props.item)"
+                                        >
+                                            <v-icon v-if="!props.item.showResultsList">list</v-icon>
+                                            <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
+                                        </v-btn>
+                                        {{ props.item.nameMetadata }}
+                                        <table v-if="props.item.showResultsList">
+                                            <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
+                                                <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                                                <!--  -->
+                                                      <v-btn
+                                                              v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
+                                                              v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
+                                                      >
+                                                            View file
+                                                        </v-btn>
+                                                <!--  -->
+                                            </tr>
+                                        </table>
+                                    </span>
+                                </template>
+                                <span>asd</span>
+                            </v-tooltip>
                         </td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
@@ -80,22 +89,22 @@
 </template>
 
 <script>
-    import { NOT_FOUND_MESSAGE } from "../Constants";
-    import { HTTP_FILE_URL } from "../Constants";
-    import { ERROR_COLOR } from "../Constants";
-    import { ERRORS_NUMBER_MESSAGE} from "../Constants";
+    import {NOT_FOUND_MESSAGE} from "../Constants";
+    import {HTTP_FILE_URL} from "../Constants";
+    import {ERROR_COLOR} from "../Constants";
+    import {ERRORS_NUMBER_MESSAGE} from "../Constants";
 
     export default {
         name: "Results",
         data: () => ({
-            showResults : false,
-            userResults : [],
-            userResultsHeaders : [
+            showResults: false,
+            userResults: [],
+            userResultsHeaders: [
                 {text: '#', value: 'index', sortable: false},
-                {text : "Metadata File", value : "nameMetadata"},
-                {text : "Status", value : "status"},
-                {text : "Message", value : "message"},
-                {text : "View file", value : "file"}
+                {text: "Metadata File", value: "nameMetadata"},
+                {text: "Status", value: "status"},
+                {text: "Message", value: "message"},
+                {text: "View file", value: "file"}
             ],
             notFound: NOT_FOUND_MESSAGE,
             errorColor: ERROR_COLOR,
@@ -105,8 +114,7 @@
 
         mounted() {
             this.$root.$on('getUserResults', results => {
-                // eslint-disable-next-line no-console
-                console.log(results);
+                results = results.body;
                 let totalResults = {};
                 for (let userName in results) {
                     let resultsOfUser = [];
@@ -146,10 +154,12 @@
                 this.userResults = totalResults;
                 this.showResults = true;
             });
+
+            this.$root.$on('searchUser', user => {this.userForSearch = user});
         },
 
         methods: {
-            showFile: function(fileOwner, fileName) {
+            showFile: function (fileOwner, fileName) {
                 this.$root.$emit(
                     'runCallback',
                     this.$http.post(HTTP_FILE_URL, fileOwner + ';' + fileName),
@@ -157,14 +167,14 @@
                 );
             },
 
-            showMetadataResults: function(result) {
+            showMetadataResults: function (result) {
                 result.showResultsList = !result.showResultsList;
                 if (result.status === 'ERROR' || result.status === '') {
                     result.status = (result.status === 'ERROR') ? '' : 'ERROR';
                 }
             },
 
-            getReport: function(result) {
+            getReport: function (result) {
                 let beginningTasks = result.filter(val => val.resultsList.length !== 0);
                 let finishedTasks = beginningTasks.filter(el => el.status === 'SUCCESS').length;
                 beginningTasks = beginningTasks.length - finishedTasks;
@@ -180,4 +190,11 @@
 
 <style scoped>
 
+    .results {
+        padding-top: 50px;
+    }
+
+    .results-table {
+        padding-top: 30px;
+    }
 </style>

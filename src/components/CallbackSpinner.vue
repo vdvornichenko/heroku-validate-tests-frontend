@@ -18,7 +18,7 @@
                             class="mb-0"
                     ></v-progress-linear>
                 </v-card-text>
-                <div style="text-align: center">
+                <div class="callback-cancel-button">
                     <v-btn v-on:click="callbackState = false" color="error">Cancel</v-btn>
                 </div>
             </v-card>
@@ -44,7 +44,7 @@
                 this.promise = callback;
                callback.then(response => {
                    if (this.callbackState && this.promise === callback) {
-                       this.$root.$emit(eventName, response.body);
+                       this.$root.$emit(eventName, response);
                        this.callbackState = false;
                    }
                }, response => {
@@ -58,4 +58,7 @@
 
 <style scoped>
 
+    .callback-cancel-button {
+        text-align: center;
+    }
 </style>

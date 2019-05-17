@@ -1,30 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-card>
-        <v-container>
-            <v-select
-                    multiple
-                    :items="Array.from(groups).sort((a, b) => a - b)"
-                    label="Выберите номер группы"
-                    v-model="currentGroups"
-            >
-                <template v-slot:prepend-item>
-                    <v-list-tile
-                            ripple
-                            @click="toggle"
-                    >
-                        <v-list-tile-action>
-                            <v-checkbox v-model="allSelected"/>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Select All</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-divider class="mt-2"></v-divider>
-                </template>
-            </v-select>
-        </v-container>
         <v-card-title>
             Группы: {{ currentGroups.length === 0 ? 'все группы' : currentGroups.join(', ') }}
+            <v-icon v-on:click="refresh" large style="padding-left: 50px">cached</v-icon>
             <v-spacer></v-spacer>
             <v-text-field
                     v-model="search"
@@ -39,27 +17,30 @@
                       :items="getCurrentUsers()"
                       class="elevation-1"
                       :search="search"
+                      :rows-per-page-items="rowsPerPage"
         >
             <template v-slot:items="props" >
                 <td>{{ props.item.index + 1 }}</td>
                 <td><input type="checkbox" v-model="props.item.checked"/></td>
                 <td class="text-xs-left">
-                    <a
-                            v-bind:href="'https://login.salesforce.com/?un=' + props.item.userName + '&pw=' + props.item.password"
-                            target="_blank"
-                    >
-                        {{ props.item.userName }}
-                    </a>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on">
+                                <a
+                                        v-bind:href="'https://login.salesforce.com/?un=' + props.item.userName + '&pw=' + props.item.password"
+                                        target="_blank"
+                                >
+                                    {{ props.item.userName }}
+                                </a>
+                            </span>
+                        </template>
+                        <span>Перейти на орг</span>
+                    </v-tooltip>
                 </td>
                 <td class="text-xs-left">{{ props.item.fio }}</td>
                 <td class="text-xs-left">{{ props.item.group }}</td>
             </template>
         </v-data-table>
-        <div style="float: right;">
-            <v-btn color="info" v-on:click="getAllUsersInfo">Show Results for all users</v-btn>
-            <v-btn color="info" v-on:click="getSelectedUsersInfo">Show Results for selected users</v-btn>
-            <v-btn color="info" v-on:click="refresh">Refresh</v-btn>
-        </div>
     </v-card>
 </template>
 
@@ -67,6 +48,7 @@
     import { NO_SELECTED_USERS_MESSAGE } from "../Constants";
     import { HTTP_USER_CREDS_URL } from "../Constants";
     import { HTTP_USERS_INFO_URL } from "../Constants";
+
     export default {
         name: "UsersTable",
         data: () => ({
@@ -74,7 +56,7 @@
             usersTableHeaders : [
                 {text : "#", value : "index", sortable: false, align: "left"},
                 {text : "Select User", value : "checked", sortable : false},
-                {text : "Login", value : "userName", sortable: false},
+                {text : "Login(Можно перейти на орг)", value : "userName", sortable: false},
                 {text : 'User name', value : 'fio', sortable: false},
                 {text : "Group", value : "group", sortable: false},
 
@@ -82,13 +64,24 @@
             search: '',
             groups: [''],
             currentGroups: [],
-            allSelected: false
+            rowsPerPage: [10,25,5,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
+            onlyWithCreds: false
         }),
 
-        created() {
-            this.getUsersCreds();
-        },
+        mounted() {
+            this.$root.$on('selectGroups', currentGroups => {this.currentGroups = currentGroups});
 
+            this.$root.$on('getAllUsersInfo', this.getAllUsersInfo);
+
+            this.$root.$on('getSelectedUsersInfo', this.getSelectedUsersInfo);
+
+            this.$root.$on('setOnlyWithCredsMod', () => {this.onlyWithCreds = !this.onlyWithCreds});
+
+            this.$root.$on('openMainPage', this.getUsersCreds);
+
+            this.$parent.$on('openTable', this.getUsersCreds());
+
+        },
         methods: {
             toggle: function() {
                 if (this.allSelected) {
@@ -111,16 +104,22 @@
                         groups.push(elem.group);
                     });
                     this.groups = new Set(groups);
+                    let curGroups = this.$cookies.get('currentGroups');
+                    if (curGroups) {
+                        this.currentGroups = curGroups.split(',').filter(elem => groups.includes(elem));
+                    }
+                    this.$root.$emit('setGroups', new Set(groups), this.currentGroups);
                     this.$root.$emit('setState', false);
 
                 });
             },
 
             getCurrentUsers: function() {
+                let users = this.onlyWithCreds ? this.users.filter(elem => elem.userName !== '' && elem.password !== '') : this.users;
                 if (this.currentGroups.length === 0) {
-                    return this.users;
+                    return users;
                 }
-                return  this.users.filter(elem => this.currentGroups.includes(elem.group));
+                return users.filter(elem => this.currentGroups.includes(elem.group));
             },
 
             refresh: function() {
@@ -133,7 +132,7 @@
                 this.getCurrentUsers().forEach((elem) => {
                     users.push(elem.userName);
                 });
-                this.getResults(users);
+                return this.getResults(users);
             },
 
             getSelectedUsersInfo: function () {
@@ -143,17 +142,16 @@
                         users.push(elem.userName);
                     }
                 });
-                this.getResults(users);
+                return this.getResults(users);
             },
             getResults: function (users) {
-                // eslint-disable-next-line no-console
-                console.log(users);
-                if (users.length === 0) {
-                    this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
-                } else if (users.includes('')) {
+                if (users.includes('')) {
                     this.$root.$emit('setAlert', 'Выбраны пользователи без логинов', 'error');
+                } else if (users.length === 0) {
+                    this.$root.$emit('setAlert', NO_SELECTED_USERS_MESSAGE, 'error');
                 } else {
                     this.$root.$emit('runCallback', this.$http.post(HTTP_USERS_INFO_URL, users.join(';')), 'getUserResults');
+                    this.$root.$emit('showUsersSearch');
                 }
             }
         }
