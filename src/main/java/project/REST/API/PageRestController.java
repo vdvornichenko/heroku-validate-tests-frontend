@@ -1,6 +1,7 @@
 package project.REST.API;
 
 import org.springframework.web.bind.annotation.*;
+import project.AuthorizationValidator;
 import project.GoogleDocsWriter;
 import project.Processors.RequestProcessor;
 import project.Rules.Constants;
@@ -11,6 +12,7 @@ import project.Processors.RequestProcessor;
 import project.Rules.Results;
 import project.ToolingHelper;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 @RestController
@@ -53,5 +55,12 @@ public class PageRestController {
     @PostMapping("/feedback")
     public void appendFeedBackTextToFile(@RequestBody String text) {
         new GoogleDocsWriter(Constants.FEEDBACK_DOCUMENT_ID, text).writeTextToFile();
+    }
+
+    @CrossOrigin
+    @PostMapping("/authorization")
+    public String checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
+        String[] creds = nameAndPassword.split(";");
+        return AuthorizationValidator.checkCreds(creds[0], creds[1]);
     }
 }

@@ -2,11 +2,12 @@ package project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import project.Processors.RequestProcessor;
+
+import java.io.FileNotFoundException;
 
 @SpringBootApplication
 public class Application {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, FileNotFoundException {
         SpringApplication.run(Application.class, args);
     }
 }

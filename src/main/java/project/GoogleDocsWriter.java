@@ -13,7 +13,6 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.docs.v1.Docs;
 import com.google.api.services.docs.v1.DocsScopes;
 import com.google.api.services.docs.v1.model.*;
-import com.google.api.services.sheets.v4.Sheets;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

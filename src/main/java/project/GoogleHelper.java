@@ -95,6 +95,8 @@ public class GoogleHelper {
 
                 Matcher matcher = pattern.matcher(text);
                 if (!matcher.find()) continue;
+                if (!pattern.matcher((String.valueOf(tableStrings.get(0)))).find()
+                        || !pattern.matcher((String.valueOf(tableStrings.get(1)))).find()) continue;
                 if (!(groupsColumn.size() - 1 < i)) {
                     if (!groupsColumn.get(i).isEmpty()) {
                         String gr = String.valueOf(groupsColumn.get(i).get(0));
