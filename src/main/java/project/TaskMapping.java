@@ -123,9 +123,9 @@ public class TaskMapping {
         METADATA_CHECK.put("ProductTablePage.page", new VisualforcePageRule("ProductTablePage", tagValuesForSearchVF));
 
         // tests: Test Class => Class тестируемый
-//        TEST_CLASSES.put("TestProductTablePageController", "ProductTablePageController");
-//        TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
-//        TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");
+        TEST_CLASSES.put("TestProductTablePageController", "ProductTablePageController");
+        TEST_CLASSES.put("TestProductTrigger", "ProductTrigger");
+        TEST_CLASSES.put("TestProductTriggerHelper", "ProductTriggerHelper");
 
         METADATA_CHECK.put("TestProductTablePageController.cls", new TestRule("TestProductTablePageController", "ProductTablePageController"));
         METADATA_CHECK.put("TestProductTrigger.cls", new TestRule("TestProductTrigger", "ProductTrigger"));
