@@ -1,6 +1,7 @@
 package project.REST.API;
 
 import org.springframework.web.bind.annotation.*;
+import project.AuthorizationInfoWrapper;
 import project.AuthorizationValidator;
 import project.GoogleDocsWriter;
 import project.Processors.RequestProcessor;
@@ -59,8 +60,15 @@ public class PageRestController {
 
     @CrossOrigin
     @PostMapping("/authorization")
-    public String checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
+    public AuthorizationInfoWrapper checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
         String[] creds = nameAndPassword.split(";");
         return AuthorizationValidator.checkCreds(creds[0], creds[1]);
+    }
+
+    @CrossOrigin
+    @PostMapping("/sessionChecking")
+    public Boolean ifSessionIsExisted(@RequestBody String userNameAndToken) {
+        String[] sessionInfo = userNameAndToken.split(";");
+        return AuthorizationValidator.ifSessionIsExisted(sessionInfo[0], sessionInfo[1]);
     }
 }
