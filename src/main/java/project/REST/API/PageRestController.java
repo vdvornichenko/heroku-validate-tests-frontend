@@ -10,6 +10,7 @@ import project.Storages.FileStorage;
 import org.springframework.web.bind.annotation.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Results;
+import project.TaskMapping;
 import project.ToolingHelper;
 
 import java.io.FileNotFoundException;
@@ -62,5 +63,18 @@ public class PageRestController {
     public String checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
         String[] creds = nameAndPassword.split(";");
         return AuthorizationValidator.checkCreds(creds[0], creds[1]);
+    }
+///////////////////////// TASK MAPPPING /////////////////////////
+    @CrossOrigin
+    @PostMapping("/saveTaskMapping")
+    public String saveTaskMapping(@RequestBody String jsonFile) {
+        TaskMapping.saveJsonFile(jsonFile);
+        return "ok D9d9";
+    }
+    @CrossOrigin
+    @GetMapping("/getTaskMapping")
+    public String getTaskMapping() {
+        TaskMapping.getJsonFile();
+        return "ok D9d9";
     }
 }
