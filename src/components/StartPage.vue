@@ -20,7 +20,7 @@
               <UsersTable />
               <Results />
               <FilesCmp />
-              <LoginComponent :showThis="showLoginForm"/>
+<!--              <LoginComponent :showThis="showLoginForm"/>-->
             </div>
         </v-container>
         </v-card>
@@ -39,8 +39,8 @@
   import FilesCmp from './FilesComponent'
   import FixedHeader from 'vue-fixed-header'
   import LeftSidebar from './LeftSidebar'
-  import LoginComponent from './LoginComponent'
-  import { AUTH_TOKEN } from "../Constants";
+  // import LoginComponent from './LoginComponent'
+  // import { AUTH_TOKEN } from "../Constants";
 
   export default {
     components: {
@@ -52,7 +52,7 @@
       FilesCmp,
       FixedHeader,
       LeftSidebar,
-      LoginComponent
+      // LoginComponent
     },
     data: () => ({
       ecosystem: [
@@ -111,12 +111,11 @@
     }),
 
     created() {
-      if (this.$cookies.get(AUTH_TOKEN) + '' === 'null') {
-        this.showLoginForm = true;
-      } else {
-        this.$emit('openTable');
-
-      }
+      // if (this.$cookies.get(AUTH_TOKEN) + '' === 'null') {
+      //   this.showLoginForm = true;
+      // } else {
+        this.$emit('openTable')
+      // }
     }
   }
 </script>
