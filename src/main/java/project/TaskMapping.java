@@ -220,45 +220,45 @@ public class TaskMapping {
     }
 
     public static void saveJsonFile(String jsonFile){
-//        GsonBuilder builder = new GsonBuilder();
-//        builder.setPrettyPrinting();
-//        Gson gson = builder.create();
-        try{
-            System.out.println(jsonFile);
-            FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
-            file.write(jsonFile);
-            file.flush();
-        } catch(Exception e){
-            System.out.println("oi kak hrenovo " + e.getMessage());
-        }
+////        GsonBuilder builder = new GsonBuilder();
+////        builder.setPrettyPrinting();
+////        Gson gson = builder.create();
+//        try{
+//            System.out.println(jsonFile);
+//            FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
+//            file.write(jsonFile);
+//            file.flush();
+//        } catch(Exception e){
+//            System.out.println("oi kak hrenovo " + e.getMessage());
+//        }
     }
 
 
 
     @SuppressWarnings("unchecked")
     public static void getJsonFile(){
-        try{
-
-            FileReader reader = new FileReader("src/main/resources/StorageTaskMapping.json");
-            JSONParser jsonParser = new JSONParser();
-            Object obj = jsonParser.parse(reader);
-            JSONArray tasksList = (JSONArray) obj;
-            System.out.println(tasksList);
-            tasksList.forEach( emp -> parseTaskObject( (JSONObject) emp ) );
-
-
-        } catch(Exception e){
-            System.out.println("oi kak hrenovo " + e.getMessage());
-        }
+//        try{
+//
+//            FileReader reader = new FileReader("src/main/resources/StorageTaskMapping.json");
+//            JSONParser jsonParser = new JSONParser();
+//            Object obj = jsonParser.parse(reader);
+//            JSONArray tasksList = (JSONArray) obj;
+//            System.out.println(tasksList);
+//            tasksList.forEach( emp -> parseTaskObject( (JSONObject) emp ) );
+//
+//
+//        } catch(Exception e){
+//            System.out.println("oi kak hrenovo " + e.getMessage());
+//        }
     }
 
     private static void parseTaskObject(JSONObject tasksList) {
 
-        List<Map<String, Rule>> TASK = new ArrayList<>();
-
-        JSONArray sObjectArr = (JSONArray) tasksList.get("sObjectTasks");
-        sObjectArr.forEach( e -> createsObjectMap( (JSONObject)e) );
-        System.out.println(sObjectArr);
+//        List<Map<String, Rule>> TASK = new ArrayList<>();
+//
+//        JSONArray sObjectArr = (JSONArray) tasksList.get("sObjectTasks");
+//        sObjectArr.forEach( e -> createsObjectMap( (JSONObject)e) );
+//        System.out.println(sObjectArr);
 //        JSONArray apexClassArr = (JSONArray) tasksList.get("apexClassTasks");
 //             System.out.println(apexClassArr);
 //        JSONArray apexPageArr = (JSONArray) tasksList.get("apexPageTasks");
@@ -273,17 +273,17 @@ public class TaskMapping {
     private static Map<String, Rule> createsObjectMap (JSONObject sObject) {
         Map<String, Rule> METADATA_CHECK   = new HashMap<>();
 
-       // JSONObject sObjTask = (JSONObject) sObject.get("employee");
-        String namesObject = (String)sObject.get("name");
-        System.out.println(namesObject);
-        String labelsObject = (String)sObject.get("label");
-        System.out.println(labelsObject);
-        JSONArray fieldsRuleArr = (JSONArray) sObject.get("fieldsRule");
-        System.out.println(fieldsRuleArr);
-        List<sObjectRule.Property> fields = new ArrayList<>();
-        fieldsRuleArr.forEach( (JSONObject)field -> {
-            String fieldName = (String)field.get("name");
-        } );
+//       // JSONObject sObjTask = (JSONObject) sObject.get("employee");
+//        String namesObject = (String)sObject.get("name");
+//        System.out.println(namesObject);
+//        String labelsObject = (String)sObject.get("label");
+//        System.out.println(labelsObject);
+//        JSONArray fieldsRuleArr = (JSONArray) sObject.get("fieldsRule");
+//        System.out.println(fieldsRuleArr);
+//        List<sObjectRule.Property> fields = new ArrayList<>();
+//        fieldsRuleArr.forEach( (JSONObject)field -> {
+//            String fieldName = (String)field.get("name");
+//        } );
 
 
         return METADATA_CHECK;

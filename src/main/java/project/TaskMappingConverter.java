@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.Set;
 
 
- public class TaskMappingConverter implements JsonSerializer<sObjectRule> {
-     @Override
-    public JsonElement serialize(sObjectRule src, Type typeOfSrc, JsonSerializationContext context) {
-//        JsonObject object = new JsonObject();
-//        object.addProperty("CLASSNAME", src.getClass().getName());
-//        object.add(DATA, JsonSerializationContext.class.);
-        return null;
-    }
-//
-//
+ public class TaskMappingConverter  {
+//     @Override
+//    public JsonElement serialize(sObjectRule src, Type typeOfSrc, JsonSerializationContext context) {
+////        JsonObject object = new JsonObject();
+////        object.addProperty("CLASSNAME", src.getClass().getName());
+////        object.add(DATA, JsonSerializationContext.class.);
+//        return null;
+//    }
+////
+////
 //    public TaskMapping deserialize(JsonElement json, Type typeOfT,
 //                              JsonDeserializationContext context) {
 //        TaskMapping taskMap = new TaskMapping();
