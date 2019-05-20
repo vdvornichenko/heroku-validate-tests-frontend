@@ -1,32 +1,34 @@
 <template>
   <v-app id="sandbox" :dark="dark">
-    <fixed-header :threshold="100">
-      <div class="navbar" style="z-index: 20">
-        <Header @changeTheme="dark=!dark"/>
-      </div>
-    </fixed-header>
-    <v-layout row wrap>
-      <v-flex lg2>
-        <div style="padding-top:50px; position:sticky; top:0">
-          <LeftSidebar/>
+    <div v-if="showTable">
+      <fixed-header :threshold="100">
+        <div class="navbar" style="z-index: 20">
+          <Header @changeTheme="dark=!dark" @logout="logout"/>
         </div>
-      </v-flex>
-      <v-flex lg8>
-        <v-card class="content-card">
-        <v-container>
-            <div class="content-card-container">
-              <AlertComponent />
-              <CallbackSpinner />
-              <UsersTable />
-              <Results />
-              <FilesCmp />
-<!--              <LoginComponent :showThis="showLoginForm"/>-->
-            </div>
-        </v-container>
-        </v-card>
-      </v-flex>
-      <v-flex lg2/>
-    </v-layout>
+      </fixed-header>
+      <v-layout row wrap>
+        <v-flex lg2>
+          <div style="padding-top:50px; position:sticky; top:0">
+            <LeftSidebar/>
+          </div>
+        </v-flex>
+        <v-flex lg8>
+          <v-card class="content-card">
+          <v-container>
+              <div class="content-card-container">
+                <AlertComponent />
+                <UsersTable :showTable="showTable"/>
+                <Results />
+                <FilesCmp />
+              </div>
+          </v-container>
+          </v-card>
+        </v-flex>
+        <v-flex lg2/>
+      </v-layout>
+    </div>
+    <CallbackSpinner />
+    <login-component :showThis="showLoginForm"/>
   </v-app>
 </template>
 
@@ -39,8 +41,10 @@
   import FilesCmp from './FilesComponent'
   import FixedHeader from 'vue-fixed-header'
   import LeftSidebar from './LeftSidebar'
-  // import LoginComponent from './LoginComponent'
-  // import { AUTH_TOKEN } from "../Constants";
+  import LoginComponent from './LoginComponent'
+  import { AUTH_TOKEN } from "../Constants";
+  import { HTTP_CHECK_SESSION_URL } from "../Constants";
+  import { USER_SESSION } from "../Constants";
 
   export default {
     components: {
@@ -52,7 +56,7 @@
       FilesCmp,
       FixedHeader,
       LeftSidebar,
-      // LoginComponent
+      LoginComponent
     },
     data: () => ({
       ecosystem: [
@@ -107,15 +111,48 @@
 
       ],
       dark: true,
-      showLoginForm: false
+      showLoginForm: false,
+      showTable : false
     }),
 
     created() {
-      // if (this.$cookies.get(AUTH_TOKEN) + '' === 'null') {
-      //   this.showLoginForm = true;
-      // } else {
-        this.$emit('openTable')
-      // }
+      if (!this.$cookies.isKey(AUTH_TOKEN)) {
+        this.showLoginForm = true;
+      } else {
+        this.$root.$emit('setState', true);
+        this.$http.post(
+                HTTP_CHECK_SESSION_URL,
+                this.$cookies.get(USER_SESSION) + ';' + this.$cookies.get(AUTH_TOKEN)
+        ).then(response => {
+          if (response.body) {
+            this.showTable = true;
+          } else {
+            this.showLoginForm = true;
+          }
+          this.$root.$emit('setState', false);
+        }, () => {
+          this.showLoginForm = true;
+          this.$root.$emit('setState', false);
+        });
+
+      }
+    },
+
+    mounted() {
+      this.$root.$on('openMainPage', () => {
+        this.showTable = true;
+      });
+    },
+
+    methods: {
+      logout: function () {
+        this.showLoginForm = true;
+        this.showTable = false;
+        this.$cookies.remove('currentGroups');
+        this.$cookies.remove(AUTH_TOKEN);
+        this.$cookies.remove(USER_SESSION);
+
+      }
     }
   }
 </script>
@@ -123,7 +160,7 @@
 <style>
 
   .content-card {
-    min-height: 100%;
+    height: 100%;
     padding-top: 40px;
   }
 

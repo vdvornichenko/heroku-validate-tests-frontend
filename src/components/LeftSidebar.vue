@@ -23,11 +23,9 @@
             </template>
         </v-select>
         <div style="text-align: center">
-            <v-checkbox v-on:change="setOnlyWithCredsMod" label="Креды должны быть заполнены">
+            <v-checkbox v-on:change="setOnlyWithCredsMod" label="Креды должны быть заполнены" v-model="onlyWithCreds">
             </v-checkbox>
-            Проверить<br/>
-            <v-btn color="info" v-on:click="getAllUsersInfo" style="width: 100%">Всех</v-btn>
-            <v-btn color="info" v-on:click="getSelectedUsersInfo" style="width: 100%">Выбранных</v-btn>
+            <v-btn color="info" v-on:click="getSelectedUsersInfo" style="width: 100%">Проверить</v-btn>
         </div>
         <v-text-field
                 v-if="usersAreShowed"
@@ -52,7 +50,8 @@
                 currentGroups: [],
                 allSelected: false,
                 usersAreShowed: false,
-                userForSearch: ""
+                userForSearch: "",
+                onlyWithCreds: true
             }
         },
 
@@ -78,9 +77,7 @@
             changeGroup: function () {
                 this.$root.$emit('selectGroups', this.currentGroups);
 
-                this.$cookies.set('currentGroups', this.currentGroups);
-                // eslint-disable-next-line no-console
-                console.log(this.$cookies.get('currentGroups'));
+                this.$cookies.set('currentGroups', this.currentGroups, 60*60*24*7);
             },
 
             getAllUsersInfo: function () {

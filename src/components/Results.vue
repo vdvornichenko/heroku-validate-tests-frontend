@@ -24,45 +24,33 @@
                 >
                     <template v-slot:items="props">
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            <v-tooltip bottom>
-                                <template v-slot:activator="{ on }">
-                                    <span v-on="on">{{ props.item.index }}</span>
-                                </template>
-                                <span>asd</span>
-                            </v-tooltip>
+                            {{ props.item.index }}
                         </td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            <v-tooltip bottom>
-                                <template v-slot:activator="{ on }">
-                                    <span v-on="on">
-                                        <v-btn
+                            <v-btn
 
-                                                flat
-                                                fab small
-                                                v-if="props.item.resultsList.length > 0"
-                                                v-on:click="showMetadataResults(props.item)"
-                                        >
-                                            <v-icon v-if="!props.item.showResultsList">list</v-icon>
-                                            <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
-                                        </v-btn>
-                                        {{ props.item.nameMetadata }}
-                                        <table v-if="props.item.showResultsList">
-                                            <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
-                                                <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
-                                                <!--  -->
-                                                      <v-btn
-                                                              v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                              v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
-                                                      >
-                                                            View file
-                                                        </v-btn>
-                                                <!--  -->
-                                            </tr>
-                                        </table>
-                                    </span>
-                                </template>
-                                <span>asd</span>
-                            </v-tooltip>
+                                    flat
+                                    fab small
+                                    v-if="props.item.resultsList.length > 0"
+                                    v-on:click="showMetadataResults(props.item)"
+                            >
+                                <v-icon v-if="!props.item.showResultsList">list</v-icon>
+                                <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
+                            </v-btn>
+                            {{ props.item.nameMetadata }}
+                            <table v-if="props.item.showResultsList">
+                                <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
+                                    <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                                    <!--  -->
+                                          <v-btn
+                                                  v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
+                                                  v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
+                                          >
+                                                View file
+                                            </v-btn>
+                                    <!--  -->
+                                </tr>
+                            </table>
                         </td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
                         <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
