@@ -5,12 +5,18 @@ import java.text.MessageFormat;
 import java.util.*;
 import javax.xml.parsers.*;
 
+import com.google.api.client.util.DateTime;
+import com.sforce.soap.apex.SoapConnection;
 import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import com.sforce.soap.metadata.*;
@@ -46,6 +52,7 @@ public class DeployRetrieveHelper {
         try {
             loginInOrg();
             retrieveZip();
+            System.out.println(getLoginHistory().toString());
         } catch (ConnectionException ex) {
             System.out.println(username + ". >> Connection Exception: " + ex.toString());
             List<Results> results = new ArrayList<>();
@@ -346,8 +353,51 @@ public class DeployRetrieveHelper {
         }
     }
 
+    private List<String> getLoginHistory() throws ConnectionException {
+        List<String> loginTimeList = new ArrayList<>();
+        ConnectorConfig config = new ConnectorConfig();
+        config.setUsername(this.username);
+        config.setPassword(this.pass);
+        config.setServiceEndpoint(MetadataLoginUtil.LOGIN_URL);
+        config.setAuthEndpoint(MetadataLoginUtil.LOGIN_URL);
 
+        PartnerConnection partnerConnection = new PartnerConnection(config);
+        QueryResult queryResult = partnerConnection.query(
+                "Select LoginTime, Browser FROM LoginHistory WHERE SourceIp <> '80.249.88.240' ORDER BY LoginTime DESC"
+        );
+        String timeZoneKey = String.valueOf(partnerConnection.query(
+                "Select TimeZoneSidKey FROM User WHERE Profile.Name = 'System Administrator'"
+        ).getRecords()[0].getSObjectField("TimeZoneSidKey"));
+        SObject[] records = queryResult.getRecords();
+        for (SObject sObject : records) {
+            String fieldValue = String.valueOf(sObject.getSObjectField("Browser"));
+            if (fieldValue.equalsIgnoreCase("Java (Salesforce.com)")) continue;
+            loginTimeList.add(
+                    getFormattedTime(
+                            String.valueOf(sObject.getSObjectField("LoginTime")),
+                            timeZoneKey
+                    )
+            );
+        }
+        return loginTimeList;
+    }
 
-
-
+    private String getFormattedTime(String loginTime, String timeZoneKey) {
+        int offset = 3 - TimeZone.getTimeZone(timeZoneKey).getRawOffset()/3600000;
+        String[] dateAndTime = loginTime.split("T");
+        String[] dateParts = dateAndTime[0].split("-");
+        int year = Integer.valueOf(dateParts[0]);
+        int month = Integer.valueOf(dateParts[1]);
+        int day = Integer.valueOf(dateParts[2]);
+        String[] timeParts = dateAndTime[1].split(":");
+        int hour = Integer.valueOf(timeParts[0]);
+        int minute = Integer.valueOf(timeParts[1]);
+        int second = Integer.valueOf(timeParts[2].substring(0, timeParts[2].indexOf(".")));
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(year, month - 1, day, hour, minute, second);
+        calendar.add(Calendar.HOUR, offset);
+        System.out.println(year + "  " + month + "   " + day);
+        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Minsk"));
+        return String.valueOf(calendar.getTime());
+    }
 }

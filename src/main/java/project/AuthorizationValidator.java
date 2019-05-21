@@ -42,9 +42,9 @@ public class AuthorizationValidator {
                 String[] userData = line.split(":::::");
                 if (userData[0].equalsIgnoreCase(login) && userData[1].equalsIgnoreCase(cryptPassword(password))) {
                     br.close();
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/UserSessions"))) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/UserSessions", true))) {
                         String token = UUID.randomUUID().toString();
-                        writer.append(userData[2] + ":::::" + token);
+                        writer.append("\n" + userData[2] + ":::::" + token);
                         writer.close();
 
                         return new AuthorizationInfoWrapper(userData[2], token);
@@ -68,6 +68,7 @@ public class AuthorizationValidator {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] sessionInfo = line.split(":::::");
+                if(sessionInfo.length < 2) continue;
                 if (sessionInfo[0].equalsIgnoreCase(userName) && sessionInfo[1].equalsIgnoreCase(token)) {
                     return true;
                 }
