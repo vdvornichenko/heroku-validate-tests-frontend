@@ -3,19 +3,19 @@
 
 
 
-<v-app id="sandbox" :dark="dark">
+<v-app :dark="dark">
 		<div style="padding-top: 70px;">
 	 <Header @changeTheme="dark=!dark"/>
 		<v-card class="mx-auto" >
 			<v-window v-model="step">
 				<v-window-item :value="0">
 					<template>
-						<v-toolbar dark flat color="secondary">
+						<v-toolbar flat color="secondary">
 							
 								<v-toolbar-title>TASK MAPPING</v-toolbar-title>
 					
 							<v-spacer></v-spacer>
-							<v-btn color="primary" dark @click="createTask">CREATE TASK</v-btn>
+							<v-btn color="primary"  @click="createTask">CREATE TASK</v-btn>
 						</v-toolbar>
 					</template>
 

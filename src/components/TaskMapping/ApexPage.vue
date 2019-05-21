@@ -31,7 +31,7 @@
 											<v-container grid-list-md>
 												<v-layout wrap>
 													<v-flex xs12>
-														<v-combobox
+														<v-combobox light
 															v-model="newRule.nameTag"
 															:items="['apex:page','button','table']"
 															label="Select a tag or enter another to search for values"
@@ -39,7 +39,7 @@
 													</v-flex>
 
 													<v-flex xs12>
-														<v-combobox
+														<v-combobox light
 															ref="inp"
 															v-model="newRule.searchStrings"
 															label="Add value and press enter"
