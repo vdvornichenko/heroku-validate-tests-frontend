@@ -24,13 +24,12 @@
               </v-btn>
             </template>
 
-            <v-list>
+            <v-list style="background-color:white">
               <v-list-tile
                 v-for="(item, i) in pages"
                 :key="i"
               >
-                     <v-list-tile-title dark >
-                       
+                     <v-list-tile-title  white >
                         <router-link :to="item" style="text-decoration: none; color:black">
                             {{ item.title }}
                         </router-link>
@@ -67,7 +66,7 @@
         data: () => ({
             drawers: ['Default (no property)', 'Permanent', 'Temporary'],
             pages: [{
-                name:"",
+                name:"Home",
                 title:"Home"},
                 {
                 name:"taskCreator",
