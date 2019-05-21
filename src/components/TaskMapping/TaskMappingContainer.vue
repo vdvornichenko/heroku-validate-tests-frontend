@@ -3,9 +3,9 @@
 
 
 
-<v-app :dark="dark">
+<v-app id="taskMp" dark>
 	
-	 <Header @changeTheme="dark=!dark"/>
+	 <Header @changeTheme="!!dark"/>
 
 
 <v-layout row wrap>
@@ -22,7 +22,7 @@
 
 
 
-<v-card class="mx-auto" >
+<v-card class="mx-auto" :dark="dark">
 			<v-window v-model="step">
 				<v-window-item :value="0">
 					<template>
@@ -177,6 +177,7 @@
 
 							<v-layout align-end justify-end>
 								<v-layout align-end justify-end>
+									<v-btn color="primary" dark @click="reloadTasks">RELOAD TASK MAPPING</v-btn>
 									<v-btn color="primary" dark @click="getTasks">GETTTTTTTTTT</v-btn>
 									<v-btn color="primary" dark>Back</v-btn>
 									<v-btn color="primary" dark @click="saveTasks" v-if="Tasks.length>0">SAVE TASKS</v-btn>
@@ -255,8 +256,10 @@ export default {
 	methods: {
 		getTaskMapping: function(index) {
 			this.$http.get('http://localhost:8080/getTaskMapping').then(response => {
-			   console.log ( response.body);
-               this.Tasks = response.body;     
+				 console.log ( response.body);
+				 if(response.body != null){
+						this.Tasks = response.body;     
+				 } 
             });
 		},
 		editTask: function(task) {
@@ -287,8 +290,8 @@ export default {
 //      'http://localhost:8080/getUsers' 
 //      export var HTTP_USER_CREDS_URL = (window.location.href.includes('localhost')) 
 //      ? 'http://localhost:8080/getUsers' : 'https://task-validation-lc.herokuapp.com/getUsers';
-
-            this.$http.post('http://localhost:8080/saveTaskMapping', tasks).then(() => {
+						var url = (window.location.href.includes('localhost')) ? 'http://localhost:8080/saveTaskMapping' : 'https://task-validation-lc.herokuapp.com/saveTaskMapping';
+            this.$http.post(url, tasks).then(() => {
                 // eslint-disable-next-line no-console
                 console.log('SUCCESS');
             }, () => {
@@ -313,12 +316,22 @@ export default {
 			// 	this.$root.$emit("setState", false);
 			// });
         },
-        getTasks: function() {
-			this.$http.get("http://localhost:8080/getTaskMapping").then(response => {
+    getTasks: function() {
+			var url = (window.location.href.includes('localhost')) ? 'http://localhost:8080/getTaskMapping' : 'https://task-validation-lc.herokuapp.com/getTaskMapping';
+			this.$http.get(url).then(response => {
 				console.log(response.body);
 			});
 		},
 
+		reloadTasks: function() {
+			var url = (window.location.href.includes('localhost')) ? 'http://localhost:8080/refreshTaskMapping' : 'https://task-validation-lc.herokuapp.com/refreshTaskMapping';
+			this.$http.post(url).then(() => {
+											console.log('SUCCESS');
+			}, () => {
+					console.log('ERROR');
+			});
+
+		},
 
 	}
 };

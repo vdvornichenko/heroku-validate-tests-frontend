@@ -33,7 +33,7 @@
 								</ul>
 							</v-flex>
 							<v-flex xs5>
-								<v-select v-model="newKeyValue.key" :items="selectList" label="tag" required></v-select>
+								<v-select v-model="newKeyValue.key"  light :items="selectList" label="tag" required ></v-select>
 							</v-flex>
 							<v-flex xs4>
 								<v-text-field label="value" v-model="newKeyValue.value" required></v-text-field>
@@ -73,7 +73,6 @@ export default {
 			value: ""
 		}
 	}),
-
 	methods: {
 		Close: function() {
 			this.dialog = false;
