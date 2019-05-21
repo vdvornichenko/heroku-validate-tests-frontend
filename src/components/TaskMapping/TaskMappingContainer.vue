@@ -4,9 +4,25 @@
 
 
 <v-app :dark="dark">
-		<div style="padding-top: 70px;">
+	
 	 <Header @changeTheme="dark=!dark"/>
-		<v-card class="mx-auto" >
+
+
+<v-layout row wrap>
+      <v-flex lg2>
+        <div style="padding-top:50px; position:sticky; top:0">
+         
+        </div>
+      </v-flex>
+      <v-flex lg8>
+        <v-card class="content-card">
+        <v-container>
+            <div class="content-card-container">
+
+
+
+
+<v-card class="mx-auto" >
 			<v-window v-model="step">
 				<v-window-item :value="0">
 					<template>
@@ -79,39 +95,42 @@
 
 							<v-flex xs12>
 								<v-expansion-panel popout>
-									<v-expansion-panel-content
+									<v-expansion-panel-content 
 										v-for="(tasksArr, index) in Tasks"
 										:key="index"
+										draggable
 									>
+	<template v-slot:actions>
+       <v-btn
+	 
+			fab
+			icon
+			float
+			pre
+			color="white"
+			flat
+			small
+				@click="editTask(tasksArr)"
+		>
+			<v-icon>edit</v-icon>
+		</v-btn>
+		<v-btn
+			fab
+			icon
+			float
+			color="white"
+			flat
+			small
+			@click="removeTask(index)"
+		><v-icon>delete</v-icon>
+		</v-btn>
+      </template>
 										<template v-slot:header>
-											<p class="text-lg-right">
-												<span class="font-weight-light body-1">Task Number:</span>
-													{{ index + 1}}
-											</p>
-											<p class="text-xs-right">
-													<v-btn
-														fab
-														icon
-														float
-														pre
-														color="white"
-														flat
-														small
-														 @click="editTask(tasksArr)"
-													>
-														<v-icon>edit</v-icon>
-													</v-btn>
-													<v-btn
-														fab
-														icon
-														float
-														color="white"
-														flat
-														small
-														@click="removeTask(index)"
-													><v-icon>delete</v-icon>
-                                      		  		</v-btn>
-											</p>
+								
+												<span class="font-weight-light body-1">Task Number:  {{ index + 1}}	</span>
+							
+	
+		
 										</template>
 										<v-card>
 											
@@ -174,7 +193,17 @@
 				</v-window-item>
 			</v-window>
 		</v-card>
-		</div>
+
+
+
+
+            </div>
+        </v-container>
+        </v-card>
+      </v-flex>
+      <v-flex lg2/>
+    </v-layout>
+
 		</v-app>
 	
 </template>
