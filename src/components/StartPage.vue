@@ -18,7 +18,7 @@
               <div class="content-card-container">
                 <AlertComponent />
                 <UsersTable :showTable="showTable"/>
-                <Results />
+                <Results ref="results"/>
                 <FilesCmp />
               </div>
           </v-container>
@@ -27,8 +27,9 @@
         <v-flex lg2/>
       </v-layout>
     </div>
-    <CallbackSpinner />
+    <CallbackSpinner/>
     <login-component :showThis="showLoginForm"/>
+    <div id="footer"></div>
   </v-app>
 </template>
 
@@ -141,6 +142,10 @@
     mounted() {
       this.$root.$on('openMainPage', () => {
         this.showTable = true;
+      });
+
+      this.$root.$on('getUserResults', ()=> {
+        this.$vuetify.goTo('#resultTables');
       });
     },
 

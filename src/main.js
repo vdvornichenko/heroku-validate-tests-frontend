@@ -19,3 +19,23 @@ export const bus = new Vue()
 new Vue({
   render: h => h(App),
 }).$mount('#app')
+
+import Router from 'vue-router'
+import goTo from 'vuetify/lib/components/Vuetify/goTo'
+
+export default new Router({
+  scrollBehavior: (to, from, savedPosition) => {
+    let scrollTo = 0
+
+    if (to.hash) {
+      scrollTo = to.hash
+    } else if (savedPosition) {
+      scrollTo = savedPosition.y
+    }
+
+    return goTo(scrollTo)
+  },
+  routes: [
+    //
+  ]
+})

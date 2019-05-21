@@ -1,76 +1,78 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-    <div v-if="showResults" class="results">
-        <div class="results-table"
-             v-if="Object.keys(userResults).filter(res => res.includes(userForSearch)).length === 0">
-            No users
-        </div>
-        <div v-for="(value, propertyName, index) in userResults" v-bind:key="index">
-            <div v-if="propertyName.includes(userForSearch)" class="results-table">
-                <v-toolbar flat>
-                    <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
-                </v-toolbar>
-                <template v-if="usersErrors[propertyName]">
-                    <v-alert :value="true" color="error" icon="warning"
-                             v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
-                        {{ error }}
-                    </v-alert>
-                </template>
-                <v-data-table
-                        v-if="!usersErrors[propertyName]"
-                        disable-initial-sort
-                        :headers="userResultsHeaders"
-                        :items="value"
-                        class="elevation-1"
-                >
-                    <template v-slot:items="props">
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            {{ props.item.index }}
-                        </td>
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            <v-btn
+    <div id="resultTables">
+        <div v-if="showResults" class="results">
+            <div class="results-table"
+                 v-if="Object.keys(userResults).filter(res => res.includes(userForSearch)).length === 0">
+                No users
+            </div>
+            <div v-for="(value, propertyName, index) in userResults" v-bind:key="index">
+                <div v-if="propertyName.includes(userForSearch)" class="results-table">
+                    <v-toolbar flat>
+                        <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
+                    </v-toolbar>
+                    <template v-if="usersErrors[propertyName]">
+                        <v-alert :value="true" color="error" icon="warning"
+                                 v-for="(error, index) in usersErrors[propertyName]" v-bind:key="index">
+                            {{ error }}
+                        </v-alert>
+                    </template>
+                    <v-data-table
+                            v-if="!usersErrors[propertyName]"
+                            disable-initial-sort
+                            :headers="userResultsHeaders"
+                            :items="value"
+                            class="elevation-1"
+                    >
+                        <template v-slot:items="props">
+                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                                {{ props.item.index }}
+                            </td>
+                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                                <v-btn
 
-                                    flat
-                                    fab small
-                                    v-if="props.item.resultsList.length > 0"
-                                    v-on:click="showMetadataResults(props.item)"
-                            >
-                                <v-icon v-if="!props.item.showResultsList">list</v-icon>
-                                <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
-                            </v-btn>
-                            {{ props.item.nameMetadata }}
-                            <table v-if="props.item.showResultsList">
-                                <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
-                                    <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
-                                    <!--  -->
-                                          <v-btn
-                                                  v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                  v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
-                                          >
-                                                View file
-                                            </v-btn>
-                                    <!--  -->
-                                </tr>
-                            </table>
-                        </td>
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
-                        <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                            <v-btn
-                                    v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
-                                    v-on:click="showFile(propertyName, props.item.nameMetadata)"
-                            >
-                                View file
-                            </v-btn>
-                        </td>
-                    </template>
-                    <template v-slot:footer>
-                        <td :colspan="userResultsHeaders.length">
-                            <strong style="float: right">
-                                {{ getReport(value) }}
-                            </strong>
-                        </td>
-                    </template>
-                </v-data-table>
+                                        flat
+                                        fab small
+                                        v-if="props.item.resultsList.length > 0"
+                                        v-on:click="showMetadataResults(props.item)"
+                                >
+                                    <v-icon v-if="!props.item.showResultsList">list</v-icon>
+                                    <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
+                                </v-btn>
+                                {{ props.item.nameMetadata }}
+                                <table v-if="props.item.showResultsList">
+                                    <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
+                                        <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
+                                        <!--  -->
+                                              <v-btn
+                                                      v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
+                                                      v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
+                                              >
+                                                    View file
+                                                </v-btn>
+                                        <!--  -->
+                                    </tr>
+                                </table>
+                            </td>
+                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
+                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
+                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                                <v-btn
+                                        v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
+                                        v-on:click="showFile(propertyName, props.item.nameMetadata)"
+                                >
+                                    View file
+                                </v-btn>
+                            </td>
+                        </template>
+                        <template v-slot:footer>
+                            <td :colspan="userResultsHeaders.length">
+                                <strong style="float: right">
+                                    {{ getReport(value) }}
+                                </strong>
+                            </td>
+                        </template>
+                    </v-data-table>
+                </div>
             </div>
         </div>
     </div>
