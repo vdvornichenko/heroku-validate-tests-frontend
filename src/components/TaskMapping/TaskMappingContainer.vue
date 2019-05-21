@@ -10,7 +10,7 @@
 			<v-window v-model="step">
 				<v-window-item :value="0">
 					<template>
-						<v-toolbar dark flat color="secondary">
+						<v-toolbar flat color="secondary">
 							
 								<v-toolbar-title>TASK MAPPING</v-toolbar-title>
 					
