@@ -9,6 +9,8 @@ import project.Storages.FileStorage;
 import org.springframework.web.bind.annotation.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Results;
+import project.TaskMapping;
+import project.ToolingHelper;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -67,5 +69,19 @@ public class PageRestController {
     public Boolean ifSessionIsExisted(@RequestBody String userNameAndToken) {
         String[] sessionInfo = userNameAndToken.split(";");
         return AuthorizationValidator.ifSessionIsExisted(sessionInfo[0], sessionInfo[1]);
+
+    }
+
+    @CrossOrigin
+    @PostMapping("/saveTaskMapping")
+    public String saveTaskMapping(@RequestBody String jsonFile) {
+        TaskMapping.saveJsonFile(jsonFile);
+        return "ok D9d9";
+    }
+    @CrossOrigin
+    @GetMapping("/getTaskMapping")
+    public String getTaskMapping() {
+        TaskMapping.getJsonFile();
+        return "ok D9d9";
     }
 }

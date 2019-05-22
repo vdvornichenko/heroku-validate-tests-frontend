@@ -2,6 +2,7 @@ package project;
 
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -22,12 +23,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.reflect.*;
+import com.google.gson.stream.JsonReader;
 import org.mortbay.util.ajax.JSON;
 import org.mortbay.util.ajax.JSONObjectConvertor;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import project.Rules.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 
 public class TaskMapping {
 
@@ -124,14 +131,6 @@ public class TaskMapping {
         METADATA_CHECK.put("TestProductTrigger.cls", new TestRule("TestProductTrigger", "ProductTrigger"));
         METADATA_CHECK.put("TestProductTriggerHelper.cls", new TestRule("TestProductTriggerHelper","ProductTriggerHelper" ));
 
-//        try{
-//        FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
-//        file.write(gson.toJson(METADATA_CHECK));
-//        file.flush();
-//    } catch(Exception e){
-//
-//    }
-
 
     }
 
@@ -211,4 +210,188 @@ public class TaskMapping {
         }
         return results;
     }
+
+    public static void saveJsonFile(String jsonFile){
+////        GsonBuilder builder = new GsonBuilder();
+////        builder.setPrettyPrinting();
+////        Gson gson = builder.create();
+//        try{
+//            System.out.println(jsonFile);
+//            FileWriter file = new FileWriter("src/main/resources/StorageTaskMapping.json");
+//            file.write(jsonFile);
+//            file.flush();
+//        } catch(Exception e){
+//            System.out.println("oi kak hrenovo " + e.getMessage());
+//        }
+    }
+
+
+    public static void getJsonFile(){
+//        try{
+//
+//            FileReader reader = new FileReader("src/main/resources/StorageTaskMapping.json");
+//            JSONParser jsonParser = new JSONParser();
+//            Object obj = jsonParser.parse(reader);
+//            JSONArray tasksList = (JSONArray) obj;
+//            System.out.println(tasksList);
+//            tasksList.forEach( emp -> parseTaskObject( (JSONObject) emp ) );
+//
+//
+//        } catch(Exception e){
+//            System.out.println("oi kak hrenovo " + e.getMessage());
+//        }
+    }
+
+//
+//    private static Map<String, Rule> parseTaskObject(JSONObject tasksList) {
+//        Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//        List<Map<String, Rule>> TASK = new ArrayList<>();
+//
+//        JSONArray sObjectArr = (JSONArray) tasksList.get("sObjectTasks");
+//        sObjectArr.forEach( e -> METADATA_CHECK.putAll(createSObjectTasks( (JSONObject)e)) );
+//        System.out.println(sObjectArr);
+//        JSONArray triggerArr = (JSONArray) tasksList.get("triggerTasks");
+//        triggerArr.forEach( e -> METADATA_CHECK.putAll(createsTriggerTasks( (JSONObject)e)) );
+//
+//        JSONArray apexClassArr = (JSONArray) tasksList.get("apexClassTasks");
+//        apexClassArr.forEach( e -> METADATA_CHECK.putAll(createsApexClassTasks( (JSONObject)e)) );
+//
+//        JSONArray apexPageArr = (JSONArray) tasksList.get("apexPageTasks");
+//        apexPageArr.forEach( e -> METADATA_CHECK.putAll(createsApexPagesTasks( (JSONObject)e)) );
+//
+//        JSONArray testArr = (JSONArray) tasksList.get("testTasks");
+//        testArr.forEach( e -> METADATA_CHECK.putAll(createsTestTasks( (JSONObject)e)) );
+//        return METADATA_CHECK;
+//    }
+//
+//
+//    private static Map<String, Rule> createSObjectTasks (JSONObject sObject) {
+//        Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//        String namesObject = (String)sObject.get("name");
+//        System.out.println(namesObject);
+//
+//        String labelsObject = (String)sObject.get("label");
+//        System.out.println(labelsObject);
+////fields
+//        JSONArray fieldsRuleArr = (JSONArray) sObject.get("fieldsRule");
+//        System.out.println(fieldsRuleArr);
+//        List<sObjectRule.Property> fields = new ArrayList<>();
+//        fields.addAll(createssObjectRuleProperty(fieldsRuleArr));
+////validationRules
+//        JSONArray validationRulesArr = (JSONArray) sObject.get("validationRule");
+//        fields.addAll(createssObjectValidationRules(validationRulesArr));
+////label
+//        fields.add(new sObjectRule.labelInnerClass(labelsObject));
+//        METADATA_CHECK.put(namesObject + ".object", new sObjectRule(namesObject, fields));
+//        return METADATA_CHECK;
+//    }
+//
+//    private static List<sObjectRule.Property> createssObjectValidationRules( JSONArray validationRulesArr){
+//        List<sObjectRule.Property> validateRules = new ArrayList<>();
+//        Iterator<JSONObject> iterator = validationRulesArr.iterator();
+//        while(iterator.hasNext()) {
+//            JSONObject validRule = iterator.next();
+//            String ruleName = (String)validRule.get("name");
+//            Map<String, String> tagRule = new HashMap<>();
+//            JSONArray fieldskeyValue = (JSONArray) validRule.get("keyValue");
+//            Iterator<JSONObject> iteratorKeyVal = fieldskeyValue.iterator();
+//            while(iteratorKeyVal.hasNext()) {
+//                JSONObject tagRuleObj = iteratorKeyVal.next();
+//                tagRule.put((String)tagRuleObj.get("key"), (String)tagRuleObj.get("value"));
+//            }
+//            validateRules.add(new sObjectRule.validationRulesInnerClass(ruleName ,tagRule));
+//        }
+//        return validateRules;
+//    }
+//
+//    private static List<sObjectRule.Property> createssObjectRuleProperty( JSONArray fieldsRuleArr){
+//        List<sObjectRule.Property> fields = new ArrayList<>();
+//        Iterator<JSONObject> iterator = fieldsRuleArr.iterator();
+//        while(iterator.hasNext()) {
+//            JSONObject field = iterator.next();
+//            String fieldName = (String)field.get("name");
+//            System.out.println("fieldName> " + fieldName);
+//            Map<String, String> tagRule = new HashMap<>();
+//            JSONArray fieldskeyValue = (JSONArray) field.get("keyValue");
+//            Iterator<JSONObject> iteratorKeyVal = fieldskeyValue.iterator();
+//            while(iteratorKeyVal.hasNext()) {
+//                JSONObject tagRuleObj = iteratorKeyVal.next();
+//                tagRule.put((String)tagRuleObj.get("key"), (String)tagRuleObj.get("value"));
+//            }
+//            fields.add(new  sObjectRule.FieldSObjectInnerClass(fieldName ,tagRule));
+//        }
+//        return fields;
+//    }
+//
+//    private static Map<String, Rule> createsTriggerTasks (JSONObject trigger) {
+//        Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//       String namesTrigger = (String)trigger.get("name");
+//       String helperMethod = (String)trigger.get("helperMethod");
+//        String objName = (String)trigger.get("objName");
+//        System.out.println(namesTrigger);
+//
+//        JSONArray events = (JSONArray) trigger.get("trigerEvents");
+//        List<String> triggerEvents = new ArrayList<>();
+//        events.forEach( e -> triggerEvents.add((String)e) );
+//        METADATA_CHECK.put(namesTrigger +".trigger",
+//                new ApexTriggerRule(namesTrigger,
+//                        new TriggerInfoWraper(objName,
+//                                triggerEvents,
+//                                helperMethod)
+//                )
+//        );
+//        return METADATA_CHECK;
+//    }
+//
+//
+//    private static Map<String, Rule> createsApexClassTasks (JSONObject apexClasses) {
+//        Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//        String namesApexClass = (String)apexClasses.get("name");
+//        List<String> methodsForSearch = new ArrayList<>();
+//        JSONArray methodsSearch = (JSONArray) apexClasses.get("methodForSearch");
+//        methodsSearch.forEach( e -> methodsForSearch.add((String)e) );
+//        JSONArray methodsExecute = (JSONArray) apexClasses.get("methodsForExecute");
+//        METADATA_CHECK.put( namesApexClass + ".cls", new ApexClassRule( namesApexClass, methodsForSearch,createsApexClassCheckExecuteWraper(methodsExecute)));
+//        return METADATA_CHECK;
+//    }
+//
+//    private static List<CheckExecuteMethodWraper> createsApexClassCheckExecuteWraper(JSONArray wrapers) {
+//        List<CheckExecuteMethodWraper> executedMethods = new ArrayList<>();
+//        Iterator<JSONObject> iterator = wrapers.iterator();
+//        while(iterator.hasNext()) {
+//            JSONObject executeMethod = iterator.next();
+//            String nameClass = (String)executeMethod.get("nameClass");
+//            String nameMethod = (String)executeMethod.get("nameMethod");
+//            String stringExecute = (String)executeMethod.get("stringExecute");
+//            executedMethods.add(new CheckExecuteMethodWraper(nameClass, nameMethod, stringExecute));
+//        }
+//        return executedMethods;
+//    }
+//
+//     private static  Map<String, Rule> createsApexPagesTasks(JSONObject apexPages) {
+//         Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//         Map<String, List<String>> tagValuesForSearchVF = new HashMap<>();
+//         String namesApexPages = (String)apexPages.get("name");
+//         JSONArray apexPagesRules = (JSONArray) apexPages.get("rules");
+//         Iterator<JSONObject> iterator = apexPagesRules.iterator();
+//         while(iterator.hasNext()) {
+//             JSONObject ruleApex = iterator.next();
+//             String nameTag = (String)ruleApex.get("nameTag");
+//             List<String> valuesTags = new ArrayList<>();
+//             JSONArray valuesTagsSearch = (JSONArray) ruleApex.get("searchStrings");
+//             valuesTagsSearch.forEach( e -> valuesTags.add((String)e) );
+//             tagValuesForSearchVF.put(nameTag, valuesTags);
+//         }
+//         METADATA_CHECK.put(namesApexPages+".page", new VisualforcePageRule(namesApexPages, tagValuesForSearchVF));
+//        return METADATA_CHECK;
+//    }
+//
+//    private static  Map<String, Rule> createsTestTasks(JSONObject tests) {
+//        Map<String, Rule> METADATA_CHECK   = new HashMap<>();
+//        String namesTest = (String)tests.get("name");
+//        String namesTestingClass = (String)tests.get("testingClass");
+//        METADATA_CHECK.put(namesTest + ".cls", new TestRule(namesTest, namesTestingClass));
+//        return METADATA_CHECK;
+//    }
+
 }

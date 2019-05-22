@@ -64,6 +64,7 @@ dependencies {
     // jsoup search tag
     compile 'org.jsoup:jsoup:1.11.3'
     // JSON object
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'io.vertx:vertx-mail-client:3.7.0'
 
