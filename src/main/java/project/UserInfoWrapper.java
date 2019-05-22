@@ -4,20 +4,16 @@ import project.Rules.Results;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class UserInfoWrapper {
-    public List<Results> results;
+    public Map<String, List<Results>> results;
+
     public List<String> loginHistoryList;
     public List<String> errors;
 
     public UserInfoWrapper() {}
 
-    public void addResults(Results results) {
-        if (this.results == null) {
-            this.results = new ArrayList<>();
-        }
-        this.results.add(results);
-    }
 
     public void addLoginHistoryElement(String loginHistory) {
         if (this.loginHistoryList == null) {
@@ -34,7 +30,7 @@ public class UserInfoWrapper {
         this.errors.add(errorMessage);
     }
 
-    public UserInfoWrapper setResults(List<Results> userResults) {
+    public UserInfoWrapper setResults( Map<String, List<Results>> userResults) {
         this.results = userResults;
         return this;
     }
