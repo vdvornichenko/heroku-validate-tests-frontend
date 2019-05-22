@@ -72,6 +72,7 @@
                     this.currentGroups = [];
                 }
                 this.$root.$emit('selectGroups', this.currentGroups);
+                this.$cookies.set('currentGroups', this.currentGroups, 60*60*24*7);
             },
 
             changeGroup: function () {

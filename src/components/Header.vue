@@ -17,7 +17,7 @@
             <v-spacer></v-spacer>
             <div class="right-part">
                 <v-layout row wrap>
-                    <v-flex lg8 style="padding-top:15px">
+                    <v-flex lg9 style="padding-top:15px">
                         <v-btn v-on:click="sendFeedBack" color="info" style="padding-right: 20px">Оставить пожелание</v-btn>
 <!--                        <v-icon large color="blue darken-2" v-on:click="sendFeedBack">chat</v-icon>-->
                     </v-flex>
@@ -25,17 +25,17 @@
                         <br/>
                         <v-switch primary :label="dark ? 'Dark' : 'Light'" v-on:change="chooseTheme"></v-switch>
                     </v-flex>
-                    <v-flex lg1>
-                        <br/>
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
-                                <span v-on="on">
-                                    <v-icon color="primary" large v-on:click="logOut">logout</v-icon>
-                                </span>
-                            </template>
-                            <span>Выход</span>
-                        </v-tooltip>
-                    </v-flex>
+<!--                    <v-flex lg1>-->
+<!--                        <br/>-->
+<!--                        <v-tooltip bottom>-->
+<!--                            <template v-slot:activator="{ on }">-->
+<!--                                <span v-on="on">-->
+<!--                                    <v-icon color="primary" large v-on:click="logOut">logout</v-icon>-->
+<!--                                </span>-->
+<!--                            </template>-->
+<!--                            <span>Выход</span>-->
+<!--                        </v-tooltip>-->
+<!--                    </v-flex>-->
                 </v-layout>
             </div>
         </v-toolbar>

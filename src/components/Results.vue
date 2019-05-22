@@ -9,6 +9,29 @@
                 <div v-if="propertyName.includes(userForSearch)" class="results-table">
                     <v-toolbar flat>
                         <v-toolbar-title>{{ propertyName }}</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <div class="text-xs-center" v-if="usersLoginHistories[propertyName]">
+                            <v-menu offset-y>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn
+                                            color="primary"
+                                            dark
+                                            v-on="on"
+                                    >
+                                        История входов
+                                    </v-btn>
+                                </template>
+                                <v-list>
+                                    <v-list-tile
+                                            v-for="(item, index) in usersLoginHistories[propertyName]"
+                                            :key="index"
+                                    >
+                                        <v-list-tile-title>{{ item }}</v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                        <div v-if="!usersLoginHistories[propertyName]">No login history</div>
                     </v-toolbar>
                     <template v-if="usersErrors[propertyName]">
                         <v-alert :value="true" color="error" icon="warning"
@@ -99,7 +122,8 @@
             notFound: NOT_FOUND_MESSAGE,
             errorColor: ERROR_COLOR,
             usersErrors: {},
-            userForSearch: ''
+            userForSearch: '',
+            usersLoginHistories: {}
         }),
 
         mounted() {
@@ -108,16 +132,12 @@
                 let totalResults = {};
                 for (let userName in results) {
                     let resultsOfUser = [];
-                    results[userName].forEach(res => {
-                        if (res.nameMetadata === null) {
-                            let errors = this.usersErrors[userName];
-                            if (!errors) {
-                                errors = [res.message];
-                            }
-                            this.usersErrors[userName] = errors;
-                        } else {
+                    this.usersErrors[userName] = results[userName].errors;
+                    this.usersLoginHistories[userName] = results[userName].loginHistoryList;
+                    if (results[userName].results) {
+                        results[userName].results.forEach(res => {
                             if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
-                                let fileResults = results[userName].filter(elem => elem.nameMetadata === res.nameMetadata);
+                                let fileResults = results[userName].results.filter(elem => elem.nameMetadata === res.nameMetadata);
 
                                 let errors = fileResults.filter(val => val.status === 'ERROR');
                                 let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
@@ -137,8 +157,8 @@
                                     showResultsList: false
                                 });
                             }
-                        }
-                    });
+                        });
+                    }
                     totalResults[userName] = resultsOfUser;
                 }
                 this.userResults = totalResults;

@@ -117,26 +117,27 @@
     }),
 
     created() {
-      if (!this.$cookies.isKey(AUTH_TOKEN)) {
-        this.showLoginForm = true;
-      } else {
-        this.$root.$emit('setState', true);
-        this.$http.post(
-                HTTP_CHECK_SESSION_URL,
-                this.$cookies.get(USER_SESSION) + ';' + this.$cookies.get(AUTH_TOKEN)
-        ).then(response => {
-          if (response.body) {
-            this.showTable = true;
-          } else {
-            this.showLoginForm = true;
-          }
-          this.$root.$emit('setState', false);
-        }, () => {
-          this.showLoginForm = true;
-          this.$root.$emit('setState', false);
-        });
-
-      }
+      this.showTable = true;
+      // if (!this.$cookies.isKey(AUTH_TOKEN)) {
+      //   this.showLoginForm = true;
+      // } else {
+      //   this.$root.$emit('setState', true);
+      //   this.$http.post(
+      //           HTTP_CHECK_SESSION_URL,
+      //           this.$cookies.get(USER_SESSION) + ';' + this.$cookies.get(AUTH_TOKEN)
+      //   ).then(response => {
+      //     if (response.body) {
+      //       this.showTable = true;
+      //     } else {
+      //       this.showLoginForm = true;
+      //     }
+      //     this.$root.$emit('setState', false);
+      //   }, () => {
+      //     this.showLoginForm = true;
+      //     this.$root.$emit('setState', false);
+      //   });
+      //
+      // }
     },
 
     mounted() {
