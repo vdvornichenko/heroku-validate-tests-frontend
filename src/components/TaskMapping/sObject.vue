@@ -9,7 +9,7 @@
             <v-container grid-list-md>
                 <v-layout wrap>
                     <v-flex xs12 sm6>
-                        <v-text-field label="Object name" v-model="sObjectRule.name" required></v-text-field>
+                        <v-text-field label="Object name" v-model.trim="sObjectRule.name" :class="{invalid: $v.sObjectRule.name.$dirty}" @change="$v.sObjectRule.name.$touch()"></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
                         <v-text-field label="Label object" v-model="sObjectRule.label"></v-text-field>
@@ -187,6 +187,7 @@
 </template>
 
 <script>
+import { required } from 'vuelidate/lib/validators'
 import cmpMapa from "./cmpMapa";
 export default {
     components: {
@@ -202,11 +203,18 @@ export default {
         },
         modeEditTask: "new"
     }),
-    mounted() {
-        //  this.$root.$on("sendData", keyValue => {
-        //     this.sObjectRule.fieldsRule.push(keyValue);
-        //   });
+    validations: {
+         sObjectRule: {
+             name: {
+                required
+             },
+        //     nestedB: {
+        //         required
+        //     }
+         }
     },
+
+
 
     methods: {
         editField: function(map) {
@@ -226,6 +234,7 @@ export default {
             this.sObjectRule.validationRule.splice(ind, 1);
         },
         addToFieldsRule(keyValue) {
+
             this.sObjectRule.fieldsRule.push(keyValue);
         },
         addToValidationRule(keyValue) {
@@ -235,7 +244,6 @@ export default {
             this.$root.$emit("closeRule");
         },
         emitSaveRule() {
-            console.log("emit sObjectRule");
             if(this.modeEditTask == "new") {
                 this.$root.$emit("addRule", "sObjectRule", this.sObjectRule);
             } else {
@@ -245,6 +253,10 @@ export default {
     }
 };
 </script>
+invalid {
+    border-coloe: red;
+} 
 
+        
 <style scoped>
 </style>

@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import Vuelidate from 'vuelidate'
+Vue.use(Vuelidate)
 import './plugins/vuetify'
 import App from './App.vue'
 import VueResource from 'vue-resource';

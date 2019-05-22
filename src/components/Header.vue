@@ -29,12 +29,13 @@
                 v-for="(item, i) in pages"
                 :key="i"
               >
+                <router-link :to="item" style="text-decoration: none; color:black">
                      <v-list-tile-title  white >
-                        <router-link :to="item" style="text-decoration: none; color:black">
+                     
                             {{ item.title }}
-                        </router-link>
+                        
                     </v-list-tile-title>
-       
+       </router-link>
               </v-list-tile>
             </v-list>
           </v-menu>

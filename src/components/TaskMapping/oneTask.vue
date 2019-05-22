@@ -7,23 +7,34 @@
                 <v-window-item :value="1">
                     <template>
                         <v-toolbar dark flat color="secondary">
-                            <v-toolbar-title>Task</v-toolbar-title>
+               
+                            <v-toolbar-title>Task creator</v-toolbar-title>
                             <v-spacer></v-spacer>
-                            <v-menu bottom right>
-                                <template v-slot:activator="{ on }">
-                                    <v-btn right color="primary" dark v-on="on">add rule</v-btn>
-                                </template>
-                                <v-list>
-                                    <v-list-tile
-                                        v-for="(item, i) in items"
-                                        :key="i"
-                                        @click="createRule(item)"
-                                    >
-                                        <v-list-tile-title>{{ item }}</v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
+           
+							
+			
+           
+                                <v-menu bottom right>
+                                    <template v-slot:activator="{ on }">
+                                        <v-btn right color="primary" dark v-on="on">add rule</v-btn>
+                                    </template>
+                                    <v-list>
+                                        <v-list-tile
+                                            v-for="(item, i) in items"
+                                            :key="i"
+                                            @click="createRule(item)"
+                                        >
+                                            <v-list-tile-title>{{ item }}</v-list-tile-title>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                    
                         </v-toolbar>
+                        <!-- <v-layout align-center justify-center row fill-height>
+                        <v-flex xs8>
+	                        <v-text-field label="name Field" required v-model="Task.nameTask"></v-text-field>
+                        </v-flex>
+                        </v-layout> -->
                     </template>
 
                     <v-card-text>
@@ -112,6 +123,7 @@ export default {
     data: () => ({
         step: 1,
         Task: {
+            nameTask: "",
             sObjectTasks: [],
             apexPageTasks: [],
             apexClassTasks: [],
