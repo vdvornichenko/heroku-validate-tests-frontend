@@ -29,7 +29,7 @@ public class DeployRetrieveHelper {
 
     public String username;
     public String pass;
-    private Map<String, List<Results>> userResults;
+    private Map<String, UserInfoWrapper> userResults;
 
     public MetadataConnection metadataConnection;
 
@@ -44,7 +44,7 @@ public class DeployRetrieveHelper {
 
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public DeployRetrieveHelper(String username, String pass, Map<String, List<Results>> userResults) {
+    public DeployRetrieveHelper(String username, String pass, Map<String, UserInfoWrapper> userResults) {
         this.username = username;
         this.pass = pass;
         this.userResults = userResults;
@@ -52,15 +52,14 @@ public class DeployRetrieveHelper {
         try {
             loginInOrg();
             retrieveZip();
-            System.out.println(getLoginHistory().toString());
+            RequestProcessor.getMapValue(this.username, this.userResults).setLoginHistoryList(getLoginHistory());
         } catch (ConnectionException ex) {
             System.out.println(username + ". >> Connection Exception: " + ex.toString());
-            List<Results> results = new ArrayList<>();
             MailService.getInstance().setSubject("Connection Exception")
                     .setBody(MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + " " +getClass())
                     .sendMail();
-            results.add(new Results(null, "Invalid username, password, security token; or user locked out", false));
-            userResults.put(username, results);
+            UserInfoWrapper info = RequestProcessor.getMapValue(this.username, this.userResults);
+            info.addError("Invalid username, password, security token; or user locked out");
             SalesforceHepler.zip_file_for_read = "";
         }
     }
@@ -365,25 +364,18 @@ public class DeployRetrieveHelper {
         QueryResult queryResult = partnerConnection.query(
                 "Select LoginTime, Browser FROM LoginHistory WHERE SourceIp <> '80.249.88.240' ORDER BY LoginTime DESC"
         );
-        String timeZoneKey = String.valueOf(partnerConnection.query(
-                "Select TimeZoneSidKey FROM User WHERE Profile.Name = 'System Administrator'"
-        ).getRecords()[0].getSObjectField("TimeZoneSidKey"));
         SObject[] records = queryResult.getRecords();
         for (SObject sObject : records) {
             String fieldValue = String.valueOf(sObject.getSObjectField("Browser"));
             if (fieldValue.equalsIgnoreCase("Java (Salesforce.com)")) continue;
             loginTimeList.add(
-                    getFormattedTime(
-                            String.valueOf(sObject.getSObjectField("LoginTime")),
-                            timeZoneKey
-                    )
+                    getFormattedTime(String.valueOf(sObject.getSObjectField("LoginTime")))
             );
         }
         return loginTimeList;
     }
 
-    private String getFormattedTime(String loginTime, String timeZoneKey) {
-        int offset = 3 - TimeZone.getTimeZone(timeZoneKey).getRawOffset()/3600000;
+    private String getFormattedTime(String loginTime) {
         String[] dateAndTime = loginTime.split("T");
         String[] dateParts = dateAndTime[0].split("-");
         int year = Integer.valueOf(dateParts[0]);
@@ -395,7 +387,7 @@ public class DeployRetrieveHelper {
         int second = Integer.valueOf(timeParts[2].substring(0, timeParts[2].indexOf(".")));
         Calendar calendar = new GregorianCalendar();
         calendar.set(year, month - 1, day, hour, minute, second);
-        calendar.add(Calendar.HOUR, offset);
+        calendar.add(Calendar.HOUR, 3);
         System.out.println(year + "  " + month + "   " + day);
         calendar.setTimeZone(TimeZone.getTimeZone("Europe/Minsk"));
         return String.valueOf(calendar.getTime());

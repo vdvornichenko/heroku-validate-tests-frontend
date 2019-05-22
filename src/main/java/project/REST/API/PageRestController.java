@@ -1,9 +1,7 @@
 package project.REST.API;
 
 import org.springframework.web.bind.annotation.*;
-import project.AuthorizationInfoWrapper;
-import project.AuthorizationValidator;
-import project.GoogleDocsWriter;
+import project.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Constants;
 import project.Rules.Results;
@@ -11,7 +9,6 @@ import project.Storages.FileStorage;
 import org.springframework.web.bind.annotation.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Results;
-import project.ToolingHelper;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -21,7 +18,7 @@ public class PageRestController {
 
     @CrossOrigin
     @PostMapping("/usersInfo")
-    public Map<String, List<Results>> getUsersInfo(@RequestBody String userNames) {
+    public Map<String, UserInfoWrapper> getUsersInfo(@RequestBody String userNames) {
         return new RequestProcessor(userNames).getUsersInfo();
     }
     public static class User {
