@@ -12,10 +12,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 import project.TaskMapping;
 import project.Storages.FileStorage;
+import project.UserInfoWrapper;
 
 public class RequestProcessor {
     String users;
-    public Map<String, List<Results>> userResults;
+    public Map<String, UserInfoWrapper> userResults;
     public List<CredentialsStorage> userLogins;
     public static List<FileStorage> files = new ArrayList<>();
 
@@ -31,7 +32,7 @@ public class RequestProcessor {
         }
     }
 
-    public Map<String, List<Results>> getUsersInfo() {
+    public Map<String, UserInfoWrapper> getUsersInfo() {
         userResults = new HashMap<>();
         Stream<String> creds = Arrays.stream(users.split(";"));
         TaskMapping.generatePackageXML();
@@ -41,6 +42,15 @@ public class RequestProcessor {
 
         });
         return userResults;
+    }
+
+    public static UserInfoWrapper getMapValue(String userName, Map<String, UserInfoWrapper> userInfoWrapperMap) {
+        UserInfoWrapper userInfoWrapper = userInfoWrapperMap.get(userName);
+        if (userInfoWrapper == null) {
+            userInfoWrapper = new UserInfoWrapper();
+        }
+        userInfoWrapperMap.put(userName, userInfoWrapper);
+        return userInfoWrapper;
     }
 
     public List<CredentialsStorage> getUserLogins() {
