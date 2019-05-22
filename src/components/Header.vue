@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div>
 <!--        <v-navigation-drawer-->
 <!--                v-model="primaryDrawer.model"-->
@@ -54,6 +54,17 @@
                         <br/>
                         <v-switch primary :label="dark ? 'Dark' : 'Light'" v-on:change="chooseTheme"></v-switch>
                     </v-flex>
+<!--                    <v-flex lg1>-->
+<!--                        <br/>-->
+<!--                        <v-tooltip bottom>-->
+<!--                            <template v-slot:activator="{ on }">-->
+<!--                                <span v-on="on">-->
+<!--                                    <v-icon color="primary" large v-on:click="logOut">logout</v-icon>-->
+<!--                                </span>-->
+<!--                            </template>-->
+<!--                            <span>Выход</span>-->
+<!--                        </v-tooltip>-->
+<!--                    </v-flex>-->
                 </v-layout>
             </div>
         </v-toolbar>
@@ -91,6 +102,11 @@
             },
             sendFeedBack: function () {
                 this.$root.$emit('setFeedBack');
+            },
+
+            logOut: function () {
+                this.$emit('logout');
+                this.$root.$emit('openLoginForm');
             }
         }
     }
@@ -102,7 +118,6 @@
         text-decoration: none;
     }
     .right-part {
-        float: right;
         padding-right: 30px;
     }
 </style>
