@@ -149,9 +149,8 @@ public class TaskMapping {
                 VisualforcePageRule VFpage = (VisualforcePageRule)rule;
                 membersVisualforcePage.add(VFpage.nameFile);
             } else if (rule instanceof TestRule){
-
-               // ApexClassRule apexRule = (ApexClassRule)rule;
-               // membersApexClass.add(apexRule.nameClass);
+                TestRule test  = (TestRule)rule;
+                membersApexClass.add(test.TestClass);
             }
         }
         if (!membersSobject.isEmpty()) {
