@@ -35,12 +35,18 @@ public class SalesforceHepler {
     private Map<String, UserInfoWrapper> userResults;
 
     public static String zip_file_for_read = "";
-    private static Map<String, Rule> mapping = TaskMapping.METADATA_CHECK;
+//    private static Map<String, Rule> mapping = TaskMapping.METADATA_CHECK;
 
-    public SalesforceHepler(String username, String password, Map<String, UserInfoWrapper> userResults) {
+    public TaskMapping taskMapping;
+
+
+
+
+    public SalesforceHepler(String username, String password, Map<String, UserInfoWrapper> userResults, TaskMapping taskMapping) {
         this.tempUsername = username;
         this.tempPassword = password;
         this.userResults = userResults;
+        this.taskMapping = taskMapping;
     }
 
     public void processUser() {
@@ -58,56 +64,64 @@ public class SalesforceHepler {
     }
 
 
-    private List<Results> checkZipFile() {
+    private void checkZipFile() {
 
-        List<Results> results = new ArrayList<>();
+        Map<String, List<Results>> TASK_RESULT = new HashMap<>();
         try {
             ZipFile file = new ZipFile(zip_file_for_read);
 
-            for (String item : TaskMapping.tasks) {
-                Enumeration< ? extends ZipEntry > e = file.entries();
-                boolean fileFound = false;
-                while (e.hasMoreElements()) {
-                    ZipEntry entry = e.nextElement();
-                    if (entry.getName().contains("/" + item) && !entry.getName().contains(".xml")) {
-                        fileFound = true;
-                        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
-                        String allFile = "";
-                        String theFile = "";
-                        String line = null;
-                        while ((line = br.readLine()) != null){
-                            allFile = allFile + line;
-                            theFile += "<br/>" + line.replaceAll(" ", "&nbsp;")
-                                    .replaceAll("<", "&lt").replaceAll(">", "&gt;");
+            for (String taskName : taskMapping.nameTask_mapResults.keySet()) {
+
+                List<Results> results = new ArrayList<>();
+                for (String nameMetadata : taskMapping.nameTask_mapResults.get(taskName).keySet()) {
+                    Enumeration<? extends ZipEntry> e = file.entries();
+                    boolean fileFound = false;
+                    while (e.hasMoreElements()) {
+                        ZipEntry entry = e.nextElement();
+                        if (entry.getName().contains("/" + nameMetadata + ".") && !entry.getName().contains(".xml")) {
+                            fileFound = true;
+                            BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
+                            String allFile = "";
+                            String theFile = "";
+                            String line = null;
+                            while ((line = br.readLine()) != null) {
+                                allFile = allFile + line;
+                                theFile += "<br/>" + line.replaceAll(" ", "&nbsp;")
+                                        .replaceAll("<", "&lt").replaceAll(">", "&gt;");
+                            }
+                            System.out.println(nameMetadata);
+                            System.out.println(tempUsername);
+                            System.out.println(allFile);
+                            if (!addFileToContainer(tempUsername, nameMetadata, theFile)) {
+                                RequestProcessor.files.add(new FileStorage(nameMetadata, tempUsername, theFile));
+                            }
+                            results.addAll(taskMapping.nameTask_mapResults.get(taskName).get(nameMetadata).checkCondition(allFile, this.tempUsername));
+//                            results.addAll(mapping.get(nameMetadata).checkCondition(allFile, this.tempUsername));
+                            break;
                         }
-                        System.out.println(item);
-                        System.out.println(tempUsername);
-                        System.out.println(allFile);
-                        if (!addFileToContainer(tempUsername, item, theFile)) {
-                            RequestProcessor.files.add(new FileStorage(item, tempUsername, theFile));
+                    }
+                    // not found file
+                    if (!fileFound) {
+                        if (nameMetadata.contains("Test")) {
+                            results.add(new Results("Test", MessageFormat.format(templateNotFoundFile, nameMetadata), false));
+                        } else {
+                            results.add(new Results(nameMetadata, MessageFormat.format(templateNotFoundFile, nameMetadata), false));
                         }
-                        results.addAll(mapping.get(item).checkCondition(allFile, this.tempUsername));
-                        break;
                     }
                 }
-                // not found file
-                if (!fileFound){
-                    if (item.contains("Test")){
-                        results.add(new Results("Test", MessageFormat.format(templateNotFoundFile, item), false));
-                    } else {
-                        results.add(new Results(item, MessageFormat.format(templateNotFoundFile, item), false));
-                    }
-                }
+                TASK_RESULT.put(taskName, results);
+
+
             }
 
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
         }
-        for (Results res : results) {
-            System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
-        }
-        RequestProcessor.getMapValue(tempUsername, userResults).setResults(results);
-        return results;
+//        for (Results res : results) {
+//            System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
+//        }
+        RequestProcessor.getMapValue(tempUsername, userResults).setResults(TASK_RESULT);
+
     }
 
     private Boolean addFileToContainer(String owner, String fileName, String fileContent) {

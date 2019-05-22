@@ -1,5 +1,6 @@
 package project.Processors;
 
+import org.mortbay.util.ajax.JSON;
 import project.GoogleHelper;
 import project.Rules.Results;
 import project.SalesforceHepler;
@@ -35,12 +36,27 @@ public class RequestProcessor {
     public Map<String, UserInfoWrapper> getUsersInfo() {
         userResults = new HashMap<>();
         Stream<String> creds = Arrays.stream(users.split(";"));
-        TaskMapping.generatePackageXML();
+
+//        TaskMapping.generatePackageXML();
+
+        TaskMapping taskMapping = new TaskMapping("Daf");
+
         creds.parallel().forEach(value -> {
-            SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value), userResults);
+            if (GoogleHelper.userCreds.get(value) == null) {
+                GoogleHelper.callDocument(userLogins);
+            }
+            SalesforceHepler helper = new SalesforceHepler(value, GoogleHelper.userCreds.get(value), userResults, taskMapping);
             helper.processUser();
 
         });
+        for (String s : userResults.keySet()) {
+            for (String ss : userResults.get(s).results.keySet()) {
+                System.out.println(ss);
+                for (Results results : userResults.get(s).results.get(ss)) {
+                    System.out.println(results.nameMetadata);
+                }
+            }
+        }
         return userResults;
     }
 
@@ -53,8 +69,8 @@ public class RequestProcessor {
         return userInfoWrapper;
     }
 
-    public List<CredentialsStorage> getUserLogins() {
 
+    public List<CredentialsStorage> getUserLogins() {
         return userLogins;
     }
 
