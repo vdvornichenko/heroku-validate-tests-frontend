@@ -66,7 +66,7 @@ public class SalesforceHepler {
 
     private void checkZipFile() {
 
-        Map<String, List<Results>> TASK_RESULT = new HashMap<>();
+        Map<String, List<Results>> TASK_RESULT = new LinkedHashMap<>();
         try {
             ZipFile file = new ZipFile(zip_file_for_read);
 

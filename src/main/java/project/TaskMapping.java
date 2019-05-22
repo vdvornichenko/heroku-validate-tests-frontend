@@ -44,7 +44,7 @@ public class TaskMapping {
     public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     public String nameTask  = "src/main/resources/package.xml";
-    public Map<String, Map<String, Rule>> nameTask_mapResults   = new HashMap<>();
+    public Map<String, Map<String, Rule>> nameTask_mapResults   = new LinkedHashMap<>();
 
     public TaskMapping(String nameTask){
         this.nameTask = nameTask;
@@ -63,7 +63,7 @@ public class TaskMapping {
 
 
     public Map<String, Map<String, Rule>> loadTaskMapping(){
-        Map<String, Map<String, Rule>> nameTask_mapResults   = new HashMap<>();
+        Map<String, Map<String, Rule>> nameTask_mapResults   = new LinkedHashMap<>();
         try{
             // System.out.println("METADATA_CHECK " + METADATA_CHECK);
             FileReader reader = new FileReader("src/main/resources/StorageTaskMapping.json");
@@ -196,7 +196,7 @@ public class TaskMapping {
 
 
     private static  Map<String, Rule> parseTaskObject(JSONObject tasksList) {
-        Map<String, Rule> taskMapping = new HashMap<>();
+        Map<String, Rule> taskMapping = new LinkedHashMap<>();
         JSONArray sObjectArr = (JSONArray) tasksList.get("sObjectTasks");
         sObjectArr.forEach( e -> {
             sObjectRule  sObjectrule = createSObjectTasks( (JSONObject)e);
