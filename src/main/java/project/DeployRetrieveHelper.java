@@ -5,12 +5,18 @@ import java.text.MessageFormat;
 import java.util.*;
 import javax.xml.parsers.*;
 
+import com.google.api.client.util.DateTime;
+import com.sforce.soap.apex.SoapConnection;
 import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import com.sforce.soap.metadata.*;
@@ -23,7 +29,7 @@ public class DeployRetrieveHelper {
 
     public String username;
     public String pass;
-    private Map<String, List<Results>> userResults;
+    private Map<String, UserInfoWrapper> userResults;
 
     public MetadataConnection metadataConnection;
 
@@ -38,7 +44,7 @@ public class DeployRetrieveHelper {
 
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public DeployRetrieveHelper(String username, String pass, Map<String, List<Results>> userResults) {
+    public DeployRetrieveHelper(String username, String pass, Map<String, UserInfoWrapper> userResults) {
         this.username = username;
         this.pass = pass;
         this.userResults = userResults;
@@ -46,14 +52,14 @@ public class DeployRetrieveHelper {
         try {
             loginInOrg();
             retrieveZip();
+            RequestProcessor.getMapValue(this.username, this.userResults).setLoginHistoryList(getLoginHistory());
         } catch (ConnectionException ex) {
             System.out.println(username + ". >> Connection Exception: " + ex.toString());
-            List<Results> results = new ArrayList<>();
             MailService.getInstance().setSubject("Connection Exception")
                     .setBody(MessageFormat.format(Constants.CONNECTION_EX_MESSAGE, username, ex.toString()) + " " +getClass())
                     .sendMail();
-            results.add(new Results(null, "Invalid username, password, security token; or user locked out", false));
-            userResults.put(username, results);
+            UserInfoWrapper info = RequestProcessor.getMapValue(this.username, this.userResults);
+            info.addError("Invalid username, password, security token; or user locked out");
             SalesforceHepler.zip_file_for_read = "";
         }
     }
@@ -346,8 +352,44 @@ public class DeployRetrieveHelper {
         }
     }
 
+    private List<String> getLoginHistory() throws ConnectionException {
+        List<String> loginTimeList = new ArrayList<>();
+        ConnectorConfig config = new ConnectorConfig();
+        config.setUsername(this.username);
+        config.setPassword(this.pass);
+        config.setServiceEndpoint(MetadataLoginUtil.LOGIN_URL);
+        config.setAuthEndpoint(MetadataLoginUtil.LOGIN_URL);
 
+        PartnerConnection partnerConnection = new PartnerConnection(config);
+        QueryResult queryResult = partnerConnection.query(
+                "Select LoginTime, Browser FROM LoginHistory WHERE SourceIp <> '80.249.88.240' ORDER BY LoginTime DESC"
+        );
+        SObject[] records = queryResult.getRecords();
+        for (SObject sObject : records) {
+            String fieldValue = String.valueOf(sObject.getSObjectField("Browser"));
+            if (fieldValue.equalsIgnoreCase("Java (Salesforce.com)")) continue;
+            loginTimeList.add(
+                    getFormattedTime(String.valueOf(sObject.getSObjectField("LoginTime")))
+            );
+        }
+        return loginTimeList;
+    }
 
-
-
+    private String getFormattedTime(String loginTime) {
+        String[] dateAndTime = loginTime.split("T");
+        String[] dateParts = dateAndTime[0].split("-");
+        int year = Integer.valueOf(dateParts[0]);
+        int month = Integer.valueOf(dateParts[1]);
+        int day = Integer.valueOf(dateParts[2]);
+        String[] timeParts = dateAndTime[1].split(":");
+        int hour = Integer.valueOf(timeParts[0]);
+        int minute = Integer.valueOf(timeParts[1]);
+        int second = Integer.valueOf(timeParts[2].substring(0, timeParts[2].indexOf(".")));
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(year, month - 1, day, hour, minute, second);
+        calendar.add(Calendar.HOUR, 3);
+        System.out.println(year + "  " + month + "   " + day);
+        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Minsk"));
+        return String.valueOf(calendar.getTime());
+    }
 }

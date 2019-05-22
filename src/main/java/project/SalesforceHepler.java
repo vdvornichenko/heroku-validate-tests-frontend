@@ -32,12 +32,12 @@ public class SalesforceHepler {
 
     private String tempUsername;
     private String tempPassword;
-    private Map<String, List<Results>> userResults;
+    private Map<String, UserInfoWrapper> userResults;
 
     public static String zip_file_for_read = "";
     private static Map<String, Rule> mapping = TaskMapping.METADATA_CHECK;
 
-    public SalesforceHepler(String username, String password, Map<String, List<Results>> userResults) {
+    public SalesforceHepler(String username, String password, Map<String, UserInfoWrapper> userResults) {
         this.tempUsername = username;
         this.tempPassword = password;
         this.userResults = userResults;
@@ -106,7 +106,7 @@ public class SalesforceHepler {
         for (Results res : results) {
             System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
         }
-        userResults.put(tempUsername, results);
+        RequestProcessor.getMapValue(tempUsername, userResults).setResults(results);
         return results;
     }
 

@@ -1,8 +1,7 @@
 package project.REST.API;
 
 import org.springframework.web.bind.annotation.*;
-import project.AuthorizationValidator;
-import project.GoogleDocsWriter;
+import project.*;
 import project.Processors.RequestProcessor;
 import project.Rules.Constants;
 import project.Rules.Results;
@@ -21,7 +20,7 @@ public class PageRestController {
 
     @CrossOrigin
     @PostMapping("/usersInfo")
-    public Map<String, List<Results>> getUsersInfo(@RequestBody String userNames) {
+    public Map<String, UserInfoWrapper> getUsersInfo(@RequestBody String userNames) {
         return new RequestProcessor(userNames).getUsersInfo();
     }
     public static class User {
@@ -60,11 +59,19 @@ public class PageRestController {
 
     @CrossOrigin
     @PostMapping("/authorization")
-    public String checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
+    public AuthorizationInfoWrapper checkCreds(@RequestBody String nameAndPassword) throws FileNotFoundException {
         String[] creds = nameAndPassword.split(";");
         return AuthorizationValidator.checkCreds(creds[0], creds[1]);
     }
-///////////////////////// TASK MAPPPING /////////////////////////
+
+    @CrossOrigin
+    @PostMapping("/sessionChecking")
+    public Boolean ifSessionIsExisted(@RequestBody String userNameAndToken) {
+        String[] sessionInfo = userNameAndToken.split(";");
+        return AuthorizationValidator.ifSessionIsExisted(sessionInfo[0], sessionInfo[1]);
+
+    }
+
     @CrossOrigin
     @PostMapping("/saveTaskMapping")
     public String saveTaskMapping(@RequestBody String jsonFile) {
