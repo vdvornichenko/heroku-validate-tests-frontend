@@ -1,8 +1,5 @@
 <template >
 
-
-
-
 <v-app id="taskMp" dark>
 	
 	 <Header @changeTheme="!!dark"/>
@@ -23,6 +20,12 @@
 
 
 <v-card class="mx-auto" :dark="dark">
+
+<v-app :dark="dark">
+		<div style="padding-top: 70px;">
+	 <Header @changeTheme="dark = !dark"/>
+		<v-card class="mx-auto" >
+
 			<v-window v-model="step">
 				<v-window-item :value="0">
 					<template>
@@ -38,7 +41,7 @@
 					<v-card-text>
 						<v-flex xs12>
 							<!-- <v-list>
-								
+
 								<v-list-group
 									sub-group
 									v-for="(row, index) in Tasks"
@@ -88,7 +91,7 @@
 										</v-list-tile-content>
 									</v-list-tile>
 								</v-list-group>
-							
+
 							</v-list> -->
 
 
@@ -211,10 +214,12 @@
 <script>
 import oneTask from "./oneTask";
 import Header from "../Header";
+import FilesComponent from "../FilesComponent";
 export default {
 	components: {
 		oneTask,
-		Header
+		Header,
+		FilesComponent
 	},
 	name: "container",
 	data: () => ({
@@ -251,6 +256,11 @@ export default {
 			this.step++;
 			this.mode = "new";
 			this.component = null;
+		});
+
+		this.$on("changeTheme", () => {
+			console.log(this.dark);
+			this.dark = !this.dark;
 		});
 	},
 	methods: {

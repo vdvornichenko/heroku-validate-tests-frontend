@@ -1,5 +1,6 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-card>
+        <input type="hidden" v-model="showTableForm"/>
         <v-card-title>
             Группы: {{ currentGroups.length === 0 ? 'все группы' : currentGroups.join(', ') }}
             <v-icon v-on:click="refresh" large style="padding-left: 50px">cached</v-icon>
@@ -19,9 +20,21 @@
                       :search="search"
                       :rows-per-page-items="rowsPerPage"
         >
+            <template v-slot:headers="props">
+                <tr>
+                    <th>
+                        <v-checkbox v-model="allUsersSelected" v-on:change="selectAllUsers" hide-details/>
+                    </th>
+                    <th v-for="header in props.headers" :key="header.text" style="text-align: left">
+                        {{ header.text }}
+                    </th>
+                </tr>
+            </template>
             <template v-slot:items="props" >
+                <td>
+                    <v-checkbox v-model="props.item.checked" hide-details/>
+                </td>
                 <td>{{ props.item.index + 1 }}</td>
-                <td><input type="checkbox" v-model="props.item.checked"/></td>
                 <td class="text-xs-left">
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on }">
@@ -55,7 +68,6 @@
             users : [],
             usersTableHeaders : [
                 {text : "#", value : "index", sortable: false, align: "left"},
-                {text : "Select User", value : "checked", sortable : false},
                 {text : "Login(Можно перейти на орг)", value : "userName", sortable: false},
                 {text : 'User name', value : 'fio', sortable: false},
                 {text : "Group", value : "group", sortable: false},
@@ -65,23 +77,35 @@
             groups: [''],
             currentGroups: [],
             rowsPerPage: [10,25,5,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
-            onlyWithCreds: false
+            onlyWithCreds: true,
+            allUsersSelected: false
         }),
+
+        props : {
+            showTable: Boolean
+        },
 
         mounted() {
             this.$root.$on('selectGroups', currentGroups => {this.currentGroups = currentGroups});
-
-            this.$root.$on('getAllUsersInfo', this.getAllUsersInfo);
 
             this.$root.$on('getSelectedUsersInfo', this.getSelectedUsersInfo);
 
             this.$root.$on('setOnlyWithCredsMod', () => {this.onlyWithCreds = !this.onlyWithCreds});
 
-            this.$root.$on('openMainPage', this.getUsersCreds);
-
-            this.$parent.$on('openTable', this.getUsersCreds());
-
+            this.$root.$on('openMainPage', () => {
+                this.getUsersCreds()
+            });
         },
+
+        computed: {
+            showTableForm : function () {
+                if (this.showTable) {
+                    this.getUsersCreds();
+                }
+                return this.showTable;
+            }
+        },
+
         methods: {
             toggle: function() {
                 if (this.allSelected) {
@@ -111,6 +135,9 @@
                     this.$root.$emit('setGroups', new Set(groups), this.currentGroups);
                     this.$root.$emit('setState', false);
 
+                }, response => {
+                    this.$root.$emit('setAlert', response.body.message, 'error');
+                    this.$root.$emit('setState', false);
                 });
             },
 
@@ -125,14 +152,6 @@
             refresh: function() {
                 this.users = [];
                 this.getUsersCreds();
-            },
-
-            getAllUsersInfo: function () {
-                let users = [];
-                this.getCurrentUsers().forEach((elem) => {
-                    users.push(elem.userName);
-                });
-                return this.getResults(users);
             },
 
             getSelectedUsersInfo: function () {
@@ -152,6 +171,25 @@
                 } else {
                     this.$root.$emit('runCallback', this.$http.post(HTTP_USERS_INFO_URL, users.join(';')), 'getUserResults');
                     this.$root.$emit('showUsersSearch');
+                }
+            },
+
+            selectAllUsers: function () {
+                let currentUsers = this.getCurrentUsers();
+                if (this.allUsersSelected) {
+                    this.users = this.users.map(el => {
+                        if (currentUsers.includes(el)) {
+                            el.checked = true;
+                        }
+                        return el;
+                    });
+                } else {
+                    this.users = this.users.map(el => {
+                        if (currentUsers.includes(el)) {
+                            el.checked = false;
+                        }
+                        return el;
+                    });
                 }
             }
         }

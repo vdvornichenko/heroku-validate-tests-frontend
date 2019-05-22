@@ -19,12 +19,14 @@
                 <v-subheader v-if="isFile">{{ fileName }}</v-subheader>
                 <v-subheader v-if="isFeedBack">Оставьте свои пожелания</v-subheader>
                 <div v-if="isFeedBack">
-                    <v-textarea
-                            solo
-                            label="Текст отзыва"
-                            v-model="feedBackText"
-                    >{{ feedBackText }}</v-textarea>
-                    <v-btn v-on:click="sendFeedback">Отправить</v-btn>
+                    <v-container>
+                        <v-textarea
+                                solo
+                                label="Текст отзыва"
+                                v-model="feedBackText"
+                        >{{ feedBackText }}</v-textarea>
+                        <v-btn v-on:click="sendFeedback">Отправить</v-btn>
+                    </v-container>
                 </div>
                 <pre id="fileContent">
                 </pre>
