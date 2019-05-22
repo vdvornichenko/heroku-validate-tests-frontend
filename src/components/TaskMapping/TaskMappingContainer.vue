@@ -5,7 +5,7 @@
 
 <v-app :dark="dark">
 		<div style="padding-top: 70px;">
-	 <Header @changeTheme="dark=!dark"/>
+	 <Header @changeTheme="dark = !dark"/>
 		<v-card class="mx-auto" >
 			<v-window v-model="step">
 				<v-window-item :value="0">
@@ -22,7 +22,7 @@
 					<v-card-text>
 						<v-flex xs12>
 							<!-- <v-list>
-								
+
 								<v-list-group
 									sub-group
 									v-for="(row, index) in Tasks"
@@ -72,7 +72,7 @@
 										</v-list-tile-content>
 									</v-list-tile>
 								</v-list-group>
-							
+
 							</v-list> -->
 
 
@@ -174,6 +174,7 @@
 				</v-window-item>
 			</v-window>
 		</v-card>
+			<FilesComponent/>
 		</div>
 		</v-app>
 	
@@ -181,10 +182,12 @@
 <script>
 import oneTask from "./oneTask";
 import Header from "../Header";
+import FilesComponent from "../FilesComponent";
 export default {
 	components: {
 		oneTask,
-		Header
+		Header,
+		FilesComponent
 	},
 	name: "container",
 	data: () => ({
@@ -222,12 +225,19 @@ export default {
 			this.mode = "new";
 			this.component = null;
 		});
+
+		this.$on("changeTheme", () => {
+			console.log(this.dark);
+			this.dark = !this.dark;
+		});
 	},
 	methods: {
 		getTaskMapping: function(index) {
 			this.$http.get('http://localhost:8080/getTaskMapping').then(response => {
 			   console.log ( response.body);
-               this.Tasks = response.body;     
+			   if (response.body) {
+				   this.Tasks = response.body;
+			   }
             });
 		},
 		editTask: function(task) {
@@ -290,6 +300,9 @@ export default {
 			});
 		},
 
+		fff: function () {
+			console.log('asd');
+		}
 
 	}
 };
