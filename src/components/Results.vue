@@ -129,15 +129,23 @@
         mounted() {
             this.$root.$on('getUserResults', results => {
                 results = results.body;
+                // eslint-disable-next-line no-console
+                console.log(results);
                 let totalResults = {};
                 for (let userName in results) {
                     let resultsOfUser = [];
                     this.usersErrors[userName] = results[userName].errors;
                     this.usersLoginHistories[userName] = results[userName].loginHistoryList;
                     if (results[userName].results) {
-                        results[userName].results.forEach(res => {
+                        let ress = [];
+                        for (let task in results[userName].results) {
+                            ress = ress.concat(results[userName].results[task]);
+                        }
+                        // eslint-disable-next-line no-console
+                        console.log(ress);
+                        ress.forEach(res => {
                             if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
-                                let fileResults = results[userName].results.filter(elem => elem.nameMetadata === res.nameMetadata);
+                                let fileResults = ress.filter(elem => elem.nameMetadata === res.nameMetadata);
 
                                 let errors = fileResults.filter(val => val.status === 'ERROR');
                                 let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
