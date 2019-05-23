@@ -120,7 +120,7 @@
 												<v-layout align-end justify-end>
 													<v-layout align-end justify-end>
 														<!-- <v-btn color="primary" dark @click="getTasks">TEST BUTTON</v-btn> -->
-														<v-btn color="primary" dark @click="saveTasks" v-if="Tasks.length>0">SAVE TASKS</v-btn>
+														<v-btn color="primary" dark @click="saveTasks" :disabled="!!disableButton">SAVE TASKS</v-btn>
 													</v-layout>
 													<!-- <v-btn  color="primary" dark @click="cancel">Cancel</v-btn>
 													<v-btn  color="primary" dark @click="createTask">CREATE TASK</v-btn>-->
@@ -188,6 +188,9 @@ export default {
 		});
 	},
 	methods: {
+		disableButton: function(index) {
+			return 'true';
+		},
 		getTaskMapping: function(index) {
 			var url = window.location.href.includes("localhost")
 				? "http://localhost:8080/getTaskMapping"

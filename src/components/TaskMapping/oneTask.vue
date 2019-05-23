@@ -92,7 +92,7 @@
 
                             <v-layout align-end justify-end>
                                 <v-btn color="primary" dark @click="cancel">Cancel</v-btn>
-                                <v-btn color="primary" dark @click="createTask">SAVE TASK</v-btn>
+                                <v-btn color="primary" dark @click="createTask" :disabled='isDisabled'>SAVE TASK</v-btn>
                             </v-layout>
                         </v-flex>
                     </v-card-text>
@@ -139,6 +139,14 @@ export default {
         ],
         component: null
     }),
+    computed: {
+  	isDisabled: function(){
+             for (var i in this.Task) {
+                if(this.Task[i].length > 0) return false;   
+            }
+             return true; 
+    }
+  },
     mounted() {
         this.$root.$on("addRule", (metaName, rule) => {
             console.log("emit OneTAsk " + metaName);
@@ -249,7 +257,7 @@ export default {
                 triggerTasks: [],
                 testTasks: []
             };
-        }
+        },
     }
 };
 </script>
