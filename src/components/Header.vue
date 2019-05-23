@@ -53,7 +53,7 @@
                     </v-flex>
                     <v-flex lg3>
                         <br/>
-                        <v-switch primary :label="dark ? 'Dark' : 'Light'" v-on:change="chooseTheme"></v-switch>
+                        <v-switch primary label="Light" v-on:change="chooseTheme"></v-switch>
                     </v-flex>
 <!--                    <v-flex lg1>-->
 <!--                        <br/>-->
