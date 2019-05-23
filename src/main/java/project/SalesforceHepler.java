@@ -18,7 +18,7 @@ public class SalesforceHepler {
     private String tempPassword;
     private Map<String, UserInfoWrapper> userResults;
 
-    public static String zip_file_for_read = "";
+    public String zip_file_for_read = "";
 
     public TaskMapping taskMapping;
 
@@ -30,10 +30,9 @@ public class SalesforceHepler {
     }
 
     public void processUser() {
-        DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword, userResults);
+        DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword, userResults, this);
         if (!zip_file_for_read.equalsIgnoreCase("")) {
             checkZipFile();
-            instance.deleteFileZip();
         }
     }
 
@@ -42,12 +41,14 @@ public class SalesforceHepler {
 
         Map<String, List<Results>> TASK_RESULT = new LinkedHashMap<>();
         try {
+            System.out.println(tempUsername + "     ---" + zip_file_for_read);
             ZipFile file = new ZipFile(zip_file_for_read);
 
             for (String taskName : taskMapping.nameTask_mapResults.keySet()) {
 
                 List<Results> results = new ArrayList<>();
                 for (String nameMetadata : taskMapping.nameTask_mapResults.get(taskName).keySet()) {
+                    System.out.println(nameMetadata);
                     Enumeration<? extends ZipEntry> e = file.entries();
                     boolean fileFound = false;
                     while (e.hasMoreElements()) {
@@ -81,7 +82,6 @@ public class SalesforceHepler {
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
         }
-        System.out.println(TASK_RESULT.size());
         RequestProcessor.getMapValue(tempUsername, userResults).setResults(TASK_RESULT);
 
     }

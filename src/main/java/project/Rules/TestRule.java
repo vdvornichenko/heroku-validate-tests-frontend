@@ -28,9 +28,9 @@ public class TestRule implements Rule {
         if (    Util.checkNesting(file, "System.assert") > 1 ||
                 Util.checkNesting(file, "System.assertEquals") > 1 ||
                 Util.checkNesting(file, "System.assertNotEquals") > 1 ) {
-            results.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_ASSERT,  this.TestClass), true));
+            results.add(new Results(this.TestClass, MessageFormat.format(Constants.TEST_SUCCESS_ASSERT,  this.TestClass), true));
         } else {
-            results.add(new Results("Test",  MessageFormat.format(Constants.TEST_FAIL_ASSERT,  this.TestClass), false));
+            results.add(new Results(this.TestClass,  MessageFormat.format(Constants.TEST_FAIL_ASSERT,  this.TestClass), false));
         }
         results.addAll(validateUserResultUsingTest(userName,  this.TestClass, this.CoveregeClass));
         return results;
@@ -73,9 +73,9 @@ public class TestRule implements Rule {
                             testRun = true;
                             Integer percentCoverage = checkCoverage((ccr.getNumLocations() - ccr.getNumLocationsNotCovered()), ccr.getNumLocations());
                             if(percentCoverage < 75){
-                                res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE, testCl, percentCoverage), false));
+                                res.add(new Results(this.TestClass, MessageFormat.format(Constants.TEST_SUCCESS_BUT_NOT_ENOUGH_COVERAGE, testCl, percentCoverage), false));
                             } else {
-                                res.add(new Results("Test", MessageFormat.format(Constants.TEST_SUCCESS,  testCl, percentCoverage), true));
+                                res.add(new Results(this.TestClass, MessageFormat.format(Constants.TEST_SUCCESS,  testCl, percentCoverage), true));
                             }
                             System.out.println(debugThreadName + ": >> Test Result For Class: " + TestClass);
                             System.out.println(debugThreadName + ": >> Coverage: " + (ccr.getNumLocations() - ccr.getNumLocationsNotCovered()) + " of " + ccr.getNumLocations()
@@ -83,7 +83,7 @@ public class TestRule implements Rule {
                         }
                     }
 
-                    if(!testRun) res.add(new Results("Test", MessageFormat.format(Constants.TEST_NOT_FOUND,  testCl), false));
+                    if(!testRun) res.add(new Results(this.TestClass, MessageFormat.format(Constants.TEST_NOT_FOUND,  testCl), false));
 
 //                }
             } else{

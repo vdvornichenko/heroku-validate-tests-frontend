@@ -41,13 +41,15 @@ public class DeployRetrieveHelper {
     private static final long ONE_SECOND = 1000;
     // maximum number of attempts to deploy the zip file
     private static final int MAX_NUM_POLL_REQUESTS = 50;
+    private SalesforceHepler salesforceHepler;
 
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public DeployRetrieveHelper(String username, String pass, Map<String, UserInfoWrapper> userResults) {
+    public DeployRetrieveHelper(String username, String pass, Map<String, UserInfoWrapper> userResults, SalesforceHepler salesforceHepler) {
         this.username = username;
         this.pass = pass;
         this.userResults = userResults;
+        this.salesforceHepler = salesforceHepler;
         this.ZIP_FILE = "src/main/resources/" +  username + ".zip";
         try {
             loginInOrg();
@@ -60,7 +62,7 @@ public class DeployRetrieveHelper {
                     .sendMail();
             UserInfoWrapper info = RequestProcessor.getMapValue(this.username, this.userResults);
             info.addError("Invalid username, password, security token; or user locked out");
-            SalesforceHepler.zip_file_for_read = "";
+            salesforceHepler.zip_file_for_read = "";
         }
     }
 
@@ -200,7 +202,7 @@ public class DeployRetrieveHelper {
                     os.close();
                 }
 
-                SalesforceHepler.zip_file_for_read = ZIP_FILE;
+                salesforceHepler.zip_file_for_read = ZIP_FILE;
             }
 
         } catch (Exception ex) {

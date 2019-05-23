@@ -107,6 +107,9 @@ public class GoogleHelper {
                 }
                 if (!currentGroup.equalsIgnoreCase("")) {
                     tableStrings.get(i).add((Object) currentGroup);
+                    if (userLogins == null) {
+                        userLogins = new ArrayList<>();
+                    }
                     userLogins.add(new RequestProcessor.CredentialsStorage(tableStrings.get(i)));
                     userCreds.put(String.valueOf(tableStrings.get(i).get(0)), String.valueOf(tableStrings.get(i).get(1)));
                 }
