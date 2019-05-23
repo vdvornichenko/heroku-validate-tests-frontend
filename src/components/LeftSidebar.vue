@@ -23,7 +23,7 @@
             </template>
         </v-select>
         <div style="text-align: center">
-            <v-checkbox v-on:change="setOnlyWithCredsMod" label="Креды должны быть заполнены" v-model="onlyWithCreds">
+            <v-checkbox v-on:change="setOnlyWithCredsMod" label="Креды заполнены" v-model="onlyWithCreds">
             </v-checkbox>
             <v-btn color="info" v-on:click="getSelectedUsersInfo" style="width: 100%">Проверить</v-btn>
         </div>

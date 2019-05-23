@@ -47,67 +47,73 @@
                             class="elevation-1"
                     >
                         <template v-slot:items="props">
-                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                                {{ props.item.index + 1 }}
-                            </td>
-                            <td>
-                                {{ props.item.taskName }}
-                            </td>
-                            <td style="padding: 0">
-                                <table width="100%" style="border-collapse: collapse">
-                                <tr
-                                        v-for="(taskResult, index) in props.item.taskResults"
-                                        :key="index"
-                                        v-bind:style="{ backgroundColor: (taskResult.status == 'ERROR') ? errorColor : '' }"
-                                        style="border: none; height: 100%; width: 100%"
+                            <tr>
+                                <td>
+                                    {{ props.item.index + 1 }}
+                                </td>
+                                <td>
+                                    {{ props.item.taskName }}
+                                </td>
+                                <td
+                                        :class="props.item.status == 'ERROR' ? 'font-weight-medium error--text' : 'success--text'"
                                 >
-                                    <td width="50%" style="vertical-align: middle">
+                                    {{ props.item.status }}
+                                </td>
+                                <td>
+                                    <div
+                                            style="width: 100%"
+                                            v-for="(taskResult, index) in props.item.taskResults"
+                                            :key="index"
+                                    >
                                         <v-layout row wrap>
-                                            <v-flex lg3>
-                                                <v-menu offset-y v-if="taskResult.resultsList.length > 0">
-                                                    <template v-slot:activator="{ on }">
-                                                        <v-btn
-                                                                v-on="on"
-                                                                flat
-                                                                fab small
-                                                        >
-                                                            <v-icon v-if="!taskResult.showResultsList">list</v-icon>
-                                                            <v-icon v-if="taskResult.showResultsList">arrow_upward</v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                    <v-list>
+                                            <v-flex lg9>
+                                                <v-list expand dense
+                                                        :class="taskResult.status == 'ERROR' ? 'primary error' : ''"
+                                                        v-if="taskResult.resultsList.length > 0"
+                                                >
+                                                    <v-list-group
+                                                                no-action
+                                                                sub-group
+                                                                fab
+                                                    >
+                                                        <template v-slot:activator >
+                                                            <v-list-tile >
+                                                                <v-list-tile-title>
+                                                                    {{ taskResult.nameMetadata }} - {{ taskResult.message }}
+                                                                </v-list-tile-title>
+                                                            </v-list-tile>
+                                                        </template>
                                                         <v-list-tile
                                                                 v-for="(resultMessage, ind) in taskResult.resultsList" :key="ind"
-                                                                v-bind:style="{ backgroundColor: (resultMessage.status == 'ERROR') ? errorColor : '' }"
+                                                                :class="resultMessage.status == 'ERROR' ? 'primary error' : 'primary secondary'"
                                                         >
-                                                            <v-list-tile-title>{{ resultMessage.message }}</v-list-tile-title>
+                                                            <v-list-tile-content >
+                                                                <span class="white--text font-weight-light">&nbsp;&nbsp;&nbsp;{{ resultMessage.message }}</span>
+                                                            </v-list-tile-content>
                                                         </v-list-tile>
-                                                    </v-list>
-                                                </v-menu>
+                                                    </v-list-group>
+                                                </v-list>
+                                                <v-list v-if="taskResult.resultsList.length == 0" class="primary error" dense>
+                                                    <v-list-tile>
+                                                        <v-list-tile-title>
+                                                            {{ taskResult.nameMetadata }} - {{ taskResult.message }}
+                                                        </v-list-tile-title>
+                                                    </v-list-tile>
+                                                </v-list>
                                             </v-flex>
-                                            <v-flex lg9 style="position:relative">
-                                                <div style="position:absolute; top:50%; margin-top: -0.625em;">
-                                                    {{ taskResult.nameMetadata }}
-                                                </div>
+                                            <v-flex lg3>
+                                                <v-btn
+                                                        v-on:click="showFile(propertyName, taskResult.nameMetadata)"
+                                                        style="float:right"
+                                                        v-if="taskResult.resultsList.length != 0"
+                                                >
+                                                    View file
+                                                </v-btn>
                                             </v-flex>
                                         </v-layout>
-                                    </td>
-                                    <td width="30%" style="vertical-align: middle">
-                                            {{ taskResult.message }}
-                                    </td>
-                                    <td width="20%" style="vertical-align: middle">
-                                        <div >
-                                            <v-btn
-                                                    v-if="taskResult.resultsList.length > 0 && !taskResult.nameMetadata.includes('Test')"
-                                                    v-on:click="showFile(propertyName, taskResult.nameMetadata)"
-                                            >
-                                                View file
-                                            </v-btn>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </table>
-                            </td>
+                                    </div>
+                                </td>
+                            </tr>
                         </template>
                         <template v-slot:footer>
                             <td :colspan="userResultsHeaders.length">
@@ -136,7 +142,8 @@
             userResults: [],
             userResultsHeaders: [
                 {text: '#', value: 'index', sortable: false},
-                {text: 'Task Name', value: 'taskName', sortable:false},
+                {text: 'Task Name', value: 'taskName', sortable: false},
+                {text: 'Status', value: 'status', sortable: false},
                 {text: "Metadata Files", value: "taskResults", sortable: false}
             ],
             notFound: NOT_FOUND_MESSAGE,
@@ -207,26 +214,29 @@
                 );
             },
 
-            showMetadataResults: function (result) {
-                result.showResultsList = !result.showResultsList;
-                if (result.status === 'ERROR' || result.status === '') {
-                    result.status = (result.status === 'ERROR') ? '' : 'ERROR';
-                }
-            },
-
             getReport: function (result) {
-                let res = [];
-                for (let task in result) {
-                    res = res.concat(result[task].taskResults);
+                if (result) {
+                    let errorTasks = result.filter(res => res.status === 'ERROR');
+                    let notBeginningTasks = errorTasks.filter(res => {
+                       let notFoundNumber = 0;
+                       res.taskResults.forEach(el => {
+                           if (el.resultsList.length === 0) {
+                               notFoundNumber ++;
+                           }
+                       });
+                       if (notFoundNumber == res.taskResults.length) {
+                           return true;
+                       }
+                       return false;
+                    }).length;
+                    let beginningTasks = errorTasks.length - notBeginningTasks;
+                    let finishedTasks = result.length - beginningTasks - notBeginningTasks;
+                    return 'Заданий выполнено без ошибок: ' + finishedTasks +
+                        ', Заданий выполнено с ошибками: ' + beginningTasks +
+                        ', Заданий не выполнено: ' + notBeginningTasks;
+                } else {
+                    return '';
                 }
-                let beginningTasks = res.filter(val => val.resultsList.length !== 0);
-                let finishedTasks = beginningTasks.filter(el => el.status === 'SUCCESS').length;
-                beginningTasks = beginningTasks.length - finishedTasks;
-                let notBeginningTasks = result.length - beginningTasks - finishedTasks;
-
-                return 'Заданий выполнено без ошибок: ' + finishedTasks +
-                    ', Заданий выполнено с ошибками: ' + beginningTasks +
-                    ', Заданий не выполнено: ' + notBeginningTasks;
             }
         }
     }
@@ -240,5 +250,9 @@
 
     .results-table {
         padding-top: 30px;
+    }
+
+    .elevation-1 .v-table tbody tr:hover{
+        background-color: inherit
     }
 </style>
