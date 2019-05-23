@@ -50,20 +50,18 @@
                             <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
                                 {{ props.item.index + 1 }}
                             </td>
-                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
+                            <td>
                                 {{ props.item.taskName }}
                             </td>
-                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                                {{ props.item.status }}
-                            </td>
-                            <td>
-                                <v-layout
+                            <td style="padding: 0">
+                                <table width="100%" style="border-collapse: collapse">
+                                <tr
                                         v-for="(taskResult, index) in props.item.taskResults"
-                                        :key="index" row wrap
+                                        :key="index"
                                         v-bind:style="{ backgroundColor: (taskResult.status == 'ERROR') ? errorColor : '' }"
                                         style="border: none; height: 100%; width: 100%"
                                 >
-                                    <v-flex lg6>
+                                    <td width="50%" style="vertical-align: middle">
                                         <v-layout row wrap>
                                             <v-flex lg3>
                                                 <v-menu offset-y v-if="taskResult.resultsList.length > 0">
@@ -87,20 +85,18 @@
                                                     </v-list>
                                                 </v-menu>
                                             </v-flex>
-                                            <v-flex lg9>
-                                                <br/>
-                                                {{ taskResult.nameMetadata }}
+                                            <v-flex lg9 style="position:relative">
+                                                <div style="position:absolute; top:50%; margin-top: -0.625em;">
+                                                    {{ taskResult.nameMetadata }}
+                                                </div>
                                             </v-flex>
                                         </v-layout>
-                                    </v-flex>
-                                    <v-flex lg4 :color="(taskResult.status == 'ERROR') ? errorColor : '' ">
-                                        <div :style="getBlockColor()">
-                                            <br/>
+                                    </td>
+                                    <td width="30%" style="vertical-align: middle">
                                             {{ taskResult.message }}
-                                        </div>
-                                    </v-flex>
-                                    <v-flex lg2>
-                                        <div :style="'background-color:' + (taskResult.status == 'ERROR') ? errorColor : '' ">
+                                    </td>
+                                    <td width="20%" style="vertical-align: middle">
+                                        <div >
                                             <v-btn
                                                     v-if="taskResult.resultsList.length > 0 && !taskResult.nameMetadata.includes('Test')"
                                                     v-on:click="showFile(propertyName, taskResult.nameMetadata)"
@@ -108,8 +104,9 @@
                                                 View file
                                             </v-btn>
                                         </div>
-                                    </v-flex>
-                                </v-layout>
+                                    </td>
+                                </tr>
+                                </table>
                             </td>
                         </template>
                         <template v-slot:footer>
@@ -139,8 +136,7 @@
             userResults: [],
             userResultsHeaders: [
                 {text: '#', value: 'index', sortable: false},
-                {text: 'Task Name', value: 'taskName', sortable: false},
-                {text: "Status", value: "status", sortable: false},
+                {text: 'Task Name', value: 'taskName', sortable:false},
                 {text: "Metadata Files", value: "taskResults", sortable: false}
             ],
             notFound: NOT_FOUND_MESSAGE,

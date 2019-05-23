@@ -187,7 +187,7 @@ export default {
         ? "http://localhost:8080/saveTaskMapping"
         : "https://task-validation-lc.herokuapp.com/saveTaskMapping";
       this.$http.post(url, tasks).then(
-        e => {
+        () => {
           this.snackbar.color = "success";
           this.snackbar.snackbar = true;
         },
