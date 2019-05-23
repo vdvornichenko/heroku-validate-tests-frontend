@@ -49,6 +49,7 @@ public class RequestProcessor {
             helper.processUser();
 
         });
+
         return userResults;
     }
 

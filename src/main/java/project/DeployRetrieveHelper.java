@@ -388,7 +388,6 @@ public class DeployRetrieveHelper {
         Calendar calendar = new GregorianCalendar();
         calendar.set(year, month - 1, day, hour, minute, second);
         calendar.add(Calendar.HOUR, 3);
-        System.out.println(year + "  " + month + "   " + day);
         calendar.setTimeZone(TimeZone.getTimeZone("Europe/Minsk"));
         return String.valueOf(calendar.getTime());
     }
