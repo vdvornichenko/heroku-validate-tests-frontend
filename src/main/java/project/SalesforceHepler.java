@@ -1,23 +1,9 @@
 package project;
 
-import com.sforce.soap.apex.*;
-import com.sforce.soap.apex.ExecuteAnonymousResult;
-import com.sforce.soap.apex.LogCategory;
-import com.sforce.soap.apex.LogCategoryLevel;
-import com.sforce.soap.apex.LogInfo;
-import com.sforce.soap.apex.LogType;
-import com.sforce.soap.metadata.MetadataConnection;
-import com.sforce.soap.tooling.*;
-import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import project.Rules.*;
-
 import project.Processors.RequestProcessor;
 import project.Storages.FileStorage;
-
 import java.io.*;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.NoSuchFileException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -77,9 +63,6 @@ public class SalesforceHepler {
                                 theFile += "<br/>" + line.replaceAll(" ", "&nbsp;")
                                         .replaceAll("<", "&lt").replaceAll(">", "&gt;");
                             }
-                            System.out.println(nameMetadata);
-                            System.out.println(tempUsername);
-                            System.out.println(allFile);
                             if (!addFileToContainer(tempUsername, nameMetadata, theFile)) {
                                 RequestProcessor.files.add(new FileStorage(nameMetadata, tempUsername, theFile));
                             }
@@ -89,11 +72,7 @@ public class SalesforceHepler {
                     }
                     // not found file
                     if (!fileFound) {
-                        if (nameMetadata.contains("Test")) {
-                            results.add(new Results("Test", MessageFormat.format(templateNotFoundFile, nameMetadata), false));
-                        } else {
-                            results.add(new Results(nameMetadata, MessageFormat.format(templateNotFoundFile, nameMetadata), false));
-                        }
+                        results.add(new Results(nameMetadata, MessageFormat.format(templateNotFoundFile, nameMetadata), false));
                     }
                 }
                 TASK_RESULT.put(taskName, results);

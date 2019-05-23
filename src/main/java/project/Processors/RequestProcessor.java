@@ -49,14 +49,7 @@ public class RequestProcessor {
             helper.processUser();
 
         });
-        for (String s : userResults.keySet()) {
-            for (String ss : userResults.get(s).results.keySet()) {
-                System.out.println(ss);
-                for (Results results : userResults.get(s).results.get(ss)) {
-                    System.out.println(results.nameMetadata);
-                }
-            }
-        }
+
         return userResults;
     }
 
