@@ -189,9 +189,10 @@ export default {
 	},
 	methods: {
 		getTaskMapping: function(index) {
-			this.$http
-				.get("http://localhost:8080/getTaskMapping")
-				.then(response => {
+			var url = window.location.href.includes("localhost")
+				? "http://localhost:8080/getTaskMapping"
+				: "https://task-validation-lc.herokuapp.com/getTaskMapping";
+				this.$http.get(url).then(response => {
 					console.log(response.body);
 					if (response.body != null) {
 						this.Tasks = response.body;
@@ -253,14 +254,6 @@ export default {
 			// 	this.$root.$emit("setState", false);
 			// });
 		},
-		getTasks: function() {
-			var url = window.location.href.includes("localhost")
-				? "http://localhost:8080/getTaskMapping"
-				: "https://task-validation-lc.herokuapp.com/getTaskMapping";
-			this.$http.get(url).then(response => {
-				console.log(response.body);
-			});
-		}
 	}
 };
 </script>
