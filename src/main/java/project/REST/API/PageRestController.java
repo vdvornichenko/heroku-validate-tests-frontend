@@ -76,7 +76,7 @@ public class PageRestController {
     @PostMapping("/saveTaskMapping")
     public String saveTaskMapping(@RequestBody String jsonFile) {
         TaskMapping.saveJsonFile(jsonFile);
-        return "ok D9d9";
+        return "ok";
     }
     @CrossOrigin
     @GetMapping("/getTaskMapping")

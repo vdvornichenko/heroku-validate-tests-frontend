@@ -28,19 +28,13 @@ public class SalesforceHepler {
 
     public static String templateNotFoundFile =  "Не найден файл: {0}";
 
-    public static long startTime = System.currentTimeMillis();
-
     private String tempUsername;
     private String tempPassword;
     private Map<String, UserInfoWrapper> userResults;
 
     public static String zip_file_for_read = "";
-//    private static Map<String, Rule> mapping = TaskMapping.METADATA_CHECK;
 
     public TaskMapping taskMapping;
-
-
-
 
     public SalesforceHepler(String username, String password, Map<String, UserInfoWrapper> userResults, TaskMapping taskMapping) {
         this.tempUsername = username;
@@ -50,17 +44,11 @@ public class SalesforceHepler {
     }
 
     public void processUser() {
-
         DeployRetrieveHelper instance = new DeployRetrieveHelper(tempUsername, tempPassword, userResults);
-
-//        instance.retrieveZip();
-//        RequestProcessor.userListResults = checkZipFile();
         if (!zip_file_for_read.equalsIgnoreCase("")) {
             checkZipFile();
             instance.deleteFileZip();
         }
-        //readZipFile();
-//
     }
 
 
@@ -96,7 +84,6 @@ public class SalesforceHepler {
                                 RequestProcessor.files.add(new FileStorage(nameMetadata, tempUsername, theFile));
                             }
                             results.addAll(taskMapping.nameTask_mapResults.get(taskName).get(nameMetadata).checkCondition(allFile, this.tempUsername));
-//                            results.addAll(mapping.get(nameMetadata).checkCondition(allFile, this.tempUsername));
                             break;
                         }
                     }
@@ -110,16 +97,11 @@ public class SalesforceHepler {
                     }
                 }
                 TASK_RESULT.put(taskName, results);
-
-
             }
 
         } catch (IOException ex) {
             System.out.println("ioEx.SFHelper.readZip: " + ex.getMessage());
         }
-//        for (Results res : results) {
-//            System.out.println(">>> " + res.status + " " + res.nameMetadata + " " +  res.message);
-//        }
         RequestProcessor.getMapValue(tempUsername, userResults).setResults(TASK_RESULT);
 
     }

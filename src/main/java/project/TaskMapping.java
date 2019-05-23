@@ -38,9 +38,6 @@ import org.json.simple.parser.ParseException;
 
 public class TaskMapping {
 
-    public static Map<String, Rule> METADATA_CHECK   = new HashMap<>();
-//    public static Map<String, String> TEST_CLASSES   = new HashMap<>();
-
     public static double VERSION  = 45.0;
     public static String PathToXMLFile  = "src/main/resources/package.xml";
     public String nameTask  = "src/main/resources/package.xml";
@@ -51,16 +48,6 @@ public class TaskMapping {
         this.nameTask_mapResults  = loadTaskMapping();
         generatePackageXML(this.nameTask_mapResults);
     }
-
-
-
-
-
-
-
-
-
-
 
     public Map<String, Map<String, Rule>> loadTaskMapping(){
         Map<String, Map<String, Rule>> nameTask_mapResults   = new LinkedHashMap<>();
@@ -186,8 +173,6 @@ public class TaskMapping {
             Object obj = jsonParser.parse(reader);
             JSONArray tasksList = (JSONArray) obj;
             return tasksList.toJSONString();
-//            System.out.println(tasksList);
-//            tasksList.forEach( emp -> parseTaskObject( (JSONObject) emp ) );
         } catch(Exception e){
             System.out.println("oi kak hrenovo " + e.getMessage());
         }
@@ -203,7 +188,6 @@ public class TaskMapping {
             String name = sObjectrule.nameFile;// + ".object";
             taskMapping.put(name, sObjectrule);
         });
-        System.out.println(sObjectArr);
         JSONArray triggerArr = (JSONArray) tasksList.get("triggerTasks");
         triggerArr.forEach( e -> {
             ApexTriggerRule triggerRule = createsTriggerTasks( (JSONObject)e);
@@ -234,13 +218,9 @@ public class TaskMapping {
 
     private static sObjectRule createSObjectTasks (JSONObject sObject) {
         String namesObject = (String)sObject.get("name");
-        System.out.println(namesObject);
-
         String labelsObject = (String)sObject.get("label");
-        System.out.println(labelsObject);
 //fields
         JSONArray fieldsRuleArr = (JSONArray) sObject.get("fieldsRule");
-        System.out.println(fieldsRuleArr);
         List<sObjectRule.Property> fields = new ArrayList<>();
         fields.addAll(createssObjectRuleProperty(fieldsRuleArr));
 //validationRules
@@ -291,7 +271,6 @@ public class TaskMapping {
         String namesTrigger = (String)trigger.get("name");
         String helperMethod = (String)trigger.get("helperMethod");
         String objName = (String)trigger.get("objName");
-        System.out.println(namesTrigger);
         JSONArray events = (JSONArray) trigger.get("trigerEvents");
         List<String> triggerEvents = new ArrayList<>();
         events.forEach( e -> triggerEvents.add((String)e) );
@@ -332,8 +311,6 @@ public class TaskMapping {
             JSONArray valuesTagsSearch = (JSONArray) ruleApex.get("searchStrings");
             valuesTagsSearch.forEach( e -> valuesTags.add((String)e) );
             tagValuesForSearchVF.put(nameTag, valuesTags);
-            System.out.println(nameTag);
-            System.out.println(valuesTags);
         }
         return  new VisualforcePageRule(namesApexPages, tagValuesForSearchVF);
     }
