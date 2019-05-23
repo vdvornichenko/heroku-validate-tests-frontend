@@ -9,7 +9,18 @@
             <v-container grid-list-md>
                 <v-layout wrap>
                     <v-flex xs12 sm6>
-                        <v-text-field label="Object name" v-model.trim="sObjectRule.name" :class="{invalid: $v.sObjectRule.name.$dirty}" @change="$v.sObjectRule.name.$touch()"></v-text-field>
+                        <v-text-field label="Object name" v-model.trim="sObjectRule.name" 
+                        :error="$v.sObjectRule.name.$dirty && !$v.sObjectRule.name.required"
+                         @change="$v.sObjectRule.name.$touch()"></v-text-field>
+                 
+                 
+                 
+                     <!-- <v-text-field label="Object name" v-model="sObjectRule.name"
+                     :rules="[
+                            () => !!sObjectRule.name || 'This field is required',
+                            () => !!sObjectRule.name.endsWith('__c')  || 'Must be \'__c\' in the end',
+                            ]"
+                     ></v-text-field> -->
                     </v-flex>
                     <v-flex xs12 sm6>
                         <v-text-field label="Label object" v-model="sObjectRule.label"></v-text-field>
@@ -18,11 +29,12 @@
                     <v-flex xs6 class="headline font-weight-medium">Fields</v-flex>
                     <v-flex xs6>
                         <!--  -->
-                        <!--  -->
+                        <!-- :rulesNameField="rulesNameFieldFunc" -->
 
                         <cmpMapa
                             @sendRule="addToFieldsRule"
                             ref="fields"
+                            :rulesNameField="rulesNameFieldFunc"
                             v-bind:nameObj="'for Field'"
                             v-bind:mode="'new'"
                             v-bind:buttonCreate="'Create rule for Field'"
@@ -104,6 +116,7 @@
 
                         <cmpMapa
                             @sendRule="addToValidationRule"
+                            :rulesNameField="()=> {return true;}"
                             ref="validation"
                             v-bind:nameObj="'for Validation Rule'"
                             v-bind:mode="'new'"
@@ -187,7 +200,7 @@
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators'
+import { required } from 'vuelidate/lib/validators';
 import cmpMapa from "./cmpMapa";
 export default {
     components: {
@@ -204,19 +217,21 @@ export default {
         modeEditTask: "new"
     }),
     validations: {
-         sObjectRule: {
-             name: {
-                required
-             },
-        //     nestedB: {
-        //         required
-        //     }
-         }
+        sObjectRule: {
+            name: {
+                 required,
+                // end__c: requiredIf(function (e) {
+                //     return e.endsWith('__c');
+                // })
+            },
+        },
+
     },
-
-
-
     methods: {
+        rulesNameFieldFunc(valueFromChild) {
+            return !!valueFromChild.endsWith('__c');
+        },
+
         editField: function(map) {
             this.$refs.fields.dialog = true;
             this.$refs.fields.mode = "save";
@@ -244,6 +259,12 @@ export default {
             this.$root.$emit("closeRule");
         },
         emitSaveRule() {
+
+            if(this.$v.$invalid){
+                this.$v.$touch();
+
+                return;
+            }
             if(this.modeEditTask == "new") {
                 this.$root.$emit("addRule", "sObjectRule", this.sObjectRule);
             } else {
@@ -253,9 +274,7 @@ export default {
     }
 };
 </script>
-invalid {
-    border-coloe: red;
-} 
+
 
         
 <style scoped>
