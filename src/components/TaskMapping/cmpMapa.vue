@@ -11,19 +11,28 @@
 				</v-card-title>
 				<v-card-text>
 					<v-container grid-list-md>
+						
 						<v-layout wrap>
 							<v-flex xs12 sm12 md12>
-								<v-text-field label="name Field" required v-model="map.name"></v-text-field>
+								<v-text-field
+									autofocus
+									label="name Field"
+									v-model="map.name"
+									:rules="[
+										() => !!map.name || 'This field is required',
+											rulesNameField(map.name) || 'Must be \'__c\' in the end',
+									]"
+								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
 								<ul>
 									<li v-for="(row, index) in map.keyValue" :key="row.key">
 										<v-layout row>
 											<v-flex grow pa-1 align-self-baseline>
-												<span class="font-weight-light body-1"> key: </span>
-												<span class="text-uppercase blue--text"> {{ row.key }}</span>
-												<span class="font-weight-light body-1"> - value: </span>
-												<span class="text-uppercase blue--text"> {{ row.value }}</span>
+												<span class="font-weight-light body-1">key:</span>
+												<span class="text-uppercase blue--text">{{ row.key }}</span>
+												<span class="font-weight-light body-1">- value:</span>
+												<span class="text-uppercase blue--text">{{ row.value }}</span>
 											</v-flex>
 											<v-flex shrink pa-1 align-self-baseline>
 												<v-btn color="blue darken-1" flat v-on:click="remove(index)">remove</v-btn>
@@ -33,10 +42,25 @@
 								</ul>
 							</v-flex>
 							<v-flex xs5>
-								<v-select v-model="newKeyValue.key"  light :items="selectList" label="tag" required ></v-select>
+								<v-select
+									v-model="newKeyValue.key"
+									light
+									:items="selectList"
+									label="tag"
+									required
+									@change="changeTag"
+								></v-select>
 							</v-flex>
 							<v-flex xs4>
-								<v-text-field label="value" v-model="newKeyValue.value" required></v-text-field>
+								<v-combobox
+									auto-select-first
+									v-model="newKeyValue.value"
+									:items="valueList"
+									label="value"
+									append-icon="false"
+								></v-combobox>
+
+								<!-- <v-text-field label="value" v-model="newKeyValue.value" required></v-text-field> -->
 							</v-flex>
 							<v-flex xs3>
 								<v-btn color="blue darken-1" flat @click="AddRule()">Add next Rule</v-btn>
@@ -59,9 +83,11 @@ export default {
 	props: {
 		selectList: Array,
 		nameObj: String,
-		buttonCreate: String
+		buttonCreate: String,
+		rulesNameField: { type: Function }
 	},
 	data: () => ({
+		valueList: [],
 		dialog: false,
 		mode: "new",
 		map: {
@@ -74,6 +100,36 @@ export default {
 		}
 	}),
 	methods: {
+		changeTag: function() {
+			if (this.newKeyValue.key == "type") {
+				this.valueList = [
+					"ExternalLookup",
+					"IndirectLookup",
+					"Number",
+					"Percent",
+					"Phone",
+					"Picklist",
+					"MultiselectPicklist",
+					"Summary",
+					"Text",
+					"TextArea",
+					"LongTextArea",
+					"Url",
+					"Hierarchy",
+					"File",
+					"Html",
+					"Location",
+					"Time"
+				];
+			} else if (
+				this.newKeyValue.key == "required" ||
+				this.newKeyValue.key == "active"
+			) {
+				this.valueList = ["true", "false"];
+			} else {
+				this.valueList = [];
+			}
+		},
 		Close: function() {
 			this.dialog = false;
 		},
