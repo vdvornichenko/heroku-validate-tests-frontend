@@ -1,7 +1,22 @@
 <template >
 	<v-app id="taskMp" dark>
 		<Header @changeTheme="!!dark"/>
-
+    <v-snackbar
+      v-model="snackbar.snackbar"
+      :color="snackbar.color"
+      multi-line
+      top
+      :timeout="snackbar.timeout"
+    >
+       SUCCESS SAVE
+      <v-btn
+        dark
+        flat
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
 		<v-layout row wrap>
 			<v-flex lg2>
 				<div style="padding-top:50px; position:sticky; top:0"></div>
@@ -21,61 +36,8 @@
 												<v-btn color="primary" @click="createTask">CREATE TASK</v-btn>
 											</v-toolbar>
 										</template>
-
 										<v-card-text>
 											<v-flex xs12>
-												<!-- <v-list>
-								
-								<v-list-group
-									sub-group
-									v-for="(row, index) in Tasks"
-									:key="index"
-									:prepend-icon="row.action"
-									no-action
-								>
-									<template v-slot:activator>
-										<v-list-tile>
-											<v-list-tile-content>
-												<v-list-tile-title>
-													<span class="font-weight-light body-1">Task Number:</span>
-													{{ index + 1}}
-												</v-list-tile-title>
-											</v-list-tile-content>
-										</v-list-tile>
-											<v-btn
-														fab
-														icon
-														float
-														pre
-														color="white"
-														flat
-														small
-														 @click="editTask(row)"
-													>
-														<v-icon>edit</v-icon>
-													</v-btn>
-													<v-btn
-														fab
-														icon
-														float
-														color="white"
-														flat
-														small
-														@click="removeTask(index)"
-													><v-icon>delete</v-icon>
-                                      		  		</v-btn>
-									</template>
-									<v-list-tile v-for="(subItem, name, subIndex) in row" :key="subIndex">
-										<v-list-tile-content>
-											<v-list-tile-title>
-												<span class="font-weight-light body-1">{{subItem}}</span>
-											</v-list-tile-title>
-										</v-list-tile-content>
-									</v-list-tile>
-								</v-list-group>
-							
-												</v-list>-->
-
 												<v-flex xs12>
 													<v-expansion-panel>
 														<v-expansion-panel-content v-for="(tasksArr, index) in Tasks" :key="index" draggable>
@@ -119,11 +81,8 @@
 
 												<v-layout align-end justify-end>
 													<v-layout align-end justify-end>
-														<!-- <v-btn color="primary" dark @click="getTasks">TEST BUTTON</v-btn> -->
-														<v-btn color="primary" dark @click="saveTasks" :disabled="!!disableButton">SAVE TASKS</v-btn>
+														<v-btn color="primary" dark @click="saveTasks" >SAVE TASKS</v-btn>
 													</v-layout>
-													<!-- <v-btn  color="primary" dark @click="cancel">Cancel</v-btn>
-													<v-btn  color="primary" dark @click="createTask">CREATE TASK</v-btn>-->
 												</v-layout>
 											</v-flex>
 										</v-card-text>
@@ -146,118 +105,100 @@
 import oneTask from "./oneTask";
 import Header from "../Header";
 export default {
-	components: {
-		oneTask,
-		Header
-	},
-	name: "container",
-	data: () => ({
-		dark: true,
-		step: 0,
-		mode: "new",
-		Tasks: [],
-		newTask: {
-			sObjectTasks: [],
-			apexClassTasks: [],
-			apexPageTasks: [],
-			triggerTasks: [],
-			testTasks: []
-		},
-		component: null
-	}),
-	created() {
-		this.getTaskMapping();
-	},
-	mounted() {
-		this.$root.$on("createTask", task => {
-			this.step++;
-			console.log("emit createTask ");
-			if (this.mode == "new") {
-				this.Tasks.push(task);
-			}
-			var that = this;
-			setTimeout(function() {
-				that.component = null;
-				that.mode = "new";
-			}, 500);
-		});
-		this.$root.$on("cancelTask", () => {
-			this.step++;
-			this.mode = "new";
-			this.component = null;
-		});
-	},
-	methods: {
-		disableButton: function(index) {
-			return 'true';
-		},
-		getTaskMapping: function(index) {
-			var url = window.location.href.includes("localhost")
-				? "http://localhost:8080/getTaskMapping"
-				: "https://task-validation-lc.herokuapp.com/getTaskMapping";
-				this.$http.get(url).then(response => {
-					console.log(response.body);
-					if (response.body != null) {
-						this.Tasks = response.body;
-					}
-				});
-		},
-		editTask: function(task) {
-			this.step++;
-			var that = this;
-			this.mode = "edit";
-			this.component = "oneTask";
-			setTimeout(function() {
-				that.$refs.task.Task = task;
-			}, 200);
-		},
-		removeTask: function(index) {
-			this.Tasks.splice(index, 1);
-		},
-		createTask: function() {
-			console.log(" createTask ");
-			this.step++;
-			this.mode = "new";
-			var that = this;
-			setTimeout(function() {
-				that.component = "oneTask";
-			}, 250);
-		},
-		saveTasks: function() {
-			console.log(" saveTasks ");
-			const tasks = JSON.stringify(this.Tasks);
-			console.log(tasks);
-			var url = window.location.href.includes("localhost")
-				? "http://localhost:8080/saveTaskMapping"
-				: "https://task-validation-lc.herokuapp.com/saveTaskMapping";
-			this.$http.post(url, tasks).then(
-				() => {
-					// eslint-disable-next-line no-console
-					console.log("SUCCESS");
-				},
-				() => {
-					// eslint-disable-next-line no-console
-					console.log("ERROR");
-				}
-			);
-			// this.$http.get(HTTP_USER_CREDS_URL).then(response => {
-			// 	let groups = [];
-			// 	response.body.forEach((elem, i) => {
-			// 		// this.users.push({
-			// 		// 	index: i,
-			// 		// 	userName: elem.userName,
-			// 		// 	password: elem.password,
-			// 		// 	checked: false,
-			// 		// 	group: elem.group,
-			// 		// 	fio: elem.fio
-			// 		// });
-			// 		// groups.push(elem.group);
-			// 	});
-			// 	this.groups = new Set(groups);
-			// 	this.$root.$emit("setState", false);
-			// });
-		},
-	}
+  components: {
+    oneTask,
+    Header
+  },
+  name: "container",
+  data: () => ({
+    snackbar:{
+      snackbar: false,
+      timeout: 3000,
+      color: "success",
+    },
+    dark: true,
+    step: 0,
+    mode: "new",
+    Tasks: [],
+    newTask: {
+      sObjectTasks: [],
+      apexClassTasks: [],
+      apexPageTasks: [],
+      triggerTasks: [],
+      testTasks: []
+    },
+    component: null
+  }),
+  created() {
+    this.getTaskMapping();
+  },
+  mounted() {
+    this.$root.$on("createTask", task => {
+      this.step++;
+      if (this.mode == "new") {
+        this.Tasks.push(task);
+      }
+      var that = this;
+      setTimeout(function() {
+        that.component = null;
+        that.mode = "new";
+      }, 500);
+    });
+    this.$root.$on("cancelTask", () => {
+      this.step++;
+      this.mode = "new";
+      this.component = null;
+    });
+  },
+  methods: {
+    getTaskMapping: function(index) {
+      var url = window.location.href.includes("localhost")
+        ? "http://localhost:8080/getTaskMapping"
+        : "https://task-validation-lc.herokuapp.com/getTaskMapping";
+      this.$http.get(url).then(response => {
+        if (response.body != null) {
+          this.Tasks = response.body;
+        }
+      });
+    },
+    editTask: function(task) {
+      this.step++;
+      var that = this;
+      this.mode = "edit";
+      this.component = "oneTask";
+      setTimeout(function() {
+        that.$refs.task.Task = task;
+      }, 200);
+    },
+    removeTask: function(index) {
+      this.Tasks.splice(index, 1);
+    },
+    createTask: function() {
+      this.step++;
+      this.mode = "new";
+      var that = this;
+      setTimeout(function() {
+        that.component = "oneTask";
+      }, 250);
+    },
+    saveTasks: function() {
+      const tasks = JSON.stringify(this.Tasks);
+      var url = window.location.href.includes("localhost")
+        ? "http://localhost:8080/saveTaskMapping"
+        : "https://task-validation-lc.herokuapp.com/saveTaskMapping";
+      this.$http.post(url, tasks).then(
+        e => {
+          this.snackbar.color = "success";
+          this.snackbar.snackbar = true;
+        },
+        e => {
+          this.snackbar.color = "error";
+          this.snackbar.snackbar = true;
+          console.log("ERROR" + e);
+        }
+      );
+    }
+  }
 };
 </script>
 

@@ -38,38 +38,37 @@
 </template>
 <script>
 export default {
-	name: "ApexClassComponent",
-	data: () => ({
-		Trigger: {
-			name: "",
-			objName: "",
-			trigerEvents: [],
-			helperMethod: ""
-		},
-		modeEditTask: "new",
-		events: [
-			"before insert",
-			"before update",
-			"before delete",
-			"after update",
-			"after insert",
-			"after delete",
-			"after undelete"
-		]
-	}),
-	methods: {
-        emitCloseRule() {
-            this.$root.$emit("closeRule");
-        },
-		emitSaveRule() {
-			console.log("emit TriggerRule");
-            if(this.modeEditTask == "new") {
-                this.$root.$emit("addRule", "TriggerRule", this.Trigger);
-            } else {
-                this.$root.$emit("closeRule");
-            }
-		}
-	}
+  name: "ApexClassComponent",
+  data: () => ({
+    Trigger: {
+      name: "",
+      objName: "",
+      trigerEvents: [],
+      helperMethod: ""
+    },
+    modeEditTask: "new",
+    events: [
+      "before insert",
+      "before update",
+      "before delete",
+      "after update",
+      "after insert",
+      "after delete",
+      "after undelete"
+    ]
+  }),
+  methods: {
+    emitCloseRule() {
+      this.$root.$emit("closeRule");
+    },
+    emitSaveRule() {
+      if (this.modeEditTask == "new") {
+        this.$root.$emit("addRule", "TriggerRule", this.Trigger);
+      } else {
+        this.$root.$emit("closeRule");
+      }
+    }
+  }
 };
 </script>
 

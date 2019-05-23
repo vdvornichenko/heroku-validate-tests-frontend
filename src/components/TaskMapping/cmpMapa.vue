@@ -2,7 +2,6 @@
 	<div>
 		<v-dialog v-model="dialog" persistent max-width="600px" light>
 			<template v-slot:activator="{ on }">
-				<!-- <v-btn color="primary" dark v-on="on">{{buttonCreate}}</v-btn> -->
 				<v-btn color="primary" dark @click="createNew()">{{buttonCreate}}</v-btn>
 			</template>
 			<v-card>
@@ -59,8 +58,6 @@
 									label="value"
 									append-icon="false"
 								></v-combobox>
-
-								<!-- <v-text-field label="value" v-model="newKeyValue.value" required></v-text-field> -->
 							</v-flex>
 							<v-flex xs3>
 								<v-btn color="blue darken-1" flat @click="AddRule()">Add next Rule</v-btn>
@@ -79,93 +76,93 @@
 </template>
 <script>
 export default {
-	name: "mapComponent",
-	props: {
-		selectList: Array,
-		nameObj: String,
-		buttonCreate: String,
-		rulesNameField: { type: Function }
-	},
-	data: () => ({
-		valueList: [],
-		dialog: false,
-		mode: "new",
-		map: {
-			name: "",
-			keyValue: []
-		},
-		newKeyValue: {
-			key: "",
-			value: ""
-		}
-	}),
-	methods: {
-		changeTag: function() {
-			if (this.newKeyValue.key == "type") {
-				this.valueList = [
-					"ExternalLookup",
-					"IndirectLookup",
-					"Number",
-					"Percent",
-					"Phone",
-					"Picklist",
-					"MultiselectPicklist",
-					"Summary",
-					"Text",
-					"TextArea",
-					"LongTextArea",
-					"Url",
-					"Hierarchy",
-					"File",
-					"Html",
-					"Location",
-					"Time"
-				];
-			} else if (
-				this.newKeyValue.key == "required" ||
-				this.newKeyValue.key == "active"
-			) {
-				this.valueList = ["true", "false"];
-			} else {
-				this.valueList = [];
-			}
-		},
-		Close: function() {
-			this.dialog = false;
-		},
-		Add: function() {
-			this.dialog = false;
-			if (this.mode == "new") {
-				this.$emit("sendRule", this.map);
-				this.map = {
-					name: "",
-					keyValue: []
-				};
-			}
-		},
-		createNew: function() {
-			this.dialog = true;
-			this.mode = "new";
-			this.map = {
-				name: "",
-				keyValue: []
-			};
-			this.newKeyValue = {
-				key: "",
-				value: ""
-			};
-		},
-		remove: function(ind) {
-			this.map.keyValue.splice(ind, 1);
-		},
-		AddRule: function() {
-			this.map.keyValue.push(this.newKeyValue);
-			this.newKeyValue = {
-				key: "",
-				value: ""
-			};
-		}
-	}
+  name: "mapComponent",
+  props: {
+    selectList: Array,
+    nameObj: String,
+    buttonCreate: String,
+    rulesNameField: { type: Function }
+  },
+  data: () => ({
+    valueList: [],
+    dialog: false,
+    mode: "new",
+    map: {
+      name: "",
+      keyValue: []
+    },
+    newKeyValue: {
+      key: "",
+      value: ""
+    }
+  }),
+  methods: {
+    changeTag: function() {
+      if (this.newKeyValue.key == "type") {
+        this.valueList = [
+          "ExternalLookup",
+          "IndirectLookup",
+          "Number",
+          "Percent",
+          "Phone",
+          "Picklist",
+          "MultiselectPicklist",
+          "Summary",
+          "Text",
+          "TextArea",
+          "LongTextArea",
+          "Url",
+          "Hierarchy",
+          "File",
+          "Html",
+          "Location",
+          "Time"
+        ];
+      } else if (
+        this.newKeyValue.key == "required" ||
+        this.newKeyValue.key == "active"
+      ) {
+        this.valueList = ["true", "false"];
+      } else {
+        this.valueList = [];
+      }
+    },
+    Close: function() {
+      this.dialog = false;
+    },
+    Add: function() {
+      this.dialog = false;
+      if (this.mode == "new") {
+        this.$emit("sendRule", this.map);
+        this.map = {
+          name: "",
+          keyValue: []
+        };
+      }
+    },
+    createNew: function() {
+      this.dialog = true;
+      this.mode = "new";
+      this.map = {
+        name: "",
+        keyValue: []
+      };
+      this.newKeyValue = {
+        key: "",
+        value: ""
+      };
+    },
+    remove: function(ind) {
+      this.map.keyValue.splice(ind, 1);
+    },
+    AddRule: function() {
+      this.map.keyValue.push(this.newKeyValue);
+      this.newKeyValue = {
+        key: "",
+        value: ""
+      };
+    }
+  }
 };
 </script>
 

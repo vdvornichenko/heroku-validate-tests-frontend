@@ -1,7 +1,5 @@
 <template>
     <div>
-        <!-- <v-card> -->
-        <v-divider></v-divider>
         <v-card-title>
             <span class="headline">SObject rule creator</span>
         </v-card-title>
@@ -10,27 +8,15 @@
                 <v-layout wrap>
                     <v-flex xs12 sm6>
                         <v-text-field label="Object name" v-model.trim="sObjectRule.name" 
-                        :error="$v.sObjectRule.name.$dirty && !$v.sObjectRule.name.required"
+                        :error="($v.sObjectRule.name.$dirty && !$v.sObjectRule.name.required) || ($v.sObjectRule.name.$dirty && !$v.sObjectRule.name.isUnique)"
+                        :error-messages="sObjectRuleNameErrors"
                          @change="$v.sObjectRule.name.$touch()"></v-text-field>
-                 
-                 
-                 
-                     <!-- <v-text-field label="Object name" v-model="sObjectRule.name"
-                     :rules="[
-                            () => !!sObjectRule.name || 'This field is required',
-                            () => !!sObjectRule.name.endsWith('__c')  || 'Must be \'__c\' in the end',
-                            ]"
-                     ></v-text-field> -->
                     </v-flex>
                     <v-flex xs12 sm6>
                         <v-text-field label="Label object" v-model="sObjectRule.label"></v-text-field>
                     </v-flex>
-
                     <v-flex xs6 class="headline font-weight-medium">Fields</v-flex>
                     <v-flex xs6>
-                        <!--  -->
-                        <!-- :rulesNameField="rulesNameFieldFunc" -->
-
                         <cmpMapa
                             @sendRule="addToFieldsRule"
                             ref="fields"
@@ -62,7 +48,6 @@
                                             </v-list-tile-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
-                                    <!-- <BUTTON> -->
                                     <v-btn
                                         fab
                                         icon
@@ -111,8 +96,6 @@
                 <v-layout wrap>
                     <v-flex xs6 class="headline font-weight-medium">Validations Rule</v-flex>
                     <v-flex xs6>
-                        <!--  -->
-                        <!--  -->
 
                         <cmpMapa
                             @sendRule="addToValidationRule"
@@ -169,7 +152,6 @@
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </template>
-
                                 <v-list-tile v-for="subItem in map.keyValue" :key="subItem.name">
                                     <v-list-tile-content>
                                         <v-list-tile-title>
@@ -195,83 +177,92 @@
             <v-btn color="blue darken-1" flat @click="emitCloseRule">Close</v-btn>
             <v-btn color="blue darken-1" flat @click="emitSaveRule">Save</v-btn>
         </v-card-actions>
-        <!-- </v-card> -->
     </div>
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators';
+import { required } from "vuelidate/lib/validators";
 import cmpMapa from "./cmpMapa";
 export default {
-    components: {
-        cmpMapa
+  components: {
+    cmpMapa
+  },
+  name: "AlertComponent",
+  data: () => ({
+    sObjectRule: {
+      name: "",
+      label: "",
+      fieldsRule: [],
+      validationRule: []
     },
-    name: "AlertComponent",
-    data: () => ({
-        sObjectRule: {
-            name: "",
-            label: "",
-            fieldsRule: [],
-            validationRule: []
-        },
-        modeEditTask: "new"
-    }),
-    validations: {
-        sObjectRule: {
-            name: {
-                 required,
-                // end__c: requiredIf(function (e) {
-                //     return e.endsWith('__c');
-                // })
-            },
-        },
+    modeEditTask: "new"
+  }),
+  computed: {
+    sObjectRuleNameErrors () {
+     const errors = []
+      if (this.$v.sObjectRule.name.$dirty && !this.$v.sObjectRule.name.required) {
+        errors.push('This field is required');
+      }
+      if (this.$v.sObjectRule.name.$dirty && !this.$v.sObjectRule.name.isUnique) {
+        errors.push('Must be "__c" in the end');
+      }
 
+      return errors
     },
-    methods: {
-        rulesNameFieldFunc(valueFromChild) {
-            return !!valueFromChild.endsWith('__c');
-        },
-
-        editField: function(map) {
-            this.$refs.fields.dialog = true;
-            this.$refs.fields.mode = "save";
-            this.$refs.fields.map = map;
-        },
-        editValidation: function(map) {
-            this.$refs.validation.dialog = true;
-            this.$refs.validation.mode = "save";
-            this.$refs.validation.map = map;
-        },
-        removeField: function(ind) {
-            this.sObjectRule.fieldsRule.splice(ind, 1);
-        },
-        removeValidation: function(ind) {
-            this.sObjectRule.validationRule.splice(ind, 1);
-        },
-        addToFieldsRule(keyValue) {
-
-            this.sObjectRule.fieldsRule.push(keyValue);
-        },
-        addToValidationRule(keyValue) {
-            this.sObjectRule.validationRule.push(keyValue);
-        },
-        emitCloseRule() {
-            this.$root.$emit("closeRule");
-        },
-        emitSaveRule() {
-
-            if(this.$v.$invalid){
-                this.$v.$touch();
-
-                return;
-            }
-            if(this.modeEditTask == "new") {
-                this.$root.$emit("addRule", "sObjectRule", this.sObjectRule);
-            } else {
-                 this.$root.$emit("closeRule");
-            }
+  },
+  validations: {
+    sObjectRule: {
+      name: {
+        required,
+        isUnique(value) {
+            if (value.endsWith('__c')) return true;
+            return false;
         }
+      }
     }
+  },
+  methods: {
+    rulesNameFieldFunc(valueFromChild) {
+      return !!valueFromChild.endsWith("__c");
+    },
+
+    editField: function(map) {
+      this.$refs.fields.dialog = true;
+      this.$refs.fields.mode = "save";
+      this.$refs.fields.map = map;
+    },
+    editValidation: function(map) {
+      this.$refs.validation.dialog = true;
+      this.$refs.validation.mode = "save";
+      this.$refs.validation.map = map;
+    },
+    removeField: function(ind) {
+      this.sObjectRule.fieldsRule.splice(ind, 1);
+    },
+    removeValidation: function(ind) {
+      this.sObjectRule.validationRule.splice(ind, 1);
+    },
+    addToFieldsRule(keyValue) {
+      this.sObjectRule.fieldsRule.push(keyValue);
+    },
+    addToValidationRule(keyValue) {
+      this.sObjectRule.validationRule.push(keyValue);
+    },
+    emitCloseRule() {
+      this.$root.$emit("closeRule");
+    },
+    emitSaveRule() {
+      if (this.$v.$invalid) {
+        this.$v.$touch();
+        return;
+      }
+      if (this.modeEditTask == "new") {
+        this.$root.$emit("addRule", "sObjectRule", this.sObjectRule);
+      } else {
+        this.$root.$emit("closeRule");
+      }
+    }
+  }
 };
 </script>
 
