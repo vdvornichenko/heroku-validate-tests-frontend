@@ -81,7 +81,6 @@ public class PageRestController {
     @CrossOrigin
     @GetMapping("/getTaskMapping")
     public String getTaskMapping() {
-        TaskMapping.getJsonFile();
-        return "ok D9d9";
+        return TaskMapping.getJsonFile();
     }
 }
