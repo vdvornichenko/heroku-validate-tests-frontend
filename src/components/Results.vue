@@ -48,43 +48,68 @@
                     >
                         <template v-slot:items="props">
                             <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                                {{ props.item.index }}
+                                {{ props.item.index + 1 }}
                             </td>
                             <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                                <v-btn
-
-                                        flat
-                                        fab small
-                                        v-if="props.item.resultsList.length > 0"
-                                        v-on:click="showMetadataResults(props.item)"
-                                >
-                                    <v-icon v-if="!props.item.showResultsList">list</v-icon>
-                                    <v-icon v-if="props.item.showResultsList">arrow_upward</v-icon>
-                                </v-btn>
-                                {{ props.item.nameMetadata }}
-                                <table v-if="props.item.showResultsList">
-                                    <tr v-for="(res, index) in props.item.resultsList" v-bind:key="index">
-                                        <td :bgcolor="res.status == 'ERROR' ? errorColor : ''">{{ res.message }}</td>
-                                        <!--  -->
-                                              <v-btn
-                                                      v-if="!res.message.includes(notFound) && props.item.nameMetadata.includes('Test')"
-                                                      v-on:click="showFile(propertyName, res.message.substring(7, res.message.indexOf(' ',  8)))"
-                                              >
-                                                    View file
-                                                </v-btn>
-                                        <!--  -->
-                                    </tr>
-                                </table>
+                                {{ props.item.taskName }}
                             </td>
-                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.status }}</td>
-                            <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">{{ props.item.message }}</td>
                             <td :bgcolor="props.item.status == 'ERROR' ? errorColor : ''">
-                                <v-btn
-                                        v-if="!props.item.message.includes(notFound) && !props.item.nameMetadata.includes('Test')"
-                                        v-on:click="showFile(propertyName, props.item.nameMetadata)"
+                                {{ props.item.status }}
+                            </td>
+                            <td>
+                                <v-layout
+                                        v-for="(taskResult, index) in props.item.taskResults"
+                                        :key="index" row wrap
+                                        v-bind:style="{ backgroundColor: (taskResult.status == 'ERROR') ? errorColor : '' }"
+                                        style="border: none; height: 100%; width: 100%"
                                 >
-                                    View file
-                                </v-btn>
+                                    <v-flex lg6>
+                                        <v-layout row wrap>
+                                            <v-flex lg3>
+                                                <v-menu offset-y v-if="taskResult.resultsList.length > 0">
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-btn
+                                                                v-on="on"
+                                                                flat
+                                                                fab small
+                                                        >
+                                                            <v-icon v-if="!taskResult.showResultsList">list</v-icon>
+                                                            <v-icon v-if="taskResult.showResultsList">arrow_upward</v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <v-list>
+                                                        <v-list-tile
+                                                                v-for="(resultMessage, ind) in taskResult.resultsList" :key="ind"
+                                                                v-bind:style="{ backgroundColor: (resultMessage.status == 'ERROR') ? errorColor : '' }"
+                                                        >
+                                                            <v-list-tile-title>{{ resultMessage.message }}</v-list-tile-title>
+                                                        </v-list-tile>
+                                                    </v-list>
+                                                </v-menu>
+                                            </v-flex>
+                                            <v-flex lg9>
+                                                <br/>
+                                                {{ taskResult.nameMetadata }}
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-flex>
+                                    <v-flex lg4 :color="(taskResult.status == 'ERROR') ? errorColor : '' ">
+                                        <div :style="getBlockColor()">
+                                            <br/>
+                                            {{ taskResult.message }}
+                                        </div>
+                                    </v-flex>
+                                    <v-flex lg2>
+                                        <div :style="'background-color:' + (taskResult.status == 'ERROR') ? errorColor : '' ">
+                                            <v-btn
+                                                    v-if="taskResult.resultsList.length > 0 && !taskResult.nameMetadata.includes('Test')"
+                                                    v-on:click="showFile(propertyName, taskResult.nameMetadata)"
+                                            >
+                                                View file
+                                            </v-btn>
+                                        </div>
+                                    </v-flex>
+                                </v-layout>
                             </td>
                         </template>
                         <template v-slot:footer>
@@ -114,10 +139,9 @@
             userResults: [],
             userResultsHeaders: [
                 {text: '#', value: 'index', sortable: false},
-                {text: "Metadata File", value: "nameMetadata"},
-                {text: "Status", value: "status"},
-                {text: "Message", value: "message"},
-                {text: "View file", value: "file"}
+                {text: 'Task Name', value: 'taskName', sortable: false},
+                {text: "Status", value: "status", sortable: false},
+                {text: "Metadata Files", value: "taskResults", sortable: false}
             ],
             notFound: NOT_FOUND_MESSAGE,
             errorColor: ERROR_COLOR,
@@ -137,35 +161,33 @@
                     this.usersErrors[userName] = results[userName].errors;
                     this.usersLoginHistories[userName] = results[userName].loginHistoryList;
                     if (results[userName].results) {
-                        let ress = [];
-                        for (let task in results[userName].results) {
-                            ress = ress.concat(results[userName].results[task]);
-                        }
-                        // eslint-disable-next-line no-console
-                        console.log(ress);
-                        ress.forEach(res => {
-                            if (resultsOfUser.filter(value => value.nameMetadata === res.nameMetadata).length === 0) {
-                                let fileResults = ress.filter(elem => elem.nameMetadata === res.nameMetadata);
-
-                                let errors = fileResults.filter(val => val.status === 'ERROR');
-                                let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
-                                if (errors.length === 1) {
-                                    if (errors[0].message.includes(NOT_FOUND_MESSAGE)) {
-                                        resultMessage = errors[0].message;
-                                        fileResults = [];
+                        let userResults = results[userName].results;
+                        for (let task in userResults) {
+                            let taskResults = [];
+                            userResults[task].forEach(taskResult => {
+                                if (taskResults.filter(val => val.nameMetadata === taskResult.nameMetadata).length === 0) {
+                                    let fileResults = userResults[task].filter(elem => elem.nameMetadata === taskResult.nameMetadata);
+                                    let errors = fileResults.filter(val => val.status === 'ERROR');
+                                    let resultMessage = ERRORS_NUMBER_MESSAGE + errors.length;
+                                    if (errors.length === 1) {
+                                        if (errors[0].message.includes(NOT_FOUND_MESSAGE)) {
+                                            resultMessage = errors[0].message;
+                                            fileResults = [];
+                                        }
                                     }
+                                    let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
+                                    taskResults.push({
+                                        nameMetadata: taskResult.nameMetadata,
+                                        status: status,
+                                        message: resultMessage,
+                                        resultsList: fileResults,
+                                        showResultsList: false
+                                    });
                                 }
-                                let status = errors.length === 0 ? 'SUCCESS' : 'ERROR';
-                                resultsOfUser.push({
-                                    index: resultsOfUser.length + 1,
-                                    nameMetadata: res.nameMetadata,
-                                    status: status,
-                                    message: resultMessage,
-                                    resultsList: fileResults,
-                                    showResultsList: false
-                                });
-                            }
-                        });
+                            });
+                            let taskStatus = taskResults.filter(res => res.status === 'ERROR').length === 0 ? 'SUCCESS' : 'ERROR';
+                            resultsOfUser.push({taskName: task, taskResults: taskResults, status: taskStatus, index: resultsOfUser.length});
+                        }
                     }
                     totalResults[userName] = resultsOfUser;
                 }
@@ -177,6 +199,10 @@
         },
 
         methods: {
+            getBlockColor: function (taskResult) {
+                return 'background-color:' + (taskResult.status == 'ERROR') ? this.errorColor : '';
+            },
+
             showFile: function (fileOwner, fileName) {
                 this.$root.$emit(
                     'runCallback',
@@ -193,7 +219,11 @@
             },
 
             getReport: function (result) {
-                let beginningTasks = result.filter(val => val.resultsList.length !== 0);
+                let res = [];
+                for (let task in result) {
+                    res = res.concat(result[task].taskResults);
+                }
+                let beginningTasks = res.filter(val => val.resultsList.length !== 0);
                 let finishedTasks = beginningTasks.filter(el => el.status === 'SUCCESS').length;
                 beginningTasks = beginningTasks.length - finishedTasks;
                 let notBeginningTasks = result.length - beginningTasks - finishedTasks;
