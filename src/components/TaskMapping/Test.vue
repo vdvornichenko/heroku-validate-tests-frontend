@@ -26,28 +26,26 @@
 </template>
 <script>
 export default {
-	name: "ApexClassComponent",
-	data: () => ({
-		Test: {
-			name: "",
-			testingClass: ""
-		},
-		modeEditTask: "new",
-	}),
-	methods: {
-        emitCloseRule() {
-            this.$root.$emit("closeRule");
-        },
-
-		emitSaveRule() {
-			console.log("emit TestRule");
-            if(this.modeEditTask == "new") {
-              	this.$root.$emit("addRule", "TestRule", this.Test);
-            } else {
-                this.$root.$emit("closeRule");
-            }
-		}
-	}
+  name: "ApexClassComponent",
+  data: () => ({
+    Test: {
+      name: "",
+      testingClass: ""
+    },
+    modeEditTask: "new"
+  }),
+  methods: {
+    emitCloseRule() {
+      this.$root.$emit("closeRule");
+    },
+    emitSaveRule() {
+      if (this.modeEditTask == "new") {
+        this.$root.$emit("addRule", "TestRule", this.Test);
+      } else {
+        this.$root.$emit("closeRule");
+      }
+    }
+  }
 };
 </script>
 

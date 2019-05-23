@@ -2,27 +2,27 @@
     <div>
         <v-card class="mx-auto">
             <v-card-title class="title font-weight-regular justify-space-between"></v-card-title>
-
             <v-window v-model="step">
                 <v-window-item :value="1">
                     <template>
                         <v-toolbar dark flat color="secondary">
-                            <v-toolbar-title>Task</v-toolbar-title>
+                            <v-toolbar-title>Task creator</v-toolbar-title>
                             <v-spacer></v-spacer>
-                            <v-menu bottom right>
-                                <template v-slot:activator="{ on }">
-                                    <v-btn right color="primary" dark v-on="on">add rule</v-btn>
-                                </template>
-                                <v-list>
-                                    <v-list-tile
-                                        v-for="(item, i) in items"
-                                        :key="i"
-                                        @click="createRule(item)"
-                                    >
-                                        <v-list-tile-title>{{ item }}</v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
+                                <v-menu bottom right>
+                                    <template v-slot:activator="{ on }">
+                                        <v-btn right color="primary" dark v-on="on">add rule</v-btn>
+                                    </template>
+                                    <v-list>
+                                        <v-list-tile
+                                            v-for="(item, i) in items"
+                                            :key="i"
+                                            @click="createRule(item)"
+                                        >
+                                            <v-list-tile-title>{{ item }}</v-list-tile-title>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                    
                         </v-toolbar>
                     </template>
 
@@ -81,7 +81,7 @@
 
                             <v-layout align-end justify-end>
                                 <v-btn color="primary" dark @click="cancel">Cancel</v-btn>
-                                <v-btn color="primary" dark @click="createTask">SAVE TASK</v-btn>
+                                <v-btn color="primary" dark @click="createTask" :disabled='isDisabled'>SAVE TASK</v-btn>
                             </v-layout>
                         </v-flex>
                     </v-card-text>
@@ -101,144 +101,142 @@ import ApexClass from "./ApexClass";
 import Trigger from "./Trigger";
 import Test from "./Test";
 export default {
-    components: {
-        sObject,
-        ApexPage,
-        ApexClass,
-        Trigger,
-        Test
+  components: {
+    sObject,
+    ApexPage,
+    ApexClass,
+    Trigger,
+    Test
+  },
+  name: "container",
+  data: () => ({
+    step: 1,
+    Task: {
+      nameTask: "",
+      sObjectTasks: [],
+      apexPageTasks: [],
+      apexClassTasks: [],
+      triggerTasks: [],
+      testTasks: []
     },
-    name: "container",
-    data: () => ({
-        step: 1,
-        Task: {
-            sObjectTasks: [],
-            apexPageTasks: [],
-            apexClassTasks: [],
-            triggerTasks: [],
-            testTasks: []
-        },
-        items: [
-            "sObject rule",
-            "apex Page rule",
-            "apex Class rule",
-            "trigger rule",
-            "test rule"
-        ],
-        component: null
-    }),
-    mounted() {
-        this.$root.$on("addRule", (metaName, rule) => {
-            console.log("emit OneTAsk " + metaName);
-            this.step++;
-            if (metaName == "sObjectRule") {
-                this.Task.sObjectTasks.push(rule);
-            } else if (metaName == "ApexPageRule") {
-                this.Task.apexPageTasks.push(rule);
-            } else if (metaName == "ApexClassRule") {
-                this.Task.apexClassTasks.push(rule);
-            } else if (metaName == "TriggerRule") {
-                this.Task.triggerTasks.push(rule);
-            } else if (metaName == "TestRule") {
-                this.Task.testTasks.push(rule);
-            }
-            this.component = null;
-            // var that = this;
-            // setTimeout(function() {
-            //     that.component = null;
-            // }, 700);
-        });
-        this.$root.$on("closeRule", () => {
-            console.log("emit close ");
-            this.step++;
-            var that = this;
-            setTimeout(function() {
-                that.component = null;
-            }, 700);
-        });
-    },
-    methods: {
-        createRule: function(e) {
-            this.step++;
-            console.log(e);
-            var that = this;
-            setTimeout(function() {
-                if (e == "sObject rule") {
-                    that.component = "sObject";
-                } else if (e == "apex Class rule") {
-                    that.component = "ApexClass";
-                } else if (e == "apex Page rule") {
-                    that.component = "ApexPage";
-                } else if (e == "trigger rule") {
-                    that.component = "Trigger";
-                } else if (e == "test rule") {
-                    that.component = "Test";
-                }
-            }, 270);
-        },
-        removeRule: function(name, index) {
-            this.Task[name].splice(index, 1);
-        },
-        editRule: function(rule, name, index) {
-            // CREATE METHOD
-            console.log(name);
-            console.log(rule);
-            this.step++;
-            var that = this;
-            if (name == "sObjectTasks") {
-                this.component = "sObject";
-                setTimeout(function() {
-                    that.$refs.cmp.sObjectRule = rule;
-                    that.$refs.cmp.modeEditTask = "edit";
-                }, 200);
-            } else if (name == "apexClassTasks") {
-                this.component = "ApexClass";
-                setTimeout(function() {
-                    that.$refs.cmp.ApexClass = rule;
-                    that.$refs.cmp.modeEditTask = "edit";
-                }, 200);
-            } else if (name == "apexPageTasks") {
-                this.component = "ApexPage";
-                setTimeout(function() {
-                    that.$refs.cmp.ApexPage = rule;
-                    that.$refs.cmp.modeEditTask = "edit";
-                }, 200);
-            } else if (name == "triggerTasks") {
-                this.component = "Trigger";
-                setTimeout(function() {
-                    that.$refs.cmp.Trigger = rule;
-                    that.$refs.cmp.modeEditTask = "edit";
-                }, 200);
-            } else if (name == "testTasks") {
-                this.component = "Test";
-                setTimeout(function() {
-                    that.$refs.cmp.Test = rule;
-                    that.$refs.cmp.modeEditTask = "edit";
-                }, 200);
-            }
-        },
-        createTask: function() {
-            console.log(this.Task);
-            this.$root.$emit("createTask", this.Task);
-            this.Task = {
-                sObjectTasks: [],
-                apexPageTasks: [],
-                apexClassTasks: [],
-                triggerTasks: [],
-                testTasks: []
-            };
-        },
-        cancel: function() {
-            this.$root.$emit("cancelTask");
-            this.Task = {
-                sObjectTasks: [],
-                apexPageTasks: [],
-                apexClassTasks: [],
-                triggerTasks: [],
-                testTasks: []
-            };
-        }
+    items: [
+      "sObject rule",
+      "apex Page rule",
+      "apex Class rule",
+      "trigger rule",
+      "test rule"
+    ],
+    component: null
+  }),
+  computed: {
+    isDisabled: function() {
+      for (var i in this.Task) {
+        if (this.Task[i].length > 0) return false;
+      }
+      return true;
     }
+  },
+  mounted() {
+    this.$root.$on("addRule", (metaName, rule) => {
+      this.step++;
+      if (metaName == "sObjectRule") {
+        this.Task.sObjectTasks.push(rule);
+      } else if (metaName == "ApexPageRule") {
+        this.Task.apexPageTasks.push(rule);
+      } else if (metaName == "ApexClassRule") {
+        this.Task.apexClassTasks.push(rule);
+      } else if (metaName == "TriggerRule") {
+        this.Task.triggerTasks.push(rule);
+      } else if (metaName == "TestRule") {
+        this.Task.testTasks.push(rule);
+      }
+      this.component = null;
+    });
+    this.$root.$on("closeRule", () => {
+      this.step++;
+      var that = this;
+      setTimeout(function() {
+        that.component = null;
+      }, 700);
+    });
+  },
+  methods: {
+    createRule: function(e) {
+      this.step++;
+      var that = this;
+      setTimeout(function() {
+        if (e == "sObject rule") {
+          that.component = "sObject";
+        } else if (e == "apex Class rule") {
+          that.component = "ApexClass";
+        } else if (e == "apex Page rule") {
+          that.component = "ApexPage";
+        } else if (e == "trigger rule") {
+          that.component = "Trigger";
+        } else if (e == "test rule") {
+          that.component = "Test";
+        }
+      }, 270);
+    },
+    removeRule: function(name, index) {
+      this.Task[name].splice(index, 1);
+    },
+    editRule: function(rule, name, index) {
+      this.step++;
+      var that = this;
+      if (name == "sObjectTasks") {
+        this.component = "sObject";
+        setTimeout(function() {
+          that.$refs.cmp.sObjectRule = rule;
+          that.$refs.cmp.modeEditTask = "edit";
+        }, 200);
+      } else if (name == "apexClassTasks") {
+        this.component = "ApexClass";
+        setTimeout(function() {
+          that.$refs.cmp.ApexClass = rule;
+          that.$refs.cmp.modeEditTask = "edit";
+        }, 200);
+      } else if (name == "apexPageTasks") {
+        this.component = "ApexPage";
+        setTimeout(function() {
+          that.$refs.cmp.ApexPage = rule;
+          that.$refs.cmp.modeEditTask = "edit";
+        }, 200);
+      } else if (name == "triggerTasks") {
+        this.component = "Trigger";
+        setTimeout(function() {
+          that.$refs.cmp.Trigger = rule;
+          that.$refs.cmp.modeEditTask = "edit";
+        }, 200);
+      } else if (name == "testTasks") {
+        this.component = "Test";
+        setTimeout(function() {
+          that.$refs.cmp.Test = rule;
+          that.$refs.cmp.modeEditTask = "edit";
+        }, 200);
+      }
+    },
+    createTask: function() {
+      this.$root.$emit("createTask", this.Task);
+      this.Task = {
+        sObjectTasks: [],
+        apexPageTasks: [],
+        apexClassTasks: [],
+        triggerTasks: [],
+        testTasks: []
+      };
+    },
+    cancel: function() {
+      this.$root.$emit("cancelTask");
+      this.Task = {
+        sObjectTasks: [],
+        apexPageTasks: [],
+        apexClassTasks: [],
+        triggerTasks: [],
+        testTasks: []
+      };
+    }
+  }
 };
 </script>
 
