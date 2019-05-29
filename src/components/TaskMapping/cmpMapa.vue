@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 	<div>
 		<v-dialog v-model="dialog" persistent max-width="600px" light>
 			<template v-slot:activator="{ on }">

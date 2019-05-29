@@ -43,6 +43,8 @@
                 this.callbackState = true;
                 this.promise = callback;
                callback.then(response => {
+                   // eslint-disable-next-line no-console
+                   console.log(response);
                    if (this.callbackState && this.promise === callback) {
                        this.$root.$emit(eventName, response);
                        this.callbackState = false;

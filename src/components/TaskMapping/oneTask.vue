@@ -1,9 +1,10 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div>
         <v-card class="mx-auto">
             <v-card-title class="title font-weight-regular justify-space-between"></v-card-title>
+            <div style="overflow: auto">
             <v-window v-model="step">
-                <v-window-item :value="1">
+                <v-window-item :value="1" >
                     <template>
                         <v-toolbar dark flat color="secondary">
                             <v-toolbar-title>Task creator</v-toolbar-title>
@@ -91,6 +92,7 @@
                     <component :is="component" v-if="component" ref="cmp"/>
                 </v-window-item>
             </v-window>
+            </div>
         </v-card>
     </div>
 </template>

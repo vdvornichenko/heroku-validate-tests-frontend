@@ -1,4 +1,4 @@
-<template >
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 	<v-app id="taskMp" dark>
 		<Header @changeTheme="!!dark"/>
     <v-snackbar
